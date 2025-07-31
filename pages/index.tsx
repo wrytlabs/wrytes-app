@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Layout from '@/components/layout/Layout';
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
 import Services from '@/components/sections/Services';
@@ -31,12 +30,10 @@ export default function Home() {
         <link rel="canonical" href="https://wrytes.io" />
       </Head>
       
-      <Layout>
-        <Hero />
-        <About />
-        <Services />
-        <Contact />
-      </Layout>
+      <Hero />
+      <About />
+      <Services />
+      <Contact />
     </>
   );
 }

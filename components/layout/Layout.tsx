@@ -1,19 +1,21 @@
 import React from 'react';
-import Header from './Header';
-import Footer from './Footer';
+import { useRouter } from 'next/router';
+import HomeLayout from './HomeLayout';
+import DashboardLayout from './DashboardLayout';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  return (
-    <div className="min-h-screen bg-dark-bg text-text-primary">
-      <Header />
-      <main className="">
-        {children}
-      </main>
-      <Footer />
-    </div>
-  );
-}
+  const router = useRouter();
+  const pathname = router.pathname;
+
+  // Check if the path starts with /dashboard
+  if (pathname.startsWith('/dashboard')) {
+    return <DashboardLayout>{children}</DashboardLayout>;
+  }
+
+  // Default to HomeLayout for all other paths
+  return <HomeLayout>{children}</HomeLayout>;
+} 

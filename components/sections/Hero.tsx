@@ -76,7 +76,7 @@ export default function Hero() {
           >
             <Button
               size="lg"
-              href="#contact"
+              href="/dashboard"
               icon={<FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />}
               className="shadow-glow"
             >
