@@ -11,7 +11,7 @@
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true yarn build"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",

@@ -81,8 +81,8 @@ export default function Contact() {
 
               {/* Response Time */}
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-accent-gold/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <FontAwesomeIcon icon={faPhone} className="w-5 h-5 text-accent-gold" />
+                <div className="w-12 h-12 bg-accent-orange/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FontAwesomeIcon icon={faPhone} className="w-5 h-5 text-accent-orange" />
                 </div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Response Time</h4>

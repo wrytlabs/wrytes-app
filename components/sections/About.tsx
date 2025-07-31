@@ -60,7 +60,7 @@ export default function About() {
                   <span className="text-text-secondary">Software Development across sectors</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-accent-gold rounded-full" />
+                  <div className="w-2 h-2 bg-accent-orange rounded-full" />
                   <span className="text-text-secondary">Bitcoin & Blockchain expertise</span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -68,7 +68,7 @@ export default function About() {
                   <span className="text-text-secondary">AI & Machine Learning solutions</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-accent-gold rounded-full" />
+                  <div className="w-2 h-2 bg-accent-orange rounded-full" />
                   <span className="text-text-secondary">Option trading on Bitcoin for cashflow</span>
                 </div>
               </div>

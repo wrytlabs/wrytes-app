@@ -94,7 +94,7 @@ export default function Services() {
                 <div className="text-text-secondary">Years Combined Experience</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-gold mb-2">50+</div>
+                <div className="text-3xl font-bold text-accent-orange mb-2">50+</div>
                 <div className="text-text-secondary">Projects Delivered</div>
               </div>
               <div className="text-center">

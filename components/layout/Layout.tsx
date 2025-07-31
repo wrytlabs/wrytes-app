@@ -10,7 +10,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-dark-bg text-text-primary">
       <Header />
-      <main className="pt-16">
+      <main className="">
         {children}
       </main>
       <Footer />
