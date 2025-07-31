@@ -51,15 +51,21 @@ The repository is in its initial planning phase with comprehensive documentation
 **Tailwind Configuration:**
 Custom color system defined in tailwind.config.ts with dark theme variables, custom animations (fade-in, slide-up, float), and extended shadows for card elevation.
 
-## Development Commands (When Package.json Exists)
+## Development Commands
 
-Based on the project setup plan, these commands will be available:
+**IMPORTANT: Always use Yarn instead of npm for this project.**
+
+Available commands:
 ```bash
 yarn dev          # Start development server
 yarn build        # Build for production
+yarn start        # Start production server
 yarn lint         # Run ESLint
-yarn tsc --noEmit # TypeScript type checking
-yarn format      # Format code with Prettier
+yarn lint:fix     # Fix ESLint errors automatically
+yarn type-check   # TypeScript type checking
+yarn format       # Format code with Prettier
+yarn format:check # Check code formatting
+yarn analyze      # Analyze bundle size
 ```
 
 ## Implementation Guidelines
