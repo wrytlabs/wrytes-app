@@ -23,7 +23,7 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
     clearWalletError,
     availableConnectors 
   } = useWallet()
-  const { signIn, isLoading: authLoading, error: authError, clearError, isAuthenticated } = useAuth()
+  const { signIn, signOut, isLoading: authLoading, error: authError, clearError, isAuthenticated } = useAuth()
   const [isAuthenticating, setIsAuthenticating] = useState(false)
   const [showWalletSelector, setShowWalletSelector] = useState(false)
 
@@ -64,7 +64,17 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
       await signIn(address)
       onSuccess?.()
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Authentication failed'
+      let errorMessage = 'Authentication failed'
+      
+      if (error instanceof Error) {
+        // Handle wallet rejection errors
+        if (error.name === 'UserRejectedRequestError' || error.message.includes('User rejected')) {
+          errorMessage = 'Signature request was cancelled. Please try again.'
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       onError?.(errorMessage)
     } finally {
       setIsAuthenticating(false)
@@ -73,7 +83,7 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
 
   const handleDisconnect = async () => {
     try {
-      await disconnectWallet()
+      await signOut()
     } catch (error) {
       console.error('Failed to disconnect:', error)
     }
@@ -88,18 +98,6 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
   return (
     <div className={`text-center max-w-md mx-auto ${className}`}>
       <div className="mb-4">
-        <FontAwesomeIcon 
-          icon={faWallet} 
-          className="text-4xl text-orange-500 mb-2" 
-        />
-        <h3 className="text-xl font-bold text-white mb-2">
-          {showConnectedState 
-            ? 'Wallet Connected' 
-            : isConnected 
-              ? 'Authenticate' 
-              : 'Connect Wallet'
-          }
-        </h3>
         <p className="text-gray-400 text-sm">
           {showConnectedState
             ? 'You are successfully authenticated'
@@ -128,7 +126,7 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
               {isConnecting 
                 ? 'Connecting wallet...' 
                 : isAuthenticating || authLoading
-                  ? 'Authenticating...'
+                  ? 'Signing message...'
                   : 'Processing...'
               }
             </p>
@@ -144,7 +142,6 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
             exit={{ opacity: 0, y: -20 }}
             className="mb-4"
           >
-            <p className="text-gray-400 text-sm mb-3">Choose your wallet:</p>
             <div className="flex flex-wrap gap-3 justify-center">
               {availableConnectors.map((connector) => (
                 <button

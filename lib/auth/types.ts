@@ -69,6 +69,7 @@ export interface AuthContextType extends AuthState {
   hasPermission: (permission: string) => boolean
   hasRole: (role: string) => boolean
   clearError: () => void
+  authFlow: AuthFlowState
 }
 
 // Wallet connection types

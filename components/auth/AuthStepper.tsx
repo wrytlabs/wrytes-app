@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -40,18 +40,40 @@ const steps = [
   },
 ]
 
-export function AuthStepper() {
-  const { isAuthenticated, isLoading, user } = useAuth()
+interface AuthStepperProps {
+  onComplete?: () => void
+}
+
+export function AuthStepper({ onComplete }: AuthStepperProps) {
+  const { 
+    isAuthenticated, 
+    isLoading, 
+    user, 
+    authFlow,
+    error 
+  } = useAuth()
   const { isConnected } = useWallet()
 
-  // Determine current step based on state
+  // Auto-close modal after successful authentication
+  useEffect(() => {
+    if (isAuthenticated && onComplete) {
+      const timer = setTimeout(() => {
+        onComplete()
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [isAuthenticated, onComplete])
+
+  // Determine current step based on auth flow state
   const getCurrentStep = (): AuthStep => {
     if (isAuthenticated) return AuthStep.AUTHENTICATED
-    if (isLoading) {
-      // Return the step that's currently loading
-      if (!isConnected) return AuthStep.CONNECT_WALLET
-      return AuthStep.VERIFY_SIGNATURE
+    if (error) return AuthStep.ERROR
+    
+    // Use authFlow.currentStep if available, otherwise fallback to wallet state
+    if (authFlow?.currentStep) {
+      return authFlow.currentStep
     }
+    
     if (isConnected) return AuthStep.GENERATE_MESSAGE
     return AuthStep.CONNECT_WALLET
   }
@@ -63,15 +85,19 @@ export function AuthStepper() {
     if (currentStep === AuthStep.ERROR) {
       return stepIndex <= currentStepIndex ? 'error' : 'pending'
     }
+    
     if (currentStep === AuthStep.AUTHENTICATED) {
       return 'completed'
     }
+    
     if (stepIndex < currentStepIndex) {
       return 'completed'
     }
+    
     if (stepIndex === currentStepIndex) {
-      return isLoading ? 'loading' : 'current'
+      return authFlow?.isLoading ? 'loading' : 'current'
     }
+    
     return 'pending'
   }
 
@@ -79,12 +105,8 @@ export function AuthStepper() {
     switch (status) {
       case 'completed':
         return faCheck
-      case 'loading':
-        return faSpinner
       case 'error':
         return faExclamationTriangle
-      case 'current':
-        return step.icon
       default:
         return step.icon
     }
@@ -146,9 +168,7 @@ export function AuthStepper() {
                 >
                   <FontAwesomeIcon
                     icon={icon}
-                    className={`text-sm ${colorClass} ${
-                      status === 'loading' ? 'animate-spin' : ''
-                    }`}
+                    className={`text-sm ${colorClass}`}
                   />
                 </motion.div>
                 
@@ -178,37 +198,6 @@ export function AuthStepper() {
             </React.Fragment>
           )
         })}
-      </div>
-
-      {/* Status Message */}
-      <div className="mt-4 text-center">
-        {currentStep === AuthStep.AUTHENTICATED && (
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-sm text-green-400"
-          >
-            ✅ Authentication completed successfully!
-          </motion.p>
-        )}
-        {currentStep === AuthStep.ERROR && (
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-sm text-red-400"
-          >
-            ❌ Authentication failed. Please try again.
-          </motion.p>
-        )}
-        {isLoading && currentStep !== AuthStep.AUTHENTICATED && (
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-sm text-orange-400"
-          >
-            🔄 Processing authentication...
-          </motion.p>
-        )}
       </div>
     </div>
   )

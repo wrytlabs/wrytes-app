@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine, faBars, faTimes, faFolder, faChartBar, faWallet, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faBars, faTimes, faFolder, faChartBar, faWallet } from '@fortawesome/free-solid-svg-icons';
 import { COMPANY } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -80,23 +80,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   Connect Wallet
                 </button>
               ) : (
-                <>
+                <button
+                  type="button"
+                  onClick={() => setShowAuthModal(true)}
+                  className="inline-flex items-center gap-2 text-white hover:text-accent-orange transition-colors text-sm font-medium"
+                  title="Click to disconnect wallet"
+                >
                   <div className="text-right">
                     <p className="text-sm text-gray-400">Connected as</p>
-                    <p className="text-white font-mono text-sm">
+                    <p className="text-white font-mono text-sm hover:text-accent-orange transition-colors">
                       {user?.walletAddress?.slice(0, 8)}...{user?.walletAddress?.slice(-6)}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="inline-flex items-center gap-2 bg-red-500/80 text-white ml-3 px-3 py-2 rounded-lg hover:bg-red-500/90 transition-colors text-sm font-medium"
-                    title="Disconnect wallet"
-                  >
-                    <FontAwesomeIcon icon={faSignOutAlt} className="w-3 h-3" />
-                    Logout
-                  </button>
-                </>
+                </button>
               )}
             </div>
 
@@ -153,26 +149,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     Connect Wallet
                   </button>
                 ) : (
-                  <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAuthModal(true);
+                      closeMobileMenu();
+                    }}
+                    className="inline-flex items-center gap-2 text-white hover:text-accent-orange transition-colors text-sm font-medium"
+                    title="Click to disconnect wallet"
+                  >
                     <div className="text-right">
                       <p className="text-sm text-gray-400">Connected as</p>
-                      <p className="text-white font-mono text-sm">
+                      <p className="text-white font-mono text-sm hover:text-accent-orange transition-colors">
                         {user?.walletAddress?.slice(0, 8)}...{user?.walletAddress?.slice(-6)}
                       </p>
-                                             <button
-                         type="button"
-                         onClick={() => {
-                           handleLogout();
-                           closeMobileMenu();
-                         }}
-                         className="inline-flex items-center gap-2 bg-red-500/80 text-white px-3 py-2 rounded-lg hover:bg-red-500/90 transition-colors text-sm font-medium mt-2"
-                         title="Disconnect wallet"
-                       >
-                        <FontAwesomeIcon icon={faSignOutAlt} className="w-3 h-3" />
-                        Logout
-                      </button>
                     </div>
-                  </>
+                  </button>
                 )}
               </nav>
             </div>

@@ -203,14 +203,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     } catch (error) {
       console.error('Sign in error:', error)
-      const apiError = error as ApiError
-      const errorMessage = apiError.message || 'Authentication failed'
+      
+      // Handle different types of errors
+      let errorMessage = 'Authentication failed'
+      
+      if (error instanceof Error) {
+        // Handle wallet rejection errors
+        if (error.name === 'UserRejectedRequestError' || error.message.includes('User rejected')) {
+          errorMessage = 'Signature request was cancelled. Please try again.'
+        } else if (error.message.includes('Network error')) {
+          errorMessage = 'Network error occurred. Please check your connection and try again.'
+        } else {
+          errorMessage = error.message
+        }
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        // Handle API errors
+        const apiError = error as ApiError
+        errorMessage = apiError.message || 'Authentication failed'
+      }
       
       dispatch({ type: 'SET_ERROR', payload: errorMessage })
       dispatch({
         type: 'SET_AUTH_FLOW',
         payload: { 
-          currentStep: AuthStep.ERROR,
+          currentStep: AuthStep.SIGN_MESSAGE, // Go back to sign message step
           isLoading: false,
           error: errorMessage,
         },
@@ -299,6 +315,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     hasPermission,
     hasRole,
     clearError,
+    authFlow: state.authFlow,
   }
 
   return (

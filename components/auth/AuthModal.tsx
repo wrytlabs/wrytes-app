@@ -25,8 +25,8 @@ export function AuthModal({
   const [error, setError] = useState<string | null>(null)
 
   const handleSuccess = () => {
-    onSuccess?.()
-    onClose()
+    // onSuccess?.()
+    // onClose()
   }
 
   const handleError = (errorMessage: string) => {
@@ -89,7 +89,7 @@ export function AuthModal({
               <div className="p-6">
                 {/* Auth Stepper */}
                 <div className="mb-6">
-                  <AuthStepper />
+                  <AuthStepper onComplete={onClose} />
                 </div>
 
                 {/* Wallet Connector */}
