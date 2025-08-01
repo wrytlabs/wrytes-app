@@ -1,16 +1,18 @@
-import { type User, type Permission, type PermissionCheck } from '@/lib/auth/types'
+import { type User, type PermissionCheck } from '@/lib/auth/types'
 
 /**
  * Check if user has a specific permission
  */
 export function checkPermission(user: User | null, permission: string): boolean {
-  if (!user || !user.permissions) return false
+  if (!user || !user.roles) return false
   
-  return user.permissions.some(p => 
-    p.name === permission || 
-    `${p.resource}.${p.action}` === permission ||
-    `${p.resource}.*` === permission || // Wildcard for all actions on resource
-    '*.*' === permission // Super admin permission
+  return user.roles.some(role => 
+    role.permissions?.some(p => 
+      p.name === permission || 
+      `${p.resource}.${p.action}` === permission ||
+      `${p.resource}.*` === permission || // Wildcard for all actions on resource
+      '*.*' === permission // Super admin permission
+    )
   )
 }
 
@@ -18,15 +20,15 @@ export function checkPermission(user: User | null, permission: string): boolean 
  * Check if user has a specific role
  */
 export function checkRole(user: User | null, role: string): boolean {
-  if (!user || !user.role) return false
-  return user.role.name.toLowerCase() === role.toLowerCase()
+  if (!user || !user.roles) return false
+  return user.roles.some(r => r.name.toLowerCase() === role.toLowerCase())
 }
 
 /**
  * Check if user has any of the specified roles
  */
 export function checkAnyRole(user: User | null, roles: string[]): boolean {
-  if (!user || !user.role) return false
+  if (!user || !user.roles) return false
   return roles.some(role => checkRole(user, role))
 }
 
@@ -34,7 +36,7 @@ export function checkAnyRole(user: User | null, roles: string[]): boolean {
  * Check if user has all of the specified roles (for multi-role systems)
  */
 export function checkAllRoles(user: User | null, roles: string[]): boolean {
-  if (!user || !user.role) return false
+  if (!user || !user.roles) return false
   return roles.every(role => checkRole(user, role))
 }
 
@@ -42,9 +44,11 @@ export function checkAllRoles(user: User | null, roles: string[]): boolean {
  * Get all available actions for a user on a specific resource
  */
 export function getAvailableActions(user: User | null, resource: string): string[] {
-  if (!user || !user.permissions) return []
+  if (!user || !user.roles) return []
   
-  return user.permissions
+  const allPermissions = user.roles.flatMap(role => role.permissions || [])
+  
+  return allPermissions
     .filter(p => p.resource === resource || p.resource === '*')
     .map(p => p.action)
     .filter((action, index, arr) => arr.indexOf(action) === index) // Remove duplicates
@@ -54,9 +58,11 @@ export function getAvailableActions(user: User | null, resource: string): string
  * Get all resources a user has access to
  */
 export function getAccessibleResources(user: User | null): string[] {
-  if (!user || !user.permissions) return []
+  if (!user || !user.roles) return []
   
-  return user.permissions
+  const allPermissions = user.roles.flatMap(role => role.permissions || [])
+  
+  return allPermissions
     .map(p => p.resource)
     .filter((resource, index, arr) => arr.indexOf(resource) === index) // Remove duplicates
     .filter(resource => resource !== '*') // Exclude wildcard
@@ -123,18 +129,11 @@ export function isModerator(user: User | null): boolean {
 }
 
 /**
- * Get user's role level (for hierarchical permissions)
+ * Check if user has system role
  */
-export function getRoleLevel(user: User | null): number {
-  if (!user || !user.role) return 0
-  return user.role.level || 0
-}
-
-/**
- * Check if user has higher or equal role level
- */
-export function hasMinimumRoleLevel(user: User | null, minimumLevel: number): boolean {
-  return getRoleLevel(user) >= minimumLevel
+export function hasSystemRole(user: User | null): boolean {
+  if (!user || !user.roles) return false
+  return user.roles.some(role => role.isSystem === true)
 }
 
 /**
@@ -184,9 +183,11 @@ export function isWildcardPermission(permission: string): boolean {
  * Get all permissions as readable strings
  */
 export function getReadablePermissions(user: User | null): string[] {
-  if (!user || !user.permissions) return []
+  if (!user || !user.roles) return []
   
-  return user.permissions.map(p => {
+  const allPermissions = user.roles.flatMap(role => role.permissions || [])
+  
+  return allPermissions.map(p => {
     if (p.description) return p.description
     return `${p.action} ${p.resource}`.replace(/\./g, ' ')
   })

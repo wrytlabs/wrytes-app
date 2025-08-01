@@ -1,3 +1,5 @@
+import { type UserProfile } from './types'
+
 const AUTH_TOKEN_KEY = 'wrytes_auth_token'
 const AUTH_USER_KEY = 'wrytes_auth_user'
 
@@ -36,7 +38,7 @@ export class AuthStorage {
   }
 
   // User data management
-  static setUser(user: any): void {
+  static setUser(user: UserProfile): void {
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user))
@@ -46,7 +48,7 @@ export class AuthStorage {
     }
   }
 
-  static getUser(): any | null {
+  static getUser(): UserProfile | null {
     if (typeof window !== 'undefined') {
       try {
         const userData = localStorage.getItem(AUTH_USER_KEY)

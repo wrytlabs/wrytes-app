@@ -29,7 +29,7 @@ export interface Role {
   name: string
   description: string
   permissions: Permission[]
-  level: number // For role hierarchy
+  isSystem?: boolean
 }
 
 export interface User {

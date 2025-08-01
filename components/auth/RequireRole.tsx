@@ -59,7 +59,7 @@ export function RequireRole({
         <span className="text-sm">{defaultErrorMessage}</span>
       </div>
       <div className="mt-2 text-xs text-gray-500">
-        Current role: {user.role?.name || 'No role assigned'}
+        Current roles: {user.roles?.map(r => r.name).join(', ') || 'No roles assigned'}
       </div>
     </motion.div>
   )
@@ -97,7 +97,7 @@ export function withRoleProtection<P extends object>(
 export function RoleBadge({ className = '' }: { className?: string }) {
   const { user } = useAuth()
 
-  if (!user?.role) return null
+  if (!user?.roles || user.roles.length === 0) return null
 
   const getRoleColor = (roleName: string) => {
     switch (roleName.toLowerCase()) {
@@ -112,10 +112,22 @@ export function RoleBadge({ className = '' }: { className?: string }) {
     }
   }
 
+  // Show the first role, prioritizing system roles
+  const primaryRole = user.roles.reduce((primary, current) => {
+    // Prioritize system roles over regular roles
+    if (current.isSystem && !primary.isSystem) return current
+    if (!current.isSystem && primary.isSystem) return primary
+    // If both are system or both are regular, return the first one (primary)
+    return primary
+  })
+
   return (
-    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs border ${getRoleColor(user.role.name)} ${className}`}>
+    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs border ${getRoleColor(primaryRole.name)} ${className}`}>
       <FontAwesomeIcon icon={faUserShield} className="mr-1 text-xs" />
-      {user.role.name}
+      {primaryRole.name.charAt(0).toUpperCase() + primaryRole.name.slice(1)}
+      {user.roles.length > 1 && (
+        <span className="ml-1 opacity-60">+{user.roles.length - 1}</span>
+      )}
     </div>
   )
 }

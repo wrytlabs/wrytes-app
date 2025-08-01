@@ -23,7 +23,7 @@ export default function Dashboard() {
                 {user && <RoleBadge />}
               </div>
               <p className="text-text-secondary">
-                Welcome back{user && user.walletAddress ? `, ${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}` : ''}! Here's what's happening with your projects.
+                Welcome back{user && user.walletAddress ? `, ${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}` : ''}! Here&apos;s what&apos;s happening with your projects.
               </p>
             </div>
             
@@ -88,7 +88,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-4 p-4 bg-dark-surface/50 rounded-lg">
                 <div className="w-2 h-2 bg-accent-orange rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-white font-medium">New project "Blockchain Analytics" created</p>
+                  <p className="text-white font-medium">New project &quot;Blockchain Analytics&quot; created</p>
                   <p className="text-text-secondary text-sm">2 hours ago</p>
                 </div>
               </div>

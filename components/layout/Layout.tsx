@@ -11,8 +11,8 @@ export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const pathname = router.pathname;
 
-  // Check if the path starts with /dashboard
-  if (pathname.startsWith('/dashboard')) {
+  // Check if the path starts with /dashboard or /admin
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
     return <DashboardLayout>{children}</DashboardLayout>;
   }
 
