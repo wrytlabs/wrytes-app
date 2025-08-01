@@ -59,7 +59,7 @@ export function AuthStepper({ onComplete }: AuthStepperProps) {
     if (isAuthenticated && onComplete) {
       const timer = setTimeout(() => {
         onComplete()
-      }, 3000)
+      }, 5000)
       return () => clearTimeout(timer)
     }
   }, [isAuthenticated, onComplete])
@@ -67,7 +67,6 @@ export function AuthStepper({ onComplete }: AuthStepperProps) {
   // Determine current step based on auth flow state
   const getCurrentStep = (): AuthStep => {
     if (isAuthenticated) return AuthStep.AUTHENTICATED
-    if (error) return AuthStep.ERROR
     
     // Use authFlow.currentStep if available, otherwise fallback to wallet state
     if (authFlow?.currentStep) {
@@ -82,12 +81,13 @@ export function AuthStepper({ onComplete }: AuthStepperProps) {
   const currentStepIndex = steps.findIndex(step => step.id === currentStep)
 
   const getStepStatus = (stepIndex: number) => {
-    if (currentStep === AuthStep.ERROR) {
-      return stepIndex <= currentStepIndex ? 'error' : 'pending'
-    }
-    
     if (currentStep === AuthStep.AUTHENTICATED) {
       return 'completed'
+    }
+    
+    // If there's an error on the current step, show error state
+    if (stepIndex === currentStepIndex && authFlow?.error && authFlow?.currentStep === steps[stepIndex].id) {
+      return 'error'
     }
     
     if (stepIndex < currentStepIndex) {

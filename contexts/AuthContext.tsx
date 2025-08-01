@@ -226,7 +226,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       dispatch({
         type: 'SET_AUTH_FLOW',
         payload: { 
-          currentStep: AuthStep.SIGN_MESSAGE, // Go back to sign message step
+          currentStep: AuthStep.SIGN_MESSAGE, // Stay on sign message step with error
           isLoading: false,
           error: errorMessage,
         },

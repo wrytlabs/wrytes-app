@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWallet, faSpinner, faExclamationTriangle, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { useWallet } from '@/hooks/useWallet'
 import { useAuth } from '@/hooks/useAuth'
+import { AuthStep } from '@/lib/auth/types'
 import Button from '@/components/ui/Button'
 
 interface WalletConnectorProps {
@@ -23,7 +24,7 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
     clearWalletError,
     availableConnectors 
   } = useWallet()
-  const { signIn, signOut, isLoading: authLoading, error: authError, clearError, isAuthenticated } = useAuth()
+  const { signIn, signOut, isLoading: authLoading, error: authError, clearError, isAuthenticated, authFlow } = useAuth()
   const [isAuthenticating, setIsAuthenticating] = useState(false)
   const [showWalletSelector, setShowWalletSelector] = useState(false)
 
@@ -102,7 +103,9 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
           {showConnectedState
             ? 'You are successfully authenticated'
             : isConnected
-              ? 'Sign a message to complete authentication'
+              ? authFlow?.currentStep === AuthStep.SIGN_MESSAGE && authFlow?.error
+                ? 'Please try signing the message again'
+                : 'Sign a message to complete authentication'
               : 'Connect your Web3 wallet to continue'
           }
         </p>
@@ -212,7 +215,10 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
               variant="primary"
             >
               <FontAwesomeIcon icon={faCheck} className="mr-2" />
-              Sign Message
+              {authFlow?.currentStep === AuthStep.SIGN_MESSAGE && authFlow?.error 
+                ? 'Retry Sign Message' 
+                : 'Sign Message'
+              }
             </Button>
             <Button
               onClick={handleDisconnect}
