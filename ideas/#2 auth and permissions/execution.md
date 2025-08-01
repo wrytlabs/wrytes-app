@@ -23,11 +23,8 @@ This execution guide provides step-by-step instructions for implementing the Web
 ### Step 1.1: Install and Configure Reown AppKit
 
 ```bash
-# Install Reown AppKit and dependencies
+# Install Reown AppKit and dependencies (✅ COMPLETED)
 yarn add @reown/appkit @reown/appkit-adapter-wagmi wagmi viem @tanstack/react-query
-
-# Install additional Web3 utilities if needed
-yarn add ethers @types/ethers
 ```
 
 **Configuration Setup:**
@@ -37,19 +34,23 @@ yarn add ethers @types/ethers
 4. Add project ID from Reown Cloud dashboard
 
 **Files to Create:**
-- `lib/web3/config.ts` - AppKit configuration
+- `lib/web3/config.ts` - AppKit configuration with viem
 - `lib/web3/constants.ts` - Web3 constants and addresses
+
+**Note:** Using viem instead of ethers for all Web3 operations as it's more modern and has better TypeScript support.
 
 ### Step 1.2: Create Authentication Service Layer
 
 **Create AuthService (`lib/auth/AuthService.ts`):**
 ```typescript
+import { type Address } from 'viem'
+
 class AuthService {
   // Message generation: POST /auth/message
-  async generateMessage(address: string): Promise<string>
+  async generateMessage(address: Address): Promise<string>
   
   // Signature verification: POST /auth/signin  
-  async signIn(message: string, signature: string): Promise<AuthResponse>
+  async signIn(message: string, signature: `0x${string}`): Promise<AuthResponse>
   
   // Token management
   getStoredToken(): string | null
@@ -62,7 +63,7 @@ class AuthService {
 ```
 
 **Files to Create:**
-- `lib/auth/AuthService.ts` - Main authentication service
+- `lib/auth/AuthService.ts` - Main authentication service using viem types
 - `lib/auth/types.ts` - TypeScript interfaces for auth
 - `lib/auth/storage.ts` - Token storage utilities
 

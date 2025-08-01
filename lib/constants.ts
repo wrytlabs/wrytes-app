@@ -1,6 +1,5 @@
 export type ConfigEnv = {
   verbose: boolean;
-  landing: string;
   app: string;
   api: string;
   indexer: string;
@@ -8,7 +7,6 @@ export type ConfigEnv = {
 
 export const CONFIG: ConfigEnv = {
   verbose: false,
-  landing: process.env.NEXT_PUBLIC_LANDINGPAGE_URL || 'https://wrytes.io',
   app: process.env.NEXT_PUBLIC_APP_URL || 'https://app.wrytes.io',
   api: process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io',
   indexer: process.env.NEXT_PUBLIC_INDEXER_URL || 'https://indexer.wrytes.io',

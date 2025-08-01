@@ -1,9 +1,9 @@
-import { type Address } from 'viem'
+import { mainnet, base } from 'viem/chains'
 
 // Supported networks
 export const SUPPORTED_NETWORKS = {
-  MAINNET: 1,
-  SEPOLIA: 11155111,
+  MAINNET: mainnet.id,
+  BASE: base.id,
 } as const
 
 // Network configurations
@@ -11,14 +11,24 @@ export const NETWORK_CONFIG = {
   [SUPPORTED_NETWORKS.MAINNET]: {
     name: 'Ethereum Mainnet',
     chainId: SUPPORTED_NETWORKS.MAINNET,
-    rpcUrl: 'https://eth.llamarpc.com',
+    rpcUrl: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_RPC_URL}`,
     blockExplorer: 'https://etherscan.io',
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18,
+    },
   },
-  [SUPPORTED_NETWORKS.SEPOLIA]: {
-    name: 'Sepolia Testnet',
-    chainId: SUPPORTED_NETWORKS.SEPOLIA,
-    rpcUrl: 'https://sepolia.infura.io/v3/',
-    blockExplorer: 'https://sepolia.etherscan.io',
+  [SUPPORTED_NETWORKS.BASE]: {
+    name: 'Base',
+    chainId: SUPPORTED_NETWORKS.BASE,
+    rpcUrl: `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_RPC_URL}`,
+    blockExplorer: 'https://basescan.org',
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18,
+    },
   },
 } as const
 

@@ -1,10 +1,20 @@
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faChartLine, faDollarSign, faRocket } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faChartLine, faDollarSign, faRocket, faWallet } from '@fortawesome/free-solid-svg-icons';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/hooks/useAuth';
+import { RoleBadge } from '@/components/auth/RequireRole';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
+import { PERMISSIONS } from '@/lib/permissions/constants';
 
 export default function Dashboard() {
+  const { user, isAuthenticated, hasPermission } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Dashboard - Wrytes</title>
         <meta name="description" content="Dashboard overview" />
@@ -12,9 +22,38 @@ export default function Dashboard() {
       
       <div className="space-y-6">
           {/* Page Header */}
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Dashboard Overview</h1>
-            <p className="text-text-secondary">Welcome back! Here's what's happening with your projects.</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold text-white">Dashboard Overview</h1>
+                {user && <RoleBadge />}
+              </div>
+              <p className="text-text-secondary">
+                Welcome back{user ? `, ${user.address.slice(0, 6)}...${user.address.slice(-4)}` : ''}! Here's what's happening with your projects.
+              </p>
+            </div>
+            
+            {/* Auth Status */}
+            <div className="flex items-center gap-4">
+              {!isAuthenticated && (
+                <Button 
+                  onClick={() => setShowAuthModal(true)}
+                  variant="primary"
+                  className="flex items-center gap-2"
+                >
+                  <FontAwesomeIcon icon={faWallet} />
+                  Connect Wallet
+                </Button>
+              )}
+              {user && (
+                <div className="text-right">
+                  <p className="text-sm text-gray-400">Connected as</p>
+                  <p className="text-white font-mono text-sm">
+                    {user.address.slice(0, 8)}...{user.address.slice(-6)}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Stats Grid */}
@@ -96,6 +135,14 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </>
+        
+        {/* Auth Modal */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={() => setShowAuthModal(false)}
+        />
+      </div>
+    </ProtectedRoute>
   );
 } 
