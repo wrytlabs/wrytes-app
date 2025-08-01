@@ -3,6 +3,7 @@ import { http, createConfig } from 'wagmi'
 import { mainnet, base } from 'wagmi/chains'
 import { walletConnect, injected, coinbaseWallet, safe } from 'wagmi/connectors'
 import { createStorage, cookieStorage } from 'wagmi'
+import { createPublicClient } from 'viem'
 
 // Configuration from environment variables
 const CONFIG = {
@@ -21,6 +22,25 @@ if (!CONFIG.rpc) {
 // Chain configuration
 export const WAGMI_CHAIN = mainnet
 export const WAGMI_CHAINS = [mainnet, base] as const
+
+// Helper functions for chain operations
+export const getChainById = (chainId: number) => {
+  return WAGMI_CHAINS.find(chain => chain.id === chainId) || mainnet;
+};
+
+export const getBlockExplorerUrl = (path: string, chainId?: number) => {
+  const chain = chainId ? getChainById(chainId) : mainnet;
+  const baseUrl = chain.blockExplorers?.default?.url;
+  
+  if (!baseUrl) {
+    // Fallback to etherscan if no block explorer is configured
+    return `https://etherscan.io/${path}`;
+  }
+  
+  // Ensure the path doesn't start with a slash if baseUrl ends with one
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${baseUrl}/${cleanPath}`;
+};
 
 // Metadata for wallets
 const WAGMI_METADATA = {
@@ -65,3 +85,15 @@ export const config = createConfig({
     storage: cookieStorage,
   }),
 })
+
+// Create Viem clients for contract reading
+export const viemClient = {
+  [mainnet.id]: createPublicClient({
+    chain: mainnet,
+    transport: http(`https://eth-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
+  }),
+  [base.id]: createPublicClient({
+    chain: base,
+    transport: http(`https://base-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
+  }),
+}

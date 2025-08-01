@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine, faBars, faTimes, faFolder, faChartBar, faWallet, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTimes, faWallet, faLightbulb, faPiggyBank } from '@fortawesome/free-solid-svg-icons';
 import { COMPANY } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -121,20 +121,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   Overview
                 </Link>
                 <Link
-                  href="/dashboard/projects"
+                  href="/dashboard/savings"
                   className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
                   onClick={closeMobileMenu}
                 >
-                  <FontAwesomeIcon icon={faFolder} className="w-4 h-4" />
-                  Projects
-                </Link>
-                <Link
-                  href="/dashboard/analytics"
-                  className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
-                  onClick={closeMobileMenu}
-                >
-                  <FontAwesomeIcon icon={faChartBar} className="w-4 h-4" />
-                  Analytics
+                  <FontAwesomeIcon icon={faPiggyBank} className="w-4 h-4" />
+                  Savings
                 </Link>
                 {!isAuthenticated ? (
                   <button
@@ -202,22 +194,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </li>
               <li>
                 <Link 
-                  href="/dashboard/projects" 
+                  href="/dashboard/savings" 
                   className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faFolder} className="w-4 h-4" />
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/dashboard/analytics" 
-                  className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
-                  onClick={closeSidebar}
-                >
-                  <FontAwesomeIcon icon={faChartBar} className="w-4 h-4" />
-                  Analytics
+                  <FontAwesomeIcon icon={faPiggyBank} className="w-4 h-4" />
+                  Savings
                 </Link>
               </li>
             </ul>
