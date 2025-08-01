@@ -55,7 +55,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-gradient-dark text-text-primary">
       {/* Dashboard Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-dark-card border-b border-dark-surface">
-        <div className="container mx-auto px-4 py-3.5">
+        <div className="mx-auto px-16 py-3.5">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-4">
@@ -117,7 +117,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   className="flex items-center gap-3 px-4 py-2 text-accent-orange bg-accent-orange/20 rounded-lg shadow-sm"
                   onClick={closeMobileMenu}
                 >
-                  <FontAwesomeIcon icon={faChartLine} className="w-4 h-4" />
+                  <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4" />
                   Overview
                 </Link>
                 <Link
@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   className="flex items-center gap-3 px-4 py-2 text-accent-orange bg-accent-orange/20 rounded-lg shadow-sm"
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faChartLine} className="w-4 h-4" />
+                  <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4" />
                   Overview
                 </Link>
               </li>

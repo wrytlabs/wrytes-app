@@ -93,9 +93,12 @@ export function withRoleProtection<P extends object>(
   return ProtectedComponent
 }
 
+import { useRouter } from 'next/router'
+
 // Component for displaying role badge
 export function RoleBadge({ className = '' }: { className?: string }) {
   const { user } = useAuth()
+  const router = useRouter()
 
   if (!user?.roles || user.roles.length === 0) return null
 
@@ -112,17 +115,25 @@ export function RoleBadge({ className = '' }: { className?: string }) {
     }
   }
 
-  // Show the first role, prioritizing system roles
   const primaryRole = user.roles.reduce((primary, current) => {
-    // Prioritize system roles over regular roles
     if (current.isSystem && !primary.isSystem) return current
     if (!current.isSystem && primary.isSystem) return primary
-    // If both are system or both are regular, return the first one (primary)
     return primary
   })
 
+  const isAdmin = primaryRole.name.toLowerCase() === 'admin'
+  const handleClick = () => {
+    if (isAdmin) router.push('/admin')
+  }
+
   return (
-    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs border ${getRoleColor(primaryRole.name)} ${className}`}>
+    <div
+      className={`inline-flex items-center px-2 py-1 rounded-full text-xs border ${getRoleColor(primaryRole.name)} ${className} ${isAdmin ? 'cursor-pointer hover:opacity-80 transition' : ''}`}
+      onClick={isAdmin ? handleClick : undefined}
+      tabIndex={isAdmin ? 0 : -1}
+      role={isAdmin ? 'button' : undefined}
+      aria-label={isAdmin ? 'Go to admin dashboard' : undefined}
+    >
       <FontAwesomeIcon icon={faUserShield} className="mr-1 text-xs" />
       {primaryRole.name.charAt(0).toUpperCase() + primaryRole.name.slice(1)}
       {user.roles.length > 1 && (

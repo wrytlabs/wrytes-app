@@ -13,6 +13,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RequireRole } from '@/components/auth/RequireRole'
 import { useState, useEffect } from 'react'
 import { AuthService } from '@/lib/auth/AuthService'
+import Link from 'next/link'
 
 // API service functions
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io'
@@ -338,18 +339,20 @@ function AdminDashboardContent() {
           <div className="bg-dark-card p-6 rounded-xl border border-dark-surface">
             <h3 className="text-lg font-bold text-white mb-4">Quick Actions</h3>
             <div className="space-y-3">
-              <button className="w-full text-left p-3 hover:bg-dark-surface/50 rounded-lg transition-colors">
+              <Link
+                href="/admin/users"
+                className="block w-full text-left p-3 hover:bg-dark-surface/50 rounded-lg transition-colors"
+              >
                 <FontAwesomeIcon icon={faUsers} className="mr-3 text-blue-500" />
                 <span className="text-white">Manage Users</span>
-              </button>
-              <button className="w-full text-left p-3 hover:bg-dark-surface/50 rounded-lg transition-colors">
+              </Link>
+              <Link
+                href="/admin/roles"
+                className="block w-full text-left p-3 hover:bg-dark-surface/50 rounded-lg transition-colors"
+              >
                 <FontAwesomeIcon icon={faUserShield} className="mr-3 text-red-500" />
                 <span className="text-white">Manage Roles</span>
-              </button>
-              <button className="w-full text-left p-3 hover:bg-dark-surface/50 rounded-lg transition-colors">
-                <FontAwesomeIcon icon={faKey} className="mr-3 text-green-500" />
-                <span className="text-white">Permission Matrix</span>
-              </button>
+              </Link>
             </div>
           </div>
 
