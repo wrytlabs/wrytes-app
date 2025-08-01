@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faUserShield,
@@ -9,69 +9,147 @@ import {
   faKey,
   faCheck,
   faSave,
-  faUsers
+  faUsers,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
-import { useAuth } from '@/hooks/useAuth'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RequireRole } from '@/components/auth/RequireRole'
 import { type Role, type Permission } from '@/lib/auth/types'
+import { AuthService } from '@/lib/auth/AuthService'
 
-// Mock data - replace with actual API calls - matching seed.ts permissions
-const mockPermissions: Permission[] = [
-  // User management
-  { id: 'users.create', name: 'users.create', description: 'Create new users', resource: 'users', action: 'create' },
-  { id: 'users.read', name: 'users.read', description: 'View user information', resource: 'users', action: 'read' },
-  { id: 'users.update', name: 'users.update', description: 'Edit user profiles', resource: 'users', action: 'update' },
-  { id: 'users.delete', name: 'users.delete', description: 'Delete user accounts', resource: 'users', action: 'delete' },
+// API service functions
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io'
 
-  // Role management
-  { id: 'roles.create', name: 'roles.create', description: 'Create new roles', resource: 'roles', action: 'create' },
-  { id: 'roles.read', name: 'roles.read', description: 'View role information', resource: 'roles', action: 'read' },
-  { id: 'roles.update', name: 'roles.update', description: 'Edit role details', resource: 'roles', action: 'update' },
-  { id: 'roles.delete', name: 'roles.delete', description: 'Delete roles', resource: 'roles', action: 'delete' },
-  { id: 'roles.assign', name: 'roles.assign', description: 'Assign roles to users', resource: 'roles', action: 'assign' },
-
-  // Permission management
-  { id: 'permissions.create', name: 'permissions.create', description: 'Create new permissions', resource: 'permissions', action: 'create' },
-  { id: 'permissions.read', name: 'permissions.read', description: 'View permission information', resource: 'permissions', action: 'read' },
-  { id: 'permissions.update', name: 'permissions.update', description: 'Edit permission details', resource: 'permissions', action: 'update' },
-  { id: 'permissions.delete', name: 'permissions.delete', description: 'Delete permissions', resource: 'permissions', action: 'delete' },
-
-  // System administration
-  { id: 'system.admin', name: 'system.admin', description: 'Full system administration', resource: 'system', action: 'admin' },
-  { id: 'system.monitor', name: 'system.monitor', description: 'Monitor system health', resource: 'system', action: 'monitor' },
-  { id: 'system.status', name: 'system.status', description: 'Get system status', resource: 'system', action: 'status' },
-]
-
-const mockRoles: Role[] = [
-  {
-    id: 'admin',
-    name: 'admin',
-    description: 'Full system administrator with all permissions',
-    isSystem: true,
-    permissions: mockPermissions
+const apiService = {
+  async getAllRoles(): Promise<Role[]> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    const response = await fetch(`${API_BASE_URL}/roles`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch roles: ${response.statusText}`)
+    }
+    
+    return response.json()
   },
-  {
-    id: 'moderator',
-    name: 'moderator',
-    description: 'Moderator with user management permissions',
-    isSystem: true,
-    permissions: mockPermissions.filter(p => 
-      p.resource === 'users' || 
-      (p.resource === 'roles' && (p.action === 'read' || p.action === 'assign')) ||
-      (p.resource === 'system' && (p.action === 'monitor' || p.action === 'status'))
-    )
+
+  async getAllPermissions(): Promise<Permission[]> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    const response = await fetch(`${API_BASE_URL}/permissions`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch permissions: ${response.statusText}`)
+    }
+    
+    return response.json()
   },
-  {
-    id: 'user',
-    name: 'user',
-    description: 'Standard user with basic permissions',
-    isSystem: true,
-    permissions: mockPermissions.filter(p => 
-      p.resource === 'system' && p.action === 'status'
-    )
-  }
-]
+
+  async createRole(roleData: { name: string; description: string }): Promise<Role> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    const response = await fetch(`${API_BASE_URL}/roles`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(roleData),
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to create role: ${response.statusText}`)
+    }
+    
+    return response.json()
+  },
+
+  async updateRole(roleId: string, roleData: { name: string; description: string }): Promise<Role> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    const response = await fetch(`${API_BASE_URL}/roles/${roleId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(roleData),
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to update role: ${response.statusText}`)
+    }
+    
+    return response.json()
+  },
+
+  async deleteRole(roleId: string): Promise<void> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    const response = await fetch(`${API_BASE_URL}/roles/${roleId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to delete role: ${response.statusText}`)
+    }
+  },
+
+  async assignPermissionToRole(roleId: string, permissionId: string): Promise<void> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    const response = await fetch(`${API_BASE_URL}/roles/${roleId}/permissions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ permissionId }),
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to assign permission: ${response.statusText}`)
+    }
+  },
+
+  async removePermissionFromRole(roleId: string, permissionId: string): Promise<void> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    const response = await fetch(`${API_BASE_URL}/roles/${roleId}/permissions/${permissionId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to remove permission: ${response.statusText}`)
+    }
+  },
+}
+
 
 interface RoleFormData {
   name: string
@@ -80,9 +158,9 @@ interface RoleFormData {
 }
 
 function RoleManagementContent() {
-  const [roles, setRoles] = useState<Role[]>(mockRoles)
-  const [permissions] = useState<Permission[]>(mockPermissions)
-  const [isLoading, setIsLoading] = useState(false)
+  const [roles, setRoles] = useState<Role[]>([])
+  const [permissions, setPermissions] = useState<Permission[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [editingRole, setEditingRole] = useState<Role | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [formData, setFormData] = useState<RoleFormData>({
@@ -90,6 +168,30 @@ function RoleManagementContent() {
     description: '',
     permissions: []
   })
+  const [error, setError] = useState<string | null>(null)
+
+  // Load data on component mount
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const [rolesData, permissionsData] = await Promise.all([
+        apiService.getAllRoles(),
+        apiService.getAllPermissions()
+      ])
+      setRoles(rolesData)
+      setPermissions(permissionsData)
+    } catch (err) {
+      console.error('Failed to load data:', err)
+      setError('Failed to load roles and permissions')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   // Group permissions by resource
   const permissionsByResource = permissions.reduce((acc, permission) => {
@@ -116,38 +218,68 @@ function RoleManagementContent() {
     setFormData({
       name: role.name,
       description: role.description,
-      permissions: role.permissions.map(p => p.id)
+      permissions: role.permissions?.map(p => p.id) || []
     })
   }
 
   const handleSaveRole = async () => {
     setIsLoading(true)
+    setError(null)
     
-    // Simulate API call
-    setTimeout(() => {
-      const selectedPermissions = permissions.filter(p => formData.permissions.includes(p.id))
+    try {
+      let savedRole: Role
       
       if (editingRole) {
         // Update existing role
-        setRoles(roles.map(role => 
-          role.id === editingRole.id 
-            ? { ...role, ...formData, permissions: selectedPermissions }
-            : role
-        ))
+        savedRole = await apiService.updateRole(editingRole.id, {
+          name: formData.name,
+          description: formData.description
+        })
+        
+        // Update permissions for the role
+        const currentPermissionIds = editingRole.permissions?.map(p => p.id) || []
+        const newPermissionIds = formData.permissions
+        
+        // Remove permissions that are no longer selected
+        for (const permissionId of currentPermissionIds) {
+          if (!newPermissionIds.includes(permissionId)) {
+            await apiService.removePermissionFromRole(editingRole.id, permissionId)
+          }
+        }
+        
+        // Add permissions that are newly selected
+        for (const permissionId of newPermissionIds) {
+          if (!currentPermissionIds.includes(permissionId)) {
+            await apiService.assignPermissionToRole(editingRole.id, permissionId)
+          }
+        }
+        
+        // Reload data to get updated role with permissions
+        await loadData()
       } else {
         // Create new role
-        const newRole: Role = {
-          id: formData.name.toLowerCase().replace(/\s+/g, '_'),
-          ...formData,
-          permissions: selectedPermissions
+        savedRole = await apiService.createRole({
+          name: formData.name,
+          description: formData.description
+        })
+        
+        // Assign permissions to the new role
+        for (const permissionId of formData.permissions) {
+          await apiService.assignPermissionToRole(savedRole.id, permissionId)
         }
-        setRoles([...roles, newRole])
+        
+        // Reload data to get the new role with permissions
+        await loadData()
       }
       
       setShowCreateForm(false)
       setEditingRole(null)
+    } catch (err) {
+      console.error('Failed to save role:', err)
+      setError('Failed to save role')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   const handleDeleteRole = async (roleId: string) => {
@@ -159,12 +291,17 @@ function RoleManagementContent() {
     
     if (confirm('Are you sure you want to delete this role?')) {
       setIsLoading(true)
+      setError(null)
       
-      // Simulate API call
-      setTimeout(() => {
-        setRoles(roles.filter(role => role.id !== roleId))
+      try {
+        await apiService.deleteRole(roleId)
+        await loadData() // Reload data to reflect changes
+      } catch (err) {
+        console.error('Failed to delete role:', err)
+        setError('Failed to delete role')
+      } finally {
         setIsLoading(false)
-      }, 1000)
+      }
     }
   }
 
@@ -230,6 +367,24 @@ function RoleManagementContent() {
       </Head>
       
       <div className="space-y-6">
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-900/20 border border-red-500/30 p-4 rounded-lg">
+            <div className="flex items-center text-red-400">
+              <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && roles.length === 0 && (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-accent-orange"></div>
+            <p className="text-text-secondary mt-4">Loading roles and permissions...</p>
+          </div>
+        )}
+
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -396,7 +551,7 @@ function RoleManagementContent() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-400">
                   <FontAwesomeIcon icon={faKey} className="w-4 h-4" />
-                  {role.permissions.length} permissions
+                  {role.permissions?.length || 0} permissions
                 </div>
               </div>
 
@@ -404,14 +559,14 @@ function RoleManagementContent() {
                 <h4 className="text-sm font-medium text-white mb-3">Permissions</h4>
                 <div className="p-3 bg-dark-surface/30 rounded-lg max-h-48 overflow-y-auto">
                   <div className="space-y-2">
-                    {role.permissions.map((permission) => (
+                    {role.permissions?.map((permission) => (
                       <div key={permission.id} className="flex items-center gap-2 text-xs">
                         <FontAwesomeIcon icon={faCheck} className="w-3 h-3 text-green-400" />
                         <span className="text-white">{permission.name}</span>
                         <span className="text-gray-400">- {permission.description}</span>
                       </div>
-                    ))}
-                    {role.permissions.length === 0 && (
+                    )) || []}
+                    {(!role.permissions || role.permissions.length === 0) && (
                       <div className="text-center text-gray-500 text-xs py-2">
                         No permissions assigned
                       </div>

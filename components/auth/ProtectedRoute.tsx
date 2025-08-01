@@ -50,7 +50,7 @@ export function ProtectedRoute({
   // Show loading state while checking authentication
   if (isLoading) {
     return loadingComponent || (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center -mt-16">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -75,7 +75,7 @@ export function ProtectedRoute({
   // If not authenticated and showModal is false, show fallback
   if (!isAuthenticated && !showModal) {
     return fallback || (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center -mt-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -109,7 +109,7 @@ export function ProtectedRoute({
   return (
     <>
       {/* Render a minimal layout while modal is open */}
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center -mt-16">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

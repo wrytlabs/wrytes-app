@@ -105,9 +105,9 @@ export const DEFAULT_ROLE_PERMISSIONS = {
 
 // Role hierarchy levels
 export const ROLE_LEVELS = {
-  USER: 1,
+  ADMIN: 1,
   MODERATOR: 2,
-  ADMIN: 3,
+  USER: 3,
 } as const
 
 // Role configurations

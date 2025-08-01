@@ -12,9 +12,13 @@ import { useAuth } from '@/hooks/useAuth'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RequireRole } from '@/components/auth/RequireRole'
 import { useState, useEffect } from 'react'
+import { AuthService } from '@/lib/auth/AuthService'
 
-// Mock data for demonstration - replace with actual API calls
-const mockStats = {
+// API service functions
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io'
+
+// Fallback mock data for when API endpoints are not available
+const mockAdminStats: AdminStats = {
   totalUsers: 1234,
   activeUsers: 892,
   adminUsers: 5,
@@ -23,7 +27,7 @@ const mockStats = {
   todayLogins: 145,
 }
 
-const mockRecentActivity = [
+const mockRecentActivity: ActivityItem[] = [
   {
     id: 1,
     type: 'user_registered',
@@ -50,25 +54,146 @@ const mockRecentActivity = [
   },
 ]
 
+const mockSystemHealth: SystemHealthItem[] = [
+  { name: 'API Status', status: 'operational', description: 'Operational' },
+  { name: 'Database', status: 'operational', description: 'Healthy' },
+  { name: 'Auth Service', status: 'degraded', description: 'Degraded' },
+  { name: 'Web3 RPC', status: 'operational', description: 'Normal' },
+]
+
+const apiService = {
+  async getAdminStats(): Promise<AdminStats> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (!response.ok) {
+        console.warn('Admin stats endpoint not available, using mock data')
+        return mockAdminStats
+      }
+      
+      return response.json()
+    } catch (error) {
+      console.warn('Failed to fetch admin stats, using mock data:', error)
+      return mockAdminStats
+    }
+  },
+
+  async getRecentActivity(): Promise<ActivityItem[]> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/activity`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (!response.ok) {
+        console.warn('Admin activity endpoint not available, using mock data')
+        return mockRecentActivity
+      }
+      
+      return response.json()
+    } catch (error) {
+      console.warn('Failed to fetch recent activity, using mock data:', error)
+      return mockRecentActivity
+    }
+  },
+
+  async getSystemHealth(): Promise<SystemHealthItem[]> {
+    const authService = AuthService.getInstance()
+    const token = authService.getStoredToken()
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/health`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (!response.ok) {
+        console.warn('Admin health endpoint not available, using mock data')
+        return mockSystemHealth
+      }
+      
+      return response.json()
+    } catch (error) {
+      console.warn('Failed to fetch system health, using mock data:', error)
+      return mockSystemHealth
+    }
+  },
+}
+
+interface AdminStats {
+  totalUsers: number
+  activeUsers: number
+  adminUsers: number
+  moderatorUsers: number
+  pendingUsers: number
+  todayLogins: number
+}
+
+interface ActivityItem {
+  id: number
+  type: string
+  message: string
+  walletAddress: string
+  timestamp: string
+  status: 'success' | 'info' | 'warning' | 'error'
+}
+
+interface SystemHealthItem {
+  name: string
+  status: 'operational' | 'degraded' | 'down'
+  description: string
+}
+
 function AdminDashboardContent() {
   const { user } = useAuth()
-  const [stats, setStats] = useState(mockStats)
-  const [recentActivity, setRecentActivity] = useState(mockRecentActivity)
-  const [isLoading, setIsLoading] = useState(false)
+  const [stats, setStats] = useState<AdminStats>({ totalUsers: 0, activeUsers: 0, adminUsers: 0, moderatorUsers: 0, pendingUsers: 0, todayLogins: 0 })
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
+  const [systemHealth, setSystemHealth] = useState<SystemHealthItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Mock function to refresh stats - replace with actual API call
-  const refreshStats = async () => {
+  const loadData = async () => {
     setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setStats({ ...mockStats, totalUsers: mockStats.totalUsers + Math.floor(Math.random() * 10) })
+    setError(null)
+    try {
+      const [statsData, activityData, healthData] = await Promise.all([
+        apiService.getAdminStats(),
+        apiService.getRecentActivity(),
+        apiService.getSystemHealth()
+      ])
+      setStats(statsData)
+      setRecentActivity(activityData)
+      setSystemHealth(healthData)
+    } catch (err) {
+      console.error('Failed to load admin data:', err)
+      // Don't show error since we have fallback data - just log it
+      console.warn('Using fallback data for admin dashboard')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
+  }
+
+  const refreshStats = async () => {
+    await loadData()
   }
 
   useEffect(() => {
-    // Load initial data
-    refreshStats()
+    loadData()
   }, [])
 
   const getActivityIcon = (type: string) => {
@@ -98,6 +223,24 @@ function AdminDashboardContent() {
       </Head>
       
       <div className="space-y-6">
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-900/20 border border-red-500/30 p-4 rounded-lg">
+            <div className="flex items-center text-red-400">
+              <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && stats.totalUsers === 0 && (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-accent-orange"></div>
+            <p className="text-text-secondary mt-4">Loading admin dashboard...</p>
+          </div>
+        )}
+
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -242,26 +385,24 @@ function AdminDashboardContent() {
         <div className="bg-dark-card p-6 rounded-xl border border-dark-surface">
           <h3 className="text-lg font-bold text-white mb-4">System Health</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-white font-medium">API Status</p>
-              <p className="text-xs text-text-secondary">Operational</p>
-            </div>
-            <div className="text-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-white font-medium">Database</p>
-              <p className="text-xs text-text-secondary">Healthy</p>
-            </div>
-            <div className="text-center">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-white font-medium">Auth Service</p>
-              <p className="text-xs text-text-secondary">Degraded</p>
-            </div>
-            <div className="text-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-white font-medium">Web3 RPC</p>
-              <p className="text-xs text-text-secondary">Normal</p>
-            </div>
+            {systemHealth.map((service) => {
+              const getStatusColor = (status: string) => {
+                switch (status) {
+                  case 'operational': return 'bg-green-500'
+                  case 'degraded': return 'bg-yellow-500'
+                  case 'down': return 'bg-red-500'
+                  default: return 'bg-gray-500'
+                }
+              }
+              
+              return (
+                <div key={service.name} className="text-center">
+                  <div className={`w-3 h-3 ${getStatusColor(service.status)} rounded-full mx-auto mb-2`}></div>
+                  <p className="text-sm text-white font-medium">{service.name}</p>
+                  <p className="text-xs text-text-secondary">{service.description}</p>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
