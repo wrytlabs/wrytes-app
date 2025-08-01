@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine, faBars, faTimes, faFolder, faChartBar, faWallet } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faBars, faTimes, faFolder, faChartBar, faWallet, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { COMPANY } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -55,12 +55,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-gradient-dark text-text-primary">
       {/* Dashboard Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-dark-card border-b border-dark-surface">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3.5">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-4">
               <div className="w-8 h-8 bg-accent-orange rounded-lg flex items-center justify-center">
-                <FontAwesomeIcon icon={faChartLine} className="w-4 h-4 text-white" />
+                <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4 text-white" />
               </div>
               <Link href="/" className="text-xl font-bold text-white">
                 {COMPANY.name.split(' ')[0]}
@@ -110,7 +110,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-4 pb-4 border-t border-dark-surface pt-4">
+            <div className="md:hidden mt-4 border-t border-dark-surface pt-4">
               <nav className="space-y-4">
                 <Link
                   href="/dashboard"
@@ -149,22 +149,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     Connect Wallet
                   </button>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowAuthModal(true);
-                      closeMobileMenu();
-                    }}
-                    className="inline-flex items-center gap-2 text-white hover:text-accent-orange transition-colors text-sm font-medium"
-                    title="Click to disconnect wallet"
-                  >
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">Connected as</p>
-                      <p className="text-white font-mono text-sm hover:text-accent-orange transition-colors">
-                        {user?.walletAddress?.slice(0, 8)}...{user?.walletAddress?.slice(-6)}
-                      </p>
-                    </div>
-                  </button>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAuthModal(true);
+                        closeMobileMenu();
+                      }}
+                      className="inline-flex gap-2 mt-4 text-white hover:text-accent-orange transition-colors text-sm font-medium"
+                      title="Click to disconnect wallet"
+                    >
+                      <div className="text-right">
+                        <p className="text-sm text-gray-400">Connected as</p>
+                        <p className="text-white font-mono text-sm hover:text-accent-orange transition-colors">
+                          {user?.walletAddress?.slice(0, 8)}...{user?.walletAddress?.slice(-6)}
+                        </p>
+                      </div>
+                    </button>
+                  </div>
                 )}
               </nav>
             </div>
@@ -183,7 +185,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         )}
 
         {/* Sidebar Navigation */}
-        <aside className={`fixed left-0 top-16 mt-2 w-64 h-screen bg-dark-bg border-r border-accent-orange/20 transform transition-transform duration-300 ease-in-out z-50 ${
+        <aside className={`fixed left-0 top-16 mt-1 w-64 h-screen bg-dark-bg border-r border-accent-orange/20 transform transition-transform duration-300 ease-in-out z-50 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}>
           <nav className="p-4">

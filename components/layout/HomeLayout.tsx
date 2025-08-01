@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpRightFromSquare, faChartLine, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpRightFromSquare, faBars, faTimes, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { COMPANY } from '@/lib/constants';
 import Footer from './Footer';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -42,7 +42,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
             {/* Logo */}
             <div className="flex items-center gap-4">
               <div className="w-8 h-8 bg-accent-orange rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faChartLine} className="w-4 h-4 text-white" />
+              <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4 text-white" />
               </div>
               <Link href="/" className="text-xl font-bold text-white">
                 {COMPANY.name.split(' ')[0]}
