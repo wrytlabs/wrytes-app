@@ -34,13 +34,15 @@ export interface Role {
 
 export interface User {
   id: string
-  address: Address
-  role: Role
-  permissions: Permission[]
+  walletAddress: Address
+  username?: string
+  email?: string
+  isActive: boolean
+  profileData?: Record<string, unknown>
   createdAt: string
   updatedAt: string
   lastLogin?: string
-  isActive: boolean
+  roles: Role[]
 }
 
 export interface UserProfile extends User {

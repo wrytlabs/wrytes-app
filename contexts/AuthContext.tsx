@@ -70,6 +70,8 @@ function authReducer(
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+export { AuthContext }
+
 interface AuthProviderProps {
   children: React.ReactNode
 }
@@ -248,18 +250,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Check if user has specific permission
   const hasPermission = useCallback((permission: string): boolean => {
-    if (!state.user || !state.user.permissions) return false
+    if (!state.user || !state.user.roles) return false
     
-    return state.user.permissions.some(p => 
-      p.name === permission || 
-      `${p.resource}.${p.action}` === permission
+    return state.user.roles.some(role => 
+      role.permissions?.some(p => 
+        p.name === permission || 
+        `${p.resource}.${p.action}` === permission
+      )
     )
   }, [state.user])
 
   // Check if user has specific role
   const hasRole = useCallback((role: string): boolean => {
-    if (!state.user || !state.user.role) return false
-    return state.user.role.name.toLowerCase() === role.toLowerCase()
+    if (!state.user || !state.user.roles) return false
+    return state.user.roles.some(r => r.name.toLowerCase() === role.toLowerCase())
   }, [state.user])
 
   // Clear error function

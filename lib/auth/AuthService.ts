@@ -86,12 +86,51 @@ export class AuthService {
       ...(expired && { expired }),
     }
 
-    const response = await this.makeRequest<string>('/auth/message', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-    })
+    const url = `${this.baseURL}/auth/message`
+    const token = AuthStorage.getToken()
 
-    return response
+    const defaultHeaders: HeadersInit = {
+      'Content-Type': 'application/json',
+    }
+
+    if (token) {
+      defaultHeaders.Authorization = `Bearer ${token}`
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: defaultHeaders,
+        body: JSON.stringify(requestBody),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const apiError: ApiError = {
+          message: errorData.message || `HTTP ${response.status}`,
+          code: errorData.code || 'HTTP_ERROR',
+          statusCode: response.status,
+          details: errorData,
+        }
+        throw apiError
+      }
+
+      // The API returns a plain string, not JSON
+      return await response.text()
+    } catch (error) {
+      if (error instanceof Error && 'statusCode' in error) {
+        throw error // Re-throw API errors
+      }
+      
+      // Handle network errors
+      const networkError: ApiError = {
+        message: 'Network error occurred',
+        code: 'NETWORK_ERROR',
+        statusCode: 0,
+        details: { originalError: error },
+      }
+      throw networkError
+    }
   }
 
   // Sign in with message and signature

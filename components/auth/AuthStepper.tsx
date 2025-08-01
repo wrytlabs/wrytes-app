@@ -41,7 +41,7 @@ const steps = [
 ]
 
 export function AuthStepper() {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, user } = useAuth()
   const { isConnected } = useWallet()
 
   // Determine current step based on state
@@ -117,7 +117,7 @@ export function AuthStepper() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between">
         {steps.map((step, index) => {
           const status = getStepStatus(index)
           const icon = getStepIcon(step, status)

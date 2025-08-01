@@ -27,20 +27,32 @@ export function useWallet() {
       isConnected,
       isConnecting: isConnecting || isPending,
       address: address as Address || null,
-      chainId: connector?.chainId || null,
+      chainId: connector?.chainId as number || null,
       error: connectError?.message || null,
     }))
   }, [address, isConnected, isConnecting, isPending, connector, connectError])
 
-  // Connect to wallet
-  const connectWallet = useCallback(async () => {
+  // Connect to wallet with specific connector
+  const connectWallet = useCallback(async (connectorId?: string) => {
     try {
       setWalletState(prev => ({ ...prev, error: null, isConnecting: true }))
       
-      // Use the first available connector (typically MetaMask or WalletConnect)
-      const availableConnector = connectors[0]
-      if (availableConnector) {
-        connect({ connector: availableConnector })
+      let targetConnector
+      if (connectorId) {
+        targetConnector = connectors.find(c => c.id === connectorId)
+      } else {
+        // Default to injected (MetaMask) if available, otherwise first available
+        targetConnector = connectors.find(c => c.id === 'injected') || connectors[0]
+      }
+      
+      if (targetConnector) {
+        // Add timeout for connection
+        const connectionPromise = connect({ connector: targetConnector })
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Connection timeout. Please try again.')), 30000) // 30 second timeout
+        })
+        
+        await Promise.race([connectionPromise, timeoutPromise])
       } else {
         throw new Error('No wallet connectors available')
       }
@@ -51,6 +63,7 @@ export function useWallet() {
         error: errorMessage, 
         isConnecting: false 
       }))
+      throw error // Re-throw to allow component to handle
     }
   }, [connect, connectors])
 

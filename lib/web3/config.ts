@@ -1,9 +1,8 @@
-import { createAppKit } from '@reown/appkit/react'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { mainnet, base } from '@reown/appkit/networks'
 import { QueryClient } from '@tanstack/react-query'
-import { http, createStorage, cookieStorage } from 'wagmi'
-import { safe, walletConnect, injected, coinbaseWallet } from 'wagmi/connectors'
+import { http, createConfig } from 'wagmi'
+import { mainnet, base } from 'wagmi/chains'
+import { walletConnect, injected, coinbaseWallet, safe } from 'wagmi/connectors'
+import { createStorage, cookieStorage } from 'wagmi'
 
 // Configuration from environment variables
 const CONFIG = {
@@ -31,9 +30,12 @@ const WAGMI_METADATA = {
   icons: ['/favicon.ico'],
 }
 
-// Set up the Wagmi adapter with custom configuration
-const wagmiAdapter = new WagmiAdapter({
-  networks: [...WAGMI_CHAINS],
+// Set up React Query client
+export const queryClient = new QueryClient()
+
+// Create Wagmi config
+export const config = createConfig({
+  chains: WAGMI_CHAINS,
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
     [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
@@ -50,7 +52,7 @@ const wagmiAdapter = new WagmiAdapter({
     walletConnect({ 
       projectId: CONFIG.wagmiId, 
       metadata: WAGMI_METADATA, 
-      showQrModal: false 
+      showQrModal: true 
     }),
     injected({ shimDisconnect: true }),
     coinbaseWallet({
@@ -62,24 +64,4 @@ const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
   }),
-  projectId: CONFIG.wagmiId,
 })
-
-// Set up React Query client
-export const queryClient = new QueryClient()
-
-// Create the modal
-export const modal = createAppKit({
-  adapters: [wagmiAdapter],
-  networks: [...WAGMI_CHAINS],
-  projectId: CONFIG.wagmiId,
-  metadata: WAGMI_METADATA,
-  features: {
-    analytics: true,
-    email: false,
-    socials: [],
-  },
-})
-
-export { wagmiAdapter }
-export const config = wagmiAdapter.wagmiConfig
