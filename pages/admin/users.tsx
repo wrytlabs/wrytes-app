@@ -154,7 +154,13 @@ const apiService = {
       throw new Error(`Failed to fetch roles: ${response.statusText}`)
     }
     
-    return response.json()
+    const roles = await response.json()
+    
+    // Process roles to extract permissions from rolePermissions
+    return roles.map((role: Role & { rolePermissions?: { permission: string }[] }) => ({
+      ...role,
+      permissions: role.rolePermissions?.map((rp: { permission: string }) => rp.permission) || []
+    }))
   },
 
   async updateUserProfile(userId: string, profileData: { username?: string; email?: string; profileData?: Record<string, any> }): Promise<User> {
@@ -1004,7 +1010,7 @@ function UserDetailModal({ user, onClose }: UserDetailModalProps) {
                         <div className="mt-2">
                           <span className="text-xs text-gray-400">
                             <FontAwesomeIcon icon={faKey} className="mr-1" />
-                            {role.permissions?.length || 0} permissions
+                            {role.permissions?.length || 0} Permissions
                           </span>
                         </div>
                       </div>
@@ -1356,7 +1362,7 @@ function UserEditModal({ user, roles, onClose, onSave }: UserEditModalProps) {
                         <p className="text-gray-300 text-sm mb-1">{role.description}</p>
                         <p className="text-xs text-gray-400">
                           <FontAwesomeIcon icon={faKey} className="mr-1" />
-                          {role.permissions?.length || 0} permissions
+                          {role.permissions?.length || 0} Permissions
                         </p>
                       </div>
                     </label>
