@@ -29,20 +29,21 @@ export const SAVINGS_VAULTS: SavingsVault[] = [
     description: 'Earn yield on USDU deposits from native Morpho Vault',
     apy: async () => {
       try {
-        const supplyRate = await readContract(viemClient[mainnet.id], {
-          address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
-          abi: [
-            {
-              name: "supplyRate",
-              type: "function",
-              stateMutability: "view",
-              inputs: [],
-              outputs: [{ internalType: "uint256", name: "", type: "uint256" }]
-            }
-          ],
-          functionName: 'supplyRate',
-        });
-        console.log(supplyRate);
+        // const supplyRate = await readContract(viemClient[mainnet.id], {
+        //   address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
+        //   abi: [
+        //     {
+        //       name: "supplyRate",
+        //       type: "function",
+        //       stateMutability: "view",
+        //       inputs: [],
+        //       outputs: [{ internalType: "uint256", name: "", type: "uint256" }]
+        //     }
+        //   ],
+        //   functionName: 'supplyRate',
+        // });
+        // console.log(supplyRate);
+        const supplyRate = 0;
         // Convert rate to APY percentage (rate is in RAY format: 1e27)
         return Number(supplyRate) / 1e25; // Convert to percentage
       } catch (error) {
