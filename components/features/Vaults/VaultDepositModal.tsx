@@ -9,14 +9,14 @@ import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
 import { ColoredBadge } from '@/components/ui/Badge';
 
-interface EnhancedDepositModalProps {
+interface VaultDepositModalProps {
   vault: Vault;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export const EnhancedDepositModal: React.FC<EnhancedDepositModalProps> = ({
+export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   vault,
   isOpen,
   onClose,
@@ -95,7 +95,8 @@ export const EnhancedDepositModal: React.FC<EnhancedDepositModalProps> = ({
 
   const handleMaxClick = () => {
     const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
-    const maxAmount = formatUnits(assetBalance, decimalsToUse);
+    const amountToUse = depositMode === 'deposit' ? assetBalance : parseUnits(calculateEstimatedShares(), decimalsToUse);
+    const maxAmount = formatUnits(amountToUse, decimalsToUse);
     setAmount(maxAmount);
   };
 
@@ -120,6 +121,10 @@ export const EnhancedDepositModal: React.FC<EnhancedDepositModalProps> = ({
       setDepositMode('deposit');
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    setError('');
+  }, [depositMode]);
 
   if (!isOpen) return null;
 

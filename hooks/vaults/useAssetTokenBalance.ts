@@ -72,14 +72,6 @@ export const useAssetTokenBalance = (vault: Vault): UseAssetTokenBalanceReturn =
     fetchBalance();
   }, [fetchBalance]);
 
-  console.log({
-    userAddress,
-    balance,
-    assetToken,
-    loading,
-    error,
-  });
-
   return {
     balance: balance || 0n,
     symbol: assetToken?.symbol || '',

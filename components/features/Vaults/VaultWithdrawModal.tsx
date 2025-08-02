@@ -6,14 +6,14 @@ import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
 import { Vault } from '@/lib/vaults/types';
 
-interface WithdrawModalProps {
+interface VaultWithdrawModalProps {
   vault: Vault;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export const WithdrawModal: React.FC<WithdrawModalProps> = ({
+export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
   vault,
   isOpen,
   onClose,
@@ -59,7 +59,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       }
       
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Withdrawal failed:', error);
       setError(handleTransactionError(error));
     }

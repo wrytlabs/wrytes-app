@@ -8,8 +8,8 @@ import { PageHeader, Section } from '@/components/ui/Layout';
 import { SavingsOverview, VaultGrid } from '@/components/features/Vaults';
 import { useModal } from '@/hooks/ui/useModal';
 import { useToast } from '@/hooks/useToast';
-import { EnhancedDepositModal } from '@/components/features/Vaults/EnhancedDepositModal';
-import { WithdrawModal } from '@/components/features/Vaults/WithdrawModal';
+import { VaultDepositModal } from '@/components/features/Vaults/VaultDepositModal';
+import { VaultWithdrawModal } from '@/components/features/Vaults/VaultWithdrawModal';
 
 export default function VaultsPage() {
   const { success } = useToast();
@@ -95,7 +95,7 @@ export default function VaultsPage() {
 
       {/* Modals */}
       {depositModal.data && (
-        <EnhancedDepositModal
+        <VaultDepositModal
           vault={depositModal.data}
           isOpen={depositModal.isOpen}
           onClose={depositModal.close}
@@ -104,13 +104,15 @@ export default function VaultsPage() {
       )}
       
       {withdrawModal.data && (
-        <WithdrawModal
+        <VaultWithdrawModal
           vault={withdrawModal.data}
           isOpen={withdrawModal.isOpen}
           onClose={withdrawModal.close}
           onSuccess={() => handleWithdrawSuccess(withdrawModal.data!)}
         />
       )}
+
+      {/* TODO: Add a modal for the curve vault actions */}
     </>
   );
 }

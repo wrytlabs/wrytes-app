@@ -11,7 +11,7 @@ export const zchfSavings: Vault = {
   symbol: 'svZCHF',
   decimals: 18,
   asset: {
-    address: '0xB58E61C3098d85632Df34EecfB899A1Ba80246cc', // ZCHF asset
+    address: '0xB58E61C3098d85632Df34EecfB899A1Ed80921cB', // ZCHF asset
     name: 'Frankencoin',
     symbol: 'ZCHF',
     decimals: 18,
@@ -56,7 +56,7 @@ export const zchfSavings: Vault = {
           }
         ],
         functionName: 'savings',
-        args: ['0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC'], // vault address
+        args: ['0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC'], // savings module address
       });
 
       // Calculate APY: currentRatePPM - referralFeePPM

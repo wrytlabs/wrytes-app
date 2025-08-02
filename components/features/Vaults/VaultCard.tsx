@@ -53,12 +53,6 @@ export const VaultCard: React.FC<VaultCardProps> = ({
     return colorMap[color as keyof typeof colorMap] || 'text-accent-orange bg-accent-orange/20';
   };
 
-  // Format balance for display
-  const formatBalance = (balance: bigint) => {
-    if (balance === 0n) return '0';
-    return formatUnits(balance, vault.decimals);
-  };
-
   return (
     <Card className={cn(
       'relative overflow-hidden group hover:scale-105 transition-transform duration-300 flex flex-col h-full',
@@ -111,34 +105,29 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       </div>
 
       {/* User Balance */}
-      {balance > 0n && (
-        <div className="mb-4 p-3 bg-accent-orange/10 rounded-lg border border-accent-orange/20">
-          <p className="text-text-secondary text-xs">Your Balance</p>
-          <p className="text-white font-semibold">
-            {formatBalance(balance)} {vault.symbol}
-          </p>
-        </div>
-      )}
+      <div className="mb-4 p-3 bg-accent-orange/10 rounded-lg border border-accent-orange/20">
+        <p className="text-text-secondary text-xs">Your Balance</p>
+        <p className="text-white font-semibold">
+          {formatCompactNumber(formatUnits(balance, vault.decimals))} {vault.symbol}
+        </p>
+      </div>
 
-      {/* Strategy Info - Fixed height */}
-      <div className="mb-4 p-3 bg-dark-surface/30 rounded-lg h-[80px] flex flex-col">
+      {/* Strategy Info and Notes - Fixed height */}
+      <div className="mb-4 p-3 bg-dark-surface/30 rounded-lg h-[160px] flex flex-col">
+      <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 mb-1">
           <FontAwesomeIcon icon={faShieldAlt} className="w-3 h-3 text-text-secondary" />
           <p className="text-text-secondary text-xs font-medium">Strategy</p>
         </div>
         <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.strategy}</p>
-      </div>
 
-      {/* Notes - Optional */}
-      {vault.notes && (
-        <div className="mb-4 p-3 bg-dark-surface/30 rounded-lg h-[80px] flex flex-col">
-          <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1">
             <FontAwesomeIcon icon={faExclamationTriangle} className="w-3 h-3 text-text-secondary" />
             <p className="text-text-secondary text-xs font-medium">Notes</p>
           </div>
           <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.notes}</p>
-        </div>
-      )}
+      </div>
+      </div>
 
       {/* Action Buttons - Always at bottom */}
       <div className="flex gap-3 mt-auto pt-4">

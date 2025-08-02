@@ -7,12 +7,17 @@ import { zchfVault } from "./morpho/alpha-zchf-vault";
 import { daiUsdcUsdt } from "./curve/dai-usdc-usdt";
 
 export const VAULTS: Vault[] = [
+  // Morpho
   alphaUsdcCoreVault,
   usduCoreVault,
   zchfVault,
+
+  // Savings
   zchfSavings,
-  usduUsdc,
-  daiUsdcUsdt,
+
+  // Curve
+  // usduUsdc,
+  // daiUsdcUsdt,
 ];
 
 export const getVaultByAddress = (address: string): Vault | undefined => {

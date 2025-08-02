@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { Vault } from '@/lib/vaults/types';
-import { useVaultActions } from '@/lib/vaults/vault';
+import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
+import { Vault } from '@/lib/vaults/types';
 
-interface DepositModalProps {
+interface CurveWithdrawModalProps {
   vault: Vault;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export const DepositModal: React.FC<DepositModalProps> = ({
+export const CurveWithdrawModal: React.FC<CurveWithdrawModalProps> = ({
   vault,
   isOpen,
   onClose,
@@ -21,19 +21,27 @@ export const DepositModal: React.FC<DepositModalProps> = ({
 }) => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
-  const { deposit, isDepositing, calculateSharesFromAssets } = useVaultActions(vault.address);
+  const [withdrawMode, setWithdrawMode] = useState<'assets' | 'shares'>('assets');
+  
+  const { withdraw, redeem, isWithdrawing, isRedeeming, calculateAssetsFromShares } = useVaultActions(vault.address);
+  const userBalance = useVaultBalance(vault.address);
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
     setError('');
     
     // Validate amount
-    if (value && parseFloat(value) <= 0) {
-      setError('Amount must be greater than 0');
+    if (value && parseFloat(value) > 0) {
+      const numValue = parseFloat(value);
+      const userBalanceNum = parseFloat(formatUnits(userBalance, vault.decimals));
+      
+      if (numValue > userBalanceNum) {
+        setError(`Insufficient balance. You have ${formatUnits(userBalance, vault.decimals)} ${vault.symbol}`);
+      }
     }
   };
 
-  const handleDeposit = async () => {
+  const handleWithdraw = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       setError('Please enter a valid amount');
       return;
@@ -44,36 +52,43 @@ export const DepositModal: React.FC<DepositModalProps> = ({
     try {
       const amountInWei = parseUnits(amount, vault.decimals);
       
-      await deposit?.(amountInWei);
+      if (withdrawMode === 'assets') {
+        await withdraw?.(amountInWei);
+      } else {
+        await redeem?.(amountInWei);
+      }
       
       onSuccess();
     } catch (error: unknown) {
-      console.error('Deposit failed:', error);
+      console.error('Withdrawal failed:', error);
       setError(handleTransactionError(error));
     }
   };
 
-  const calculateEstimatedShares = () => {
+  const calculateEstimatedAssets = () => {
     if (!amount || parseFloat(amount) <= 0) return '0';
     try {
       const amountInWei = parseUnits(amount, vault.decimals);
-      const shares = calculateSharesFromAssets(amountInWei);
-      return formatUnits(shares, vault.decimals);
+      const assets = calculateAssetsFromShares(amountInWei);
+      return formatUnits(assets, vault.decimals);
     } catch {
       return '0';
     }
   };
 
   const handleMaxClick = () => {
-    // In a real implementation, you'd get the user's token balance
-    // For now, we'll use a reasonable default
-    setAmount('1000');
+    setAmount(formatUnits(userBalance, vault.decimals));
+  };
+
+  const formatUserBalance = () => {
+    return formatUnits(userBalance, vault.decimals);
   };
 
   useEffect(() => {
     if (!isOpen) {
       setAmount('');
       setError('');
+      setWithdrawMode('assets');
     }
   }, [isOpen]);
 
@@ -85,7 +100,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-white">Deposit to {vault.name}</h2>
+            <h2 className="text-xl font-bold text-white">Withdraw from {vault.name}</h2>
             <p className="text-text-secondary text-sm">{vault.symbol}</p>
           </div>
           <button
@@ -96,10 +111,39 @@ export const DepositModal: React.FC<DepositModalProps> = ({
           </button>
         </div>
 
+        {/* Withdraw Mode Toggle */}
+        <div className="mb-6">
+          <label className="block text-text-secondary text-sm mb-2">
+            Withdraw Mode
+          </label>
+          <div className="flex bg-dark-surface rounded-lg p-1">
+            <button
+              onClick={() => setWithdrawMode('assets')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                withdrawMode === 'assets'
+                  ? 'bg-accent-orange text-white'
+                  : 'text-text-secondary hover:text-white'
+              }`}
+            >
+              Assets
+            </button>
+            <button
+              onClick={() => setWithdrawMode('shares')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                withdrawMode === 'shares'
+                  ? 'bg-accent-orange text-white'
+                  : 'text-text-secondary hover:text-white'
+              }`}
+            >
+              Shares
+            </button>
+          </div>
+        </div>
+
         {/* Amount Input */}
         <div className="mb-6">
           <label className="block text-text-secondary text-sm mb-2">
-            Amount to Deposit
+            Amount to Withdraw ({withdrawMode === 'assets' ? 'Assets' : 'Shares'})
           </label>
           <div className="relative">
             <input
@@ -109,6 +153,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({
               placeholder="0.00"
               step="0.000001"
               min="0"
+              max={formatUserBalance()}
               className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-3 text-white placeholder-text-secondary focus:outline-none focus:border-accent-orange transition-colors"
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
@@ -124,20 +169,22 @@ export const DepositModal: React.FC<DepositModalProps> = ({
           {error && (
             <p className="text-red-400 text-xs mt-2">{error}</p>
           )}
-          <div className="flex justify-between text-xs text-text-secondary mt-2">
-            <span>Enter amount to deposit</span>
+          <div className="text-xs text-text-secondary mt-2">
+            Available: {formatUserBalance()} {vault.symbol}
           </div>
         </div>
 
         {/* Preview */}
         <div className="mb-6 p-4 bg-dark-surface/50 rounded-lg space-y-3">
+          {withdrawMode === 'shares' && (
+            <div className="flex justify-between text-sm">
+              <span className="text-text-secondary">Estimated Assets:</span>
+              <span className="text-white font-medium">{calculateEstimatedAssets()} {vault.symbol}</span>
+            </div>
+          )}
           <div className="flex justify-between text-sm">
-            <span className="text-text-secondary">Estimated Shares:</span>
-            <span className="text-white font-medium">{calculateEstimatedShares()} {vault.symbol}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-text-secondary">APY:</span>
-            <span className="text-green-400 font-medium">Variable</span>
+            <span className="text-text-secondary">Withdraw Mode:</span>
+            <span className="text-white">{withdrawMode === 'assets' ? 'Assets' : 'Shares'}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">Risk Level:</span>
@@ -145,13 +192,13 @@ export const DepositModal: React.FC<DepositModalProps> = ({
           </div>
         </div>
 
-        {/* Info Box */}
-        <div className="mb-6 p-3 bg-blue-400/10 border border-blue-400/20 rounded-lg">
+        {/* Warning Box */}
+        <div className="mb-6 p-3 bg-yellow-400/10 border border-yellow-400/20 rounded-lg">
           <div className="flex items-start gap-2">
-            <FontAwesomeIcon icon={faInfoCircle} className="w-4 h-4 text-blue-400 mt-0.5" />
-            <div className="text-xs text-blue-400">
-              <p className="font-medium mb-1">Important Information</p>
-              <p>Deposits are subject to smart contract risks. APY rates are variable and may change over time.</p>
+            <FontAwesomeIcon icon={faExclamationTriangle} className="w-4 h-4 text-yellow-400 mt-0.5" />
+            <div className="text-xs text-yellow-400">
+              <p className="font-medium mb-1">Withdrawal Notice</p>
+              <p>Withdrawals may be subject to fees and processing delays. Ensure you have sufficient gas for the transaction.</p>
             </div>
           </div>
         </div>
@@ -165,17 +212,17 @@ export const DepositModal: React.FC<DepositModalProps> = ({
             Cancel
           </button>
           <button
-            onClick={handleDeposit}
-            disabled={isDepositing || !amount || !!error}
+            onClick={handleWithdraw}
+            disabled={isWithdrawing || isRedeeming || !amount || !!error || userBalance === 0n}
             className="flex-1 bg-accent-orange hover:bg-accent-orange/90 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors"
           >
-            {isDepositing ? (
+            {(isWithdrawing || isRedeeming) ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 Processing...
               </div>
             ) : (
-              'Deposit'
+              'Withdraw'
             )}
           </button>
         </div>
