@@ -1,4 +1,4 @@
-import { Vault } from '@/lib/vaults/config';
+import { Vault } from '@/lib/vaults/types';
 
 export interface SavingsOverviewProps {
   /** Custom stats data override */
