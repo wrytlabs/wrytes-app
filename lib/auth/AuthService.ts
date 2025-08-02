@@ -177,14 +177,15 @@ export class AuthService {
 
   // Sign out
   async signOut(): Promise<void> {
-    try {
-      await this.makeRequest('/auth/signout', {
-        method: 'POST',
-      })
-    } catch (error) {
-      // Continue with local cleanup even if server request fails
-      console.warn('Sign out request failed:', error)
-    }
+    // this is not implemented.
+    // try {
+    //   await this.makeRequest('/auth/signout', {
+    //     method: 'POST',
+    //   })
+    // } catch (error) {
+    //   // Continue with local cleanup even if server request fails
+    //   console.warn('Sign out request failed:', error)
+    // }
 
     // Clear local storage
     AuthStorage.clearAll()

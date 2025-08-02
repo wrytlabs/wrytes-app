@@ -1,17 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
+import { useReadContract } from 'wagmi';
 import { Vault } from '@/lib/vaults/types';
 
-// Standard ERC20 ABI for balanceOf function (for future use)
-// const ERC20_ABI = [
-//   {
-//     inputs: [{ name: 'account', type: 'address' }],
-//     name: 'balanceOf',
-//     outputs: [{ name: '', type: 'uint256' }],
-//     stateMutability: 'view',
-//     type: 'function'
-//   }
-// ] as const;
+// Standard ERC20 ABI for balanceOf function
+const ERC20_ABI = [
+  {
+    inputs: [{ name: 'account', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function'
+  }
+] as const;
 
 export interface UseAssetTokenBalanceReturn {
   balance: bigint;
@@ -19,7 +20,6 @@ export interface UseAssetTokenBalanceReturn {
   decimals: number;
   loading: boolean;
   error: string | null;
-  refresh: () => void;
 }
 
 /**
@@ -35,66 +35,44 @@ export const useAssetTokenBalance = (vault: Vault): UseAssetTokenBalanceReturn =
   // Get the asset token configuration from the vault
   const assetToken = vault.asset;
 
-  const fetchBalance = useCallback(async () => {
-    if (!userAddress || !assetToken) {
-      setBalance(0n);
-      setLoading(false);
-      setError(null);
-      return;
-    }
+  // Use wagmi's useReadContract hook for real contract calls
+  const { data: tokenBalance, isLoading, error: contractError } = useReadContract({
+    address: assetToken?.address as `0x${string}`,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: userAddress ? [userAddress as `0x${string}`] : undefined,
+    query: {
+      enabled: !!userAddress && !!assetToken?.address,
+    },
+  });
 
-    try {
-      setLoading(true);
-      setError(null);
-
-      // For now, we'll use mock data since Reown AppKit doesn't provide direct contract reading
-      // In a real implementation, you would use a separate RPC provider or API to read from the token contract
-      // Example: await readContract(client, { address: assetToken.address, abi: ERC20_ABI, functionName: 'balanceOf', args: [userAddress] })
-      
-      // Mock different balances based on token type for demonstration
-      let mockBalance: bigint;
-      switch (assetToken.symbol) {
-        case 'USDC':
-        case 'USDT':
-          mockBalance = BigInt(5000 * (10 ** assetToken.decimals)); // 5000 USDC/USDT
-          break;
-        case 'DAI':
-          mockBalance = BigInt(3000 * (10 ** assetToken.decimals)); // 3000 DAI
-          break;
-        case 'ZCHF':
-          mockBalance = BigInt(2000 * (10 ** assetToken.decimals)); // 2000 ZCHF
-          break;
-        case 'USDU':
-          mockBalance = BigInt(1500 * (10 ** assetToken.decimals)); // 1500 USDU
-          break;
-        default:
-          mockBalance = BigInt(1000 * (10 ** assetToken.decimals)); // 1000 default
-      }
-
-      setBalance(mockBalance);
-    } catch (err) {
-      console.error('Error fetching asset token balance:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch balance');
-      setBalance(0n);
-    } finally {
-      setLoading(false);
-    }
-  }, [userAddress, assetToken]);
-
+  // Update balance when contract data changes
   useEffect(() => {
-    fetchBalance();
-  }, [fetchBalance]);
+    if (tokenBalance !== undefined) {
+      setBalance(tokenBalance);
+    }
+  }, [tokenBalance]);
 
-  const refresh = useCallback(() => {
-    fetchBalance();
-  }, [fetchBalance]);
+  // Update loading state
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
+
+  // Update error state
+  useEffect(() => {
+    if (contractError) {
+      setError(contractError.message);
+    } else {
+      setError(null);
+    }
+  }, [contractError]);
+
 
   return {
-    balance,
+    balance: balance || 0n,
     symbol: assetToken?.symbol || '',
     decimals: assetToken?.decimals || 18,
     loading,
     error,
-    refresh
   };
 };

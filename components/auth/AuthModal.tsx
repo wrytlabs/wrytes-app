@@ -17,7 +17,6 @@ interface AuthModalProps {
 export function AuthModal({ 
   isOpen, 
   onClose, 
-  onSuccess, 
   title = 'Authentication Required',
   description = 'Please connect your wallet and sign a message to continue.'
 }: AuthModalProps) {
@@ -94,9 +93,9 @@ export function AuthModal({
 
                 {/* Wallet Connector */}
                 <WalletConnector
+                  className="border-0 bg-transparent p-0 shadow-none"
                   onSuccess={handleSuccess}
                   onError={handleError}
-                  className="border-0 bg-transparent p-0 shadow-none"
                 />
 
                 {/* Global Error Display */}

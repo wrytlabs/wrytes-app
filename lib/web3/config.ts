@@ -1,27 +1,25 @@
-import { QueryClient } from '@tanstack/react-query'
-import { http, createConfig } from 'wagmi'
-import { mainnet, base } from 'wagmi/chains'
-import { walletConnect, injected, coinbaseWallet, safe } from 'wagmi/connectors'
-import { createStorage, cookieStorage } from 'wagmi'
-import { createPublicClient } from 'viem'
+import { cookieStorage, createStorage, http } from "@wagmi/core";
+import { injected, coinbaseWallet, walletConnect, safe } from "@wagmi/connectors";
+import { mainnet, base, AppKitNetwork } from "@reown/appkit/networks";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 
 // Configuration from environment variables
 const CONFIG = {
   wagmiId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID,
   rpc: process.env.NEXT_PUBLIC_RPC_URL,
-}
+};
 
 if (!CONFIG.wagmiId) {
-  throw new Error('NEXT_PUBLIC_REOWN_PROJECT_ID is not set')
+  throw new Error('NEXT_PUBLIC_REOWN_PROJECT_ID is not set');
 }
 
 if (!CONFIG.rpc) {
-  throw new Error('NEXT_PUBLIC_RPC_URL is not set')
+  throw new Error('NEXT_PUBLIC_RPC_URL is not set');
 }
 
 // Chain configuration
-export const WAGMI_CHAIN = mainnet
-export const WAGMI_CHAINS = [mainnet, base] as const
+export const WAGMI_CHAIN = mainnet;
+export const WAGMI_CHAINS = [mainnet, base] as const;
 
 // Helper functions for chain operations
 export const getChainById = (chainId: number) => {
@@ -43,19 +41,15 @@ export const getBlockExplorerUrl = (path: string, chainId?: number) => {
 };
 
 // Metadata for wallets
-const WAGMI_METADATA = {
+export const WAGMI_METADATA = {
   name: 'Wrytes',
   description: 'Swiss precision in software development, Bitcoin/Blockchain technology, and AI solutions',
   url: process.env.NEXT_PUBLIC_APP_URL || 'https://wrytes.io',
   icons: ['/favicon.ico'],
-}
+};
 
-// Set up React Query client
-export const queryClient = new QueryClient()
-
-// Create Wagmi config
-export const config = createConfig({
-  chains: WAGMI_CHAINS,
+export const WAGMI_ADAPTER = new WagmiAdapter({
+  networks: WAGMI_CHAINS as unknown as AppKitNetwork[],
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
     [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
@@ -72,7 +66,7 @@ export const config = createConfig({
     walletConnect({ 
       projectId: CONFIG.wagmiId, 
       metadata: WAGMI_METADATA, 
-      showQrModal: true 
+      showQrModal: false 
     }),
     injected({ shimDisconnect: true }),
     coinbaseWallet({
@@ -84,16 +78,7 @@ export const config = createConfig({
   storage: createStorage({
     storage: cookieStorage,
   }),
-})
+  projectId: CONFIG.wagmiId,
+});
 
-// Create Viem clients for contract reading
-export const viemClient = {
-  [mainnet.id]: createPublicClient({
-    chain: mainnet,
-    transport: http(`https://eth-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
-  }),
-  [base.id]: createPublicClient({
-    chain: base,
-    transport: http(`https://base-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
-  }),
-}
+export const WAGMI_CONFIG = WAGMI_ADAPTER.wagmiConfig;

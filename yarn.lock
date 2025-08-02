@@ -1629,7 +1629,7 @@
     dayjs "1.11.13"
     viem ">=2.29.0"
 
-"@reown/appkit-controllers@1.7.17":
+"@reown/appkit-controllers@1.7.17", "@reown/appkit-controllers@^1.7.17":
   version "1.7.17"
   resolved "https://registry.yarnpkg.com/@reown/appkit-controllers/-/appkit-controllers-1.7.17.tgz#5c355218307bcead4924b954a53ab8f7f3aa1d06"
   integrity sha512-rYgXf3nAzxgu1s10rSfibpAqnm/Y3wyY47v6BpN98Y57NArWqxYXhBtdRQL1ZKpSTV9OmrzwMxPNKePOmFgxZQ==

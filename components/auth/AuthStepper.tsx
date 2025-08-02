@@ -6,7 +6,6 @@ import {
   faFileSignature, 
   faShieldAlt, 
   faCheck, 
-  faSpinner,
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '@/hooks/useAuth'
@@ -46,11 +45,8 @@ interface AuthStepperProps {
 
 export function AuthStepper({ onComplete }: AuthStepperProps) {
   const { 
-    isAuthenticated, 
-    isLoading, 
-    user, 
+    isAuthenticated,
     authFlow,
-    error 
   } = useAuth()
   const { isConnected } = useWallet()
 
@@ -59,7 +55,7 @@ export function AuthStepper({ onComplete }: AuthStepperProps) {
     if (isAuthenticated && onComplete) {
       const timer = setTimeout(() => {
         onComplete()
-      }, 5000)
+      }, 3000)
       return () => clearTimeout(timer)
     }
   }, [isAuthenticated, onComplete])

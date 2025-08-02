@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react'
 import { type Address } from 'viem'
-import { useAccount, useDisconnect, useSignMessage } from 'wagmi'
+import { useAppKitAccount, useDisconnect } from '@reown/appkit-controllers/react'
+import { useSignMessage } from 'wagmi'
 import { AuthService } from '@/lib/auth/AuthService'
 import { AuthStorage } from '@/lib/auth/storage'
 import {
@@ -80,8 +81,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialAuthState)
   const authService = AuthService.getInstance()
   
-  // Wagmi hooks
-  const { address, isConnected } = useAccount()
+  // AppKit hooks
+  const { address, isConnected } = useAppKitAccount()
   const { disconnect } = useDisconnect()
   const { signMessageAsync } = useSignMessage()
 
@@ -201,9 +202,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         },
       })
 
-    } catch (error) {
-      console.error('Sign in error:', error)
-      
+    } catch (error) {      
       // Handle different types of errors
       let errorMessage = 'Authentication failed'
       
@@ -232,7 +231,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         },
       })
     }
-  }, [signMessageAsync])
+  }, [authService, signMessageAsync])
 
   // Sign out function
   const signOut = useCallback(async () => {
@@ -240,13 +239,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       await authService.signOut()
-      disconnect()
+      await disconnect()
+      dispatch({ type: 'CLEAR_AUTH' })
     } catch (error) {
       console.warn('Sign out error:', error)
-    } finally {
       dispatch({ type: 'CLEAR_AUTH' })
     }
-  }, [disconnect])
+  }, [authService, disconnect])
 
   // Refresh token function
   const refreshToken = useCallback(async () => {
@@ -262,7 +261,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // If refresh fails, sign out
       await signOut()
     }
-  }, [signOut])
+  }, [authService, signOut])
 
   // Check if user has specific permission
   const hasPermission = useCallback((permission: string): boolean => {
@@ -305,7 +304,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const interval = setInterval(checkTokenExpiration, 5 * 60 * 1000)
     
     return () => clearInterval(interval)
-  }, [state.isAuthenticated, state.token, refreshToken])
+  }, [authService, state.isAuthenticated, state.token, refreshToken])
 
   const contextValue: AuthContextType = {
     ...state,
