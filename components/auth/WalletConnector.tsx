@@ -6,7 +6,7 @@ import { useWallet } from '@/hooks/useWallet'
 import { useAuth } from '@/hooks/useAuth'
 import { AuthStep } from '@/lib/auth/types'
 import Button from '@/components/ui/Button'
-import { AppKitConnectButton } from '@reown/appkit/react'
+import { useAppKit } from '@reown/appkit/react'
 
 interface WalletConnectorProps {
   onSuccess?: () => void
@@ -24,12 +24,13 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
   } = useWallet()
   const { signIn, signOut, isLoading: authLoading, error: authError, clearError, isAuthenticated, authFlow } = useAuth()
   const [isAuthenticating, setIsAuthenticating] = useState(false)
+  const { open } = useAppKit();
 
   const handleConnect = async () => {
     try {
       clearWalletError()
       clearError()
-      
+      open()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to connect wallet'
       onError?.(errorMessage)
@@ -130,7 +131,7 @@ export function WalletConnector({ onSuccess, onError, className = '' }: WalletCo
               className="w-full mb-4"
               variant="primary"
             >
-            <AppKitConnectButton className="w-full mb-4 bg-transparent border-0" />
+              Connect Wallet
             </Button>
           </motion.div>
         )}
