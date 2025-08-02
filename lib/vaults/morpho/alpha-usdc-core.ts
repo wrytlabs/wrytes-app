@@ -1,24 +1,24 @@
 import { readContract } from "viem/actions";
-import { viemClient } from "../web3/config";
+import { viemClient } from "../../web3/config";
 import { mainnet } from "viem/chains";
 import { formatUnits } from "viem";
-import { Vault } from "./types";
-import { apolloClient } from "../graphql/client";
-import { GET_VAULT_METRICS } from "../graphql/queries/morpho";
+import { Vault } from "../types";
+import { apolloClient } from "../../graphql/client";
+import { GET_VAULT_METRICS } from "../../graphql/queries/morpho";
 
-export const zchfVault: Vault = {
-  address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
-  name: 'ZCHF Vault',
-  symbol: 'aZCHF',
+export const alphaUsdcCoreVault: Vault = {
+  address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
+  name: 'Alpha USDC Core',
+  symbol: 'fUSDC',
   decimals: 18,
-  description: 'Earn yield on ZCHF deposits from native Morpho Vault',
+  description: 'Earn yield on USDC deposits from native Morpho Vault',
   apy: async () => {
     try {
       // Try to get Morpho data first
       const result = await apolloClient.query({
         query: GET_VAULT_METRICS,
         variables: { 
-          address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
+          address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
           chainId: 1
         },
         fetchPolicy: 'network-only',
@@ -42,7 +42,7 @@ export const zchfVault: Vault = {
       const result = await apolloClient.query({
         query: GET_VAULT_METRICS,
         variables: { 
-          address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
+          address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
           chainId: 1
         },
         fetchPolicy: 'network-only',
@@ -54,7 +54,7 @@ export const zchfVault: Vault = {
 
       // Fallback to contract call
       const totalAssets = await readContract(viemClient[mainnet.id], {
-        address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
+        address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
         abi: [
           {
             name: "totalAssets",
@@ -74,8 +74,8 @@ export const zchfVault: Vault = {
   },
   riskLevel: 'low',
   chainId: 1,
-  strategy: 'ZCHF staking + yield farming + reward incentives',
+  strategy: 'USDC staking + yield farming + reward incentives',
   notes: 'This vault is curated by AlphaPing',
   icon: 'vault',
-  color: 'green'
+  color: 'orange'
 }; 

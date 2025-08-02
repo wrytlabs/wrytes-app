@@ -1,24 +1,24 @@
 import { readContract } from "viem/actions";
-import { viemClient } from "../web3/config";
+import { viemClient } from "../../web3/config";
 import { mainnet } from "viem/chains";
 import { formatUnits } from "viem";
-import { Vault } from "./types";
-import { apolloClient } from "../graphql/client";
-import { GET_VAULT_METRICS } from "../graphql/queries/morpho";
+import { Vault } from "../types";
+import { apolloClient } from "../../graphql/client";
+import { GET_VAULT_METRICS } from "../../graphql/queries/morpho";
 
-export const alphaUsdcCoreVault: Vault = {
-  address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
-  name: 'Alpha USDC Core',
-  symbol: 'fUSDC',
+export const usduCoreVault: Vault = {
+  address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
+  name: 'USDU Core',
+  symbol: 'sUSDU',
   decimals: 18,
-  description: 'Earn yield on USDC deposits from native Morpho Vault',
+  description: 'Earn yield on USDU deposits from native Morpho Vault',
   apy: async () => {
     try {
       // Try to get Morpho data first
       const result = await apolloClient.query({
         query: GET_VAULT_METRICS,
         variables: { 
-          address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
+          address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
           chainId: 1
         },
         fetchPolicy: 'network-only',
@@ -42,7 +42,7 @@ export const alphaUsdcCoreVault: Vault = {
       const result = await apolloClient.query({
         query: GET_VAULT_METRICS,
         variables: { 
-          address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
+          address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
           chainId: 1
         },
         fetchPolicy: 'network-only',
@@ -54,7 +54,7 @@ export const alphaUsdcCoreVault: Vault = {
 
       // Fallback to contract call
       const totalAssets = await readContract(viemClient[mainnet.id], {
-        address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
+        address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
         abi: [
           {
             name: "totalAssets",
@@ -66,7 +66,8 @@ export const alphaUsdcCoreVault: Vault = {
         ],
         functionName: 'totalAssets',
       });
-      return Number(formatUnits(totalAssets, 6));
+
+      return Number(formatUnits(totalAssets, 18));
     } catch (error) {
       console.error('Error reading Morpho vault TVL:', error);
       return 0;
@@ -74,8 +75,8 @@ export const alphaUsdcCoreVault: Vault = {
   },
   riskLevel: 'low',
   chainId: 1,
-  strategy: 'USDC staking + yield farming + reward incentives',
-  notes: 'This vault is curated by AlphaPing',
+  strategy: 'USDU staking + yield farming + reward incentives',
+  notes: 'This vault is curated by USDU Core Aragon DAO',
   icon: 'vault',
-  color: 'green'
+  color: 'orange'
 }; 

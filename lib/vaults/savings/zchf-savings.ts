@@ -1,8 +1,8 @@
 import { readContract } from "viem/actions";
-import { viemClient } from "../web3/config";
+import { viemClient } from "../../web3/config";
 import { mainnet } from "viem/chains";
 import { formatUnits } from "viem";
-import { Vault } from "./types";
+import { Vault } from "../types";
 
 export const zchfSavings: Vault = {
   address: '0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC',

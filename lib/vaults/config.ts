@@ -1,16 +1,18 @@
 import { Vault } from "./types";
-import { alphaUsdcCoreVault } from "./alpha-usdc-core";
-import { usduCoreVault } from "./usdu-core";
-import { zchfSavings } from "./zchf-savings";
-import { lpTokenVault } from "./lp-token-vault";
-import { zchfVault } from "./zchf-vault";
+import { alphaUsdcCoreVault } from "./morpho/alpha-usdc-core";
+import { usduCoreVault } from "./morpho/usdu-core";
+import { zchfSavings } from "./savings/zchf-savings";
+import { usduUsdc } from "./curve/usdu-usdc";
+import { zchfVault } from "./morpho/alpha-zchf-vault";
+import { daiUsdcUsdt } from "./curve/dai-usdc-usdt";
 
 export const VAULTS: Vault[] = [
   alphaUsdcCoreVault,
   usduCoreVault,
   zchfVault,
   zchfSavings,
-  lpTokenVault,
+  usduUsdc,
+  daiUsdcUsdt,
 ];
 
 export const getVaultByAddress = (address: string): Vault | undefined => {
