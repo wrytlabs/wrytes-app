@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { Vault } from '@/lib/vaults/config';
+import { Vault } from '@/lib/vaults/types';
 import { DepositModal } from '@/components/features/Vaults/DepositModal';
 import { WithdrawModal } from '@/components/features/Vaults/WithdrawModal';
 import { VAULTS } from '@/lib/vaults/config';
