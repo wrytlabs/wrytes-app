@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faTrash, faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faTrash, faHistory, faPlay, faPlayCircle } from '@fortawesome/free-solid-svg-icons';
 import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 import { QueuePanelProps } from './types';
 import { QueueItem } from './QueueItem';
@@ -15,7 +15,9 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
     retryTransaction,
     cancelTransaction,
     removeTransaction,
-    clearCompleted
+    clearCompleted,
+    executeAll,
+    isExecuting
   } = useTransactionQueue();
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -56,7 +58,12 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
     tx.status === 'completed' || tx.status === 'failed' || tx.status === 'cancelled'
   );
 
+  const pendingTransactions = transactions.filter(tx => 
+    tx.status === 'pending' || tx.status === 'failed'
+  );
+
   const hasCompletedTransactions = completedTransactions.length > 0;
+  const hasPendingTransactions = pendingTransactions.length > 0;
 
   return (
     <>
@@ -81,6 +88,18 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {hasPendingTransactions && (
+              <button
+                onClick={executeAll}
+                disabled={isExecuting}
+                className="px-3 py-1.5 bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium rounded-md transition-colors"
+                title="Execute all pending transactions"
+              >
+                <FontAwesomeIcon icon={faPlayCircle} className="w-3 h-3 mr-1" />
+                Execute All
+              </button>
+            )}
+
             {hasCompletedTransactions && (
               <button
                 onClick={() => {

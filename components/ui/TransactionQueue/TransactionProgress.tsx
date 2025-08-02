@@ -12,8 +12,7 @@ import { TransactionProgressProps } from './types';
 
 export const TransactionProgress: React.FC<TransactionProgressProps> = ({
   status,
-  progress = 0,
-  estimatedTime
+  progress = 0
 }) => {
   const getStatusConfig = () => {
     switch (status) {
@@ -87,11 +86,6 @@ export const TransactionProgress: React.FC<TransactionProgressProps> = ({
           <span className={`text-sm font-medium ${config.color}`}>
             {config.text}
           </span>
-          {estimatedTime && (status === 'pending' || status === 'approving' || status === 'executing') && (
-            <span className="text-xs text-text-secondary">
-              ~{estimatedTime}s
-            </span>
-          )}
         </div>
 
         {/* Progress Bar */}

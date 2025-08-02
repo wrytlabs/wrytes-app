@@ -21,5 +21,4 @@ export interface QueueItemProps {
 export interface TransactionProgressProps {
   status: QueueTransaction['status'];
   progress?: number;
-  estimatedTime?: number;
 }
