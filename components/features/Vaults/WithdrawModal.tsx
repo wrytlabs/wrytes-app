@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { SavingsVault } from '@/lib/vaults/config';
+import { Vault } from '@/lib/vaults/config';
 import { useSavingsVault, useVaultBalance } from '@/lib/web3/savings';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
 
 interface WithdrawModalProps {
-  vault: SavingsVault;
+  vault: Vault;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;

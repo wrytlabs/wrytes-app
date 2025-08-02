@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, from, type FetchPolicy } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { RetryLink } from '@apollo/client/link/retry';
@@ -103,11 +103,11 @@ export const apolloClient = new ApolloClient({
   cache,
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'cache-and-network' as FetchPolicy,
       errorPolicy: 'all',
     },
     query: {
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'cache-and-network' as FetchPolicy,
       errorPolicy: 'all',
     },
   },

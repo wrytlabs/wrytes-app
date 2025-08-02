@@ -18,6 +18,9 @@ export interface Vault {
   icon?: string;
   color?: string;
   untilUnlocked?: number | (() => Promise<number>);
+  // Morpho integration fields
+  morphoAddress?: string;
+  useMorphoData?: boolean;
 }
 
 export const VAULTS: Vault[] = [
@@ -63,7 +66,10 @@ export const VAULTS: Vault[] = [
     strategy: 'USDC staking + yield farming + reward incentives',
     notes: 'This vault is curated by AlphaPing',
     icon: 'vault',
-    color: 'green'
+    color: 'green',
+    // Morpho integration
+    morphoAddress: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
+    useMorphoData: true
   },
   {
     address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
@@ -122,7 +128,10 @@ export const VAULTS: Vault[] = [
     strategy: 'USDU staking + yield farming + reward incentives',
     notes: 'This vault is curated by USDU Core Aragon DAO',
     icon: 'vault',
-    color: 'green'
+    color: 'green',
+    // Morpho integration
+    morphoAddress: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
+    useMorphoData: true
   },
   {
     address: '0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC',
