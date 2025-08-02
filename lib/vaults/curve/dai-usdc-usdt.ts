@@ -1,7 +1,7 @@
-import { readContract } from "viem/actions";
+import { readContract } from "wagmi/actions";
 import { Vault } from "../types";
-import { viemClient } from "@/lib/web3/config";
-import { mainnet } from "viem/chains";
+import { WAGMI_CONFIG } from "@/lib/web3/config";
+import { mainnet } from "@reown/appkit/networks";
 
 export const daiUsdcUsdt: Vault = {
   address: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
@@ -53,7 +53,8 @@ export const daiUsdcUsdt: Vault = {
   tvl: async () => {
     try {
       // Get total supply of LP tokens
-      const totalSupply = await readContract(viemClient[mainnet.id], {
+      const totalSupply = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490', // older version for token
         abi: [
           {
@@ -68,7 +69,8 @@ export const daiUsdcUsdt: Vault = {
       });
 
       // Get virtual price (price of 1 LP token in USD)
-      const virtualPrice = await readContract(viemClient[mainnet.id], {
+      const virtualPrice = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
         abi: [
           {

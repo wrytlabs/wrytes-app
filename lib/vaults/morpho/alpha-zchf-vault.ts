@@ -1,6 +1,6 @@
-import { readContract } from "viem/actions";
-import { viemClient } from "../../web3/config";
-import { mainnet } from "viem/chains";
+import { readContract } from "wagmi/actions";
+import { WAGMI_CONFIG } from "@/lib/web3/config";
+import { mainnet } from "@reown/appkit/networks";
 import { formatUnits } from "viem";
 import { Vault } from "../types";
 import { apolloClient } from "../../graphql/client";
@@ -56,10 +56,11 @@ export const zchfVault: Vault = {
 
       if (result.data?.vaultByAddress?.state?.totalAssetsUsd) {
         return Number(result.data.vaultByAddress.state.totalAssetsUsd);
-      }
+      } 
 
       // Fallback to contract call
-      const totalAssets = await readContract(viemClient[mainnet.id], {
+      const totalAssets = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
         abi: [
           {

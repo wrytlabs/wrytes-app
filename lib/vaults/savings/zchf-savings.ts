@@ -1,6 +1,6 @@
-import { readContract } from "viem/actions";
-import { viemClient } from "../../web3/config";
-import { mainnet } from "viem/chains";
+import { readContract } from "wagmi/actions";
+import { WAGMI_CONFIG } from "@/lib/web3/config";
+import { mainnet } from "@reown/appkit/networks";
 import { formatUnits } from "viem";
 import { Vault } from "../types";
 
@@ -21,7 +21,8 @@ export const zchfSavings: Vault = {
       const savingsModule = "0x27d9AD987BdE08a0d083ef7e0e4043C857A17B38";
 
       // Get current rate PPM
-      const currentRatePPM = await readContract(viemClient[mainnet.id], {
+      const currentRatePPM = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: savingsModule,
         abi: [
           {
@@ -36,7 +37,8 @@ export const zchfSavings: Vault = {
       });
 
       // Get savings data for the vault address to calculate referral fee
-      const savingsData = await readContract(viemClient[mainnet.id], {
+      const savingsData = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: savingsModule,
         abi: [
           {
@@ -68,7 +70,8 @@ export const zchfSavings: Vault = {
   },
   tvl: async () => {
     try {
-      const balance = await readContract(viemClient[mainnet.id], {
+      const balance = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: '0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC',
         abi: [
           {
@@ -90,7 +93,8 @@ export const zchfSavings: Vault = {
   },
   untilUnlocked: async () => {
     try {
-      const untilUnlocked = await readContract(viemClient[mainnet.id], {
+      const untilUnlocked = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: '0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC',
         abi: [
           { 

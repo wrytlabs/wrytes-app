@@ -1,6 +1,6 @@
-import { readContract } from "viem/actions";
-import { viemClient } from "../../web3/config";
-import { mainnet } from "viem/chains";
+import { readContract } from "wagmi/actions";
+import { WAGMI_CONFIG } from "@/lib/web3/config";
+import { mainnet } from "@reown/appkit/networks";
 import { formatUnits } from "viem";
 import { Vault } from "../types";
 import { apolloClient } from "../../graphql/client";
@@ -59,7 +59,8 @@ export const usduCoreVault: Vault = {
       }
 
       // Fallback to contract call
-      const totalAssets = await readContract(viemClient[mainnet.id], {
+      const totalAssets = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
         address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
         abi: [
           {

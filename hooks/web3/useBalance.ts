@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { usePublicClient } from 'wagmi';
+import { readContract } from 'wagmi/actions';
 import { formatUnits } from 'viem';
 import { UseBalanceProps, UseBalanceReturn } from './types';
+import { WAGMI_CONFIG } from '@/lib/web3/config';
 
 /**
  * useBalance - Generic balance checking hook with auto-refresh
@@ -15,9 +16,7 @@ export const useBalance = ({
   watch = false,
   refetchInterval = 30000, // 30 seconds default
   enabled = true
-}: UseBalanceProps): UseBalanceReturn => {
-  const publicClient = usePublicClient({ chainId });
-  
+}: UseBalanceProps): UseBalanceReturn => {;
   const [balance, setBalance] = useState<bigint>(0n);
   const [formatted, setFormatted] = useState<string>('0');
   const [decimals, setDecimals] = useState<number>(18);
@@ -27,7 +26,7 @@ export const useBalance = ({
 
   // Fetch balance
   const fetchBalance = useCallback(async () => {
-    if (!enabled || !publicClient || !address) {
+    if (!enabled || !address) {
       return;
     }
 
@@ -38,7 +37,8 @@ export const useBalance = ({
       if (token) {
         // ERC20 token balance
         const [tokenBalance, tokenDecimals, tokenSymbol] = await Promise.all([
-          publicClient.readContract({
+          readContract(WAGMI_CONFIG, {
+            chainId,
             address: token as `0x${string}`,
             abi: [
               {
@@ -52,7 +52,8 @@ export const useBalance = ({
             functionName: 'balanceOf',
             args: [address as `0x${string}`]
           }),
-          publicClient.readContract({
+          readContract(WAGMI_CONFIG, {
+            chainId,
             address: token as `0x${string}`,
             abi: [
               {
@@ -65,7 +66,8 @@ export const useBalance = ({
             ],
             functionName: 'decimals'
           }),
-          publicClient.readContract({
+          readContract(WAGMI_CONFIG, {
+            chainId,
             address: token as `0x${string}`,
             abi: [
               {
@@ -90,8 +92,19 @@ export const useBalance = ({
         setFormatted(formatUnits(balanceValue, decimalsValue));
       } else {
         // Native token balance
-        const nativeBalance = await publicClient.getBalance({
-          address: address as `0x${string}`
+        const nativeBalance = await readContract(WAGMI_CONFIG, {
+          chainId,
+          address: address as `0x${string}`,
+          abi: [
+            {
+              name: 'balanceOf',
+              type: 'function',
+              stateMutability: 'view',
+              inputs: [],
+              outputs: [{ name: 'balance', type: 'uint256' }]
+            }
+          ],
+          functionName: 'balanceOf'
         });
 
         setBalance(nativeBalance);
@@ -106,7 +119,7 @@ export const useBalance = ({
     } finally {
       setLoading(false);
     }
-  }, [enabled, publicClient, address, token]);
+  }, [enabled, address, token, chainId]);
 
   // Refetch function
   const refetch = useCallback(() => {
