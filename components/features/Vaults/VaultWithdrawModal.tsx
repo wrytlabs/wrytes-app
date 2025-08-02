@@ -5,6 +5,8 @@ import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
 import { Vault } from '@/lib/vaults/types';
+import { AmountInput } from '@/components/ui/AmountInput';
+import { ColoredBadge } from '@/components/ui/Badge';
 
 interface VaultWithdrawModalProps {
   vault: Vault;
@@ -84,6 +86,16 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
     return formatUnits(userBalance, vault.decimals);
   };
 
+  const getInputTitle = () => {
+    return withdrawMode === 'assets' 
+      ? `Amount to Withdraw (Assets)` 
+      : `Shares to Redeem (${vault.symbol})`;
+  };
+
+  const getInputSymbol = () => {
+    return withdrawMode === 'assets' ? vault.asset?.symbol || vault.symbol : vault.symbol;
+  };
+
   useEffect(() => {
     if (!isOpen) {
       setAmount('');
@@ -101,7 +113,15 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold text-white">Withdraw from {vault.name}</h2>
-            <p className="text-text-secondary text-sm">{vault.symbol}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-text-secondary text-sm">{vault.symbol}</p>
+              <ColoredBadge 
+                variant="risk" 
+                riskLevel={vault.riskLevel}
+                text={vault.riskLevel.toUpperCase()}
+                size="sm"
+              />
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -142,36 +162,17 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
 
         {/* Amount Input */}
         <div className="mb-6">
-          <label className="block text-text-secondary text-sm mb-2">
-            Amount to Withdraw ({withdrawMode === 'assets' ? 'Assets' : 'Shares'})
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => handleAmountChange(e.target.value)}
-              placeholder="0.00"
-              step="0.000001"
-              min="0"
-              max={formatUserBalance()}
-              className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-3 text-white placeholder-text-secondary focus:outline-none focus:border-accent-orange transition-colors"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
-              {vault.symbol}
-            </div>
-            <button
-              onClick={handleMaxClick}
-              className="absolute right-12 top-1/2 transform -translate-y-1/2 text-accent-orange hover:text-accent-orange/80 text-sm font-medium"
-            >
-              MAX
-            </button>
-          </div>
-          {error && (
-            <p className="text-red-400 text-xs mt-2">{error}</p>
-          )}
-          <div className="text-xs text-text-secondary mt-2">
-            Available: {formatUserBalance()} {vault.symbol}
-          </div>
+          <AmountInput
+            amount={amount}
+            onAmountChange={handleAmountChange}
+            title={getInputTitle()}
+            symbol={getInputSymbol()}
+            decimals={vault.decimals}
+            availableBalance={userBalance}
+            availableLabel="Vault Shares"
+            onMaxClick={handleMaxClick}
+            error={error}
+          />
         </div>
 
         {/* Preview */}
@@ -179,7 +180,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
           {withdrawMode === 'shares' && (
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">Estimated Assets:</span>
-              <span className="text-white font-medium">{calculateEstimatedAssets()} {vault.symbol}</span>
+              <span className="text-white font-medium">{calculateEstimatedAssets()} {vault.asset?.symbol || 'Assets'}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
@@ -188,7 +189,12 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">Risk Level:</span>
-            <span className="text-white">{vault.riskLevel.toUpperCase()}</span>
+            <ColoredBadge 
+              variant="risk" 
+              riskLevel={vault.riskLevel}
+              text={vault.riskLevel.toUpperCase()}
+              size="sm"
+            />
           </div>
         </div>
 

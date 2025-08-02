@@ -62,14 +62,6 @@ export type {
   UseVaultDataReturn 
 } from '@/components/features/Vaults';
 export type {
-  UseContractReadProps,
-  UseContractReadReturn,
-  UseContractWriteProps,
-  UseContractWriteReturn,
-  UseBalanceProps,
-  UseBalanceReturn
-} from '@/hooks/web3';
-export type {
   UseModalReturn,
   UseLoadingStateReturn,
   UseToastActionsReturn,

@@ -5,6 +5,7 @@ import { faBars, faTimes, faWallet, faLightbulb, faVault } from '@fortawesome/fr
 import { COMPANY } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/auth/AuthModal';
+import { QueueIcon, QueuePanel } from '@/components/ui/TransactionQueue';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showTransactionQueue, setShowTransactionQueue] = useState(false);
   const { isAuthenticated, user, signOut } = useAuth();
 
   const toggleSidebar = () => {
@@ -70,6 +72,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Desktop CTA Button */}
             <div className="hidden md:flex items-center gap-3">
+              {/* Transaction Queue */}
+              <QueueIcon 
+                onClick={() => setShowTransactionQueue(true)}
+                className="mr-2"
+              />
+
               {!isAuthenticated ? (
                 <button
                   type="button"
@@ -96,16 +104,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={toggleMobileMenu}
-              className="md:hidden p-2 text-text-secondary hover:text-accent-orange transition-colors"
-            >
-              <FontAwesomeIcon 
-                icon={isMobileMenuOpen ? faTimes : faBars} 
-                className="w-5 h-5" 
+            {/* Mobile Actions */}
+            <div className="md:hidden flex items-center gap-2">
+              <QueueIcon 
+                onClick={() => setShowTransactionQueue(true)}
               />
-            </button>
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 text-text-secondary hover:text-accent-orange transition-colors"
+              >
+                <FontAwesomeIcon 
+                  icon={isMobileMenuOpen ? faTimes : faBars} 
+                  className="w-5 h-5" 
+                />
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation */}
@@ -217,6 +230,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => setShowAuthModal(false)}
+      />
+
+      {/* Transaction Queue Panel */}
+      <QueuePanel
+        isOpen={showTransactionQueue}
+        onClose={() => setShowTransactionQueue(false)}
+        onClearCompleted={() => {}}
       />
     </div>
   );

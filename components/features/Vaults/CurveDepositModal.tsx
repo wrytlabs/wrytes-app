@@ -4,7 +4,8 @@ import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Vault } from '@/lib/vaults/types';
 import { useVaultActions } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
-import { handleTransactionError } from '@/lib/utils/error-handling';
+import { AmountInput } from '@/components/ui/AmountInput';
+import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 
 interface CurveDepositModalProps {
   vault: Vault;
@@ -22,6 +23,7 @@ export const CurveDepositModal: React.FC<CurveDepositModalProps> = ({
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const { deposit, isDepositing, calculateSharesFromAssets } = useVaultActions(vault.address);
+  const { addTransaction } = useTransactionQueue();
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
@@ -41,16 +43,23 @@ export const CurveDepositModal: React.FC<CurveDepositModalProps> = ({
 
     if (error) return;
 
-    try {
-      const amountInWei = parseUnits(amount, vault.decimals);
-      
-      await deposit?.(amountInWei);
-      
-      onSuccess();
-    } catch (error: unknown) {
-      console.error('Deposit failed:', error);
-      setError(handleTransactionError(error));
-    }
+    // Add transaction to queue instead of executing directly
+    addTransaction({
+      type: 'deposit',
+      vault: {
+        name: vault.name,
+        symbol: vault.symbol,
+        address: vault.address,
+      },
+      amount,
+      symbol: vault.symbol,
+      needsApproval: false, // Curve pools typically don't need approval
+      estimatedTime: 20,
+    });
+
+    // Close modal and trigger success callback
+    onSuccess();
+    onClose();
   };
 
   const calculateEstimatedShares = () => {
@@ -65,10 +74,13 @@ export const CurveDepositModal: React.FC<CurveDepositModalProps> = ({
   };
 
   const handleMaxClick = () => {
-    // In a real implementation, you'd get the user's token balance
-    // For now, we'll use a reasonable default
+    // For Curve pools, we'll use a reasonable default amount
+    // In production, this would be the actual user balance
     setAmount('1000');
   };
+
+  // Mock balance for demonstration - in production this would come from useAssetTokenBalance
+  const mockBalance = parseUnits('10000', vault.decimals);
 
   useEffect(() => {
     if (!isOpen) {
@@ -98,35 +110,17 @@ export const CurveDepositModal: React.FC<CurveDepositModalProps> = ({
 
         {/* Amount Input */}
         <div className="mb-6">
-          <label className="block text-text-secondary text-sm mb-2">
-            Amount to Deposit
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => handleAmountChange(e.target.value)}
-              placeholder="0.00"
-              step="0.000001"
-              min="0"
-              className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-3 text-white placeholder-text-secondary focus:outline-none focus:border-accent-orange transition-colors"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
-              {vault.symbol}
-            </div>
-            <button
-              onClick={handleMaxClick}
-              className="absolute right-12 top-1/2 transform -translate-y-1/2 text-accent-orange hover:text-accent-orange/80 text-sm font-medium"
-            >
-              MAX
-            </button>
-          </div>
-          {error && (
-            <p className="text-red-400 text-xs mt-2">{error}</p>
-          )}
-          <div className="flex justify-between text-xs text-text-secondary mt-2">
-            <span>Enter amount to deposit</span>
-          </div>
+          <AmountInput
+            amount={amount}
+            onAmountChange={handleAmountChange}
+            title="Amount to Deposit"
+            symbol={vault.symbol}
+            decimals={vault.decimals}
+            availableBalance={mockBalance}
+            availableLabel="Available"
+            onMaxClick={handleMaxClick}
+            error={error}
+          />
         </div>
 
         {/* Preview */}

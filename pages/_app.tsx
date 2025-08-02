@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import '../styles/globals.css'
 import Layout from '@/components/layout/Layout'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { TransactionQueueProvider } from '@/contexts/TransactionQueueContext'
 import { ApolloProvider } from '@/lib/graphql/provider'
 import AppKitProvider from '@/lib/web3/appkit-provider'
 
@@ -18,10 +19,12 @@ export default function App({ Component, pageProps }: AppProps) {
       <AppKitProvider>
         <ApolloProvider>
           <AuthProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-            <Toaster position="bottom-right" />
+            <TransactionQueueProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+              <Toaster position="bottom-right" />
+            </TransactionQueueProvider>
           </AuthProvider>
         </ApolloProvider>
       </AppKitProvider>

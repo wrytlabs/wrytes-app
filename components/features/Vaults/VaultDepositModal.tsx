@@ -8,6 +8,7 @@ import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
 import { ColoredBadge } from '@/components/ui/Badge';
+import { AmountInput } from '@/components/ui/AmountInput';
 
 interface VaultDepositModalProps {
   vault: Vault;
@@ -78,10 +79,9 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   const calculateEstimatedShares = () => {
     if (!amount || parseFloat(amount) <= 0) return '0';
     try {
-      const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
-      const amountInWei = parseUnits(amount, decimalsToUse);
-      
       if (depositMode === 'deposit') {
+        // In deposit mode, calculate shares from assets
+        const amountInWei = parseUnits(amount, assetDecimals);
         const shares = calculateSharesFromAssets(amountInWei);
         return formatUnits(shares, vault.decimals);
       } else {
@@ -93,25 +93,56 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
     }
   };
 
+  const calculateEstimatedAssets = () => {
+    if (!amount || parseFloat(amount) <= 0) return '0';
+    try {
+      if (depositMode === 'mint') {
+        // In mint mode, calculate assets needed from shares
+        const amountInWei = parseUnits(amount, vault.decimals);
+        // This would need an assetsFromShares calculation - for now return amount
+        return amount;
+      } else {
+        // In deposit mode, the amount is already in assets
+        return amount;
+      }
+    } catch {
+      return '0';
+    }
+  };
+
   const handleMaxClick = () => {
-    const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
-    const amountToUse = depositMode === 'deposit' ? assetBalance : parseUnits(calculateEstimatedShares(), decimalsToUse);
-    const maxAmount = formatUnits(amountToUse, decimalsToUse);
-    setAmount(maxAmount);
+    if (depositMode === 'deposit') {
+      // In deposit mode, use full asset balance
+      const maxAmount = formatUnits(assetBalance, assetDecimals);
+      setAmount(maxAmount);
+    } else {
+      // In mint mode, use estimated shares from available assets
+      const estimatedShares = calculateEstimatedSharesFromAssets();
+      setAmount(estimatedShares);
+    }
   };
 
-  const formatAvailableBalance = () => {
-    const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
-    const balanceSymbol = depositMode === 'deposit' ? assetSymbol : vault.symbol;
-    return `${formatUnits(assetBalance, decimalsToUse)} ${balanceSymbol}`;
+  const calculateEstimatedSharesFromAssets = () => {
+    try {
+      const shares = calculateSharesFromAssets(assetBalance);
+      return formatUnits(shares, vault.decimals);
+    } catch {
+      return '0';
+    }
   };
 
-  const getInputLabel = () => {
-    return depositMode === 'deposit' ? `Amount to Deposit (${assetSymbol})` : `Shares to Mint (${vault.symbol})`;
+  const getInputTitle = () => {
+    return depositMode === 'deposit' 
+      ? `Amount to Deposit (${assetSymbol})` 
+      : `Shares to Mint (${vault.symbol})`;
   };
 
   const getInputSymbol = () => {
     return depositMode === 'deposit' ? assetSymbol : vault.symbol;
+  };
+
+  const getInputDecimals = () => {
+    return depositMode === 'deposit' ? assetDecimals : vault.decimals;
   };
 
   useEffect(() => {
@@ -192,43 +223,33 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
 
         {/* Amount Input */}
         <div className="mb-6">
-          <label className="block text-text-secondary text-sm mb-2">
-            {getInputLabel()}
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => handleAmountChange(e.target.value)}
-              placeholder="0.00"
-              step="0.000001"
-              min="0"
-              className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-3 text-white placeholder-text-secondary focus:outline-none focus:border-accent-orange transition-colors"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
-              {getInputSymbol()}
-            </div>
-            <button
-              onClick={handleMaxClick}
-              className="absolute right-16 top-1/2 transform -translate-y-1/2 text-accent-orange hover:text-accent-orange/80 text-sm font-medium"
-            >
-              MAX
-            </button>
-          </div>
-          {error && (
-            <p className="text-red-400 text-xs mt-2">{error}</p>
-          )}
-          <div className="text-xs text-text-secondary mt-2">
-            Available: {balanceLoading ? 'Loading...' : formatAvailableBalance()}
-          </div>
+          <AmountInput
+            amount={amount}
+            onAmountChange={handleAmountChange}
+            title={getInputTitle()}
+            symbol={getInputSymbol()}
+            decimals={getInputDecimals()}
+            availableBalance={assetBalance}
+            availableLabel={`Available ${assetSymbol}`}
+            onMaxClick={handleMaxClick}
+            error={error}
+            disabled={balanceLoading}
+          />
         </div>
 
         {/* Preview */}
         <div className="mb-6 p-4 bg-dark-surface/50 rounded-lg space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-text-secondary">Estimated Shares:</span>
-            <span className="text-white font-medium">{calculateEstimatedShares()} {vault.symbol}</span>
-          </div>
+          {depositMode === 'deposit' ? (
+            <div className="flex justify-between text-sm">
+              <span className="text-text-secondary">Estimated Shares:</span>
+              <span className="text-white font-medium">{calculateEstimatedShares()} {vault.symbol}</span>
+            </div>
+          ) : (
+            <div className="flex justify-between text-sm">
+              <span className="text-text-secondary">Estimated Assets:</span>
+              <span className="text-white font-medium">{calculateEstimatedAssets()} {assetSymbol}</span>
+            </div>
+          )}
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">Current APY:</span>
             <span className="text-green-400 font-medium">

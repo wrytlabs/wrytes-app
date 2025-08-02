@@ -3,8 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
-import { handleTransactionError } from '@/lib/utils/error-handling';
 import { Vault } from '@/lib/vaults/types';
+import { AmountInput } from '@/components/ui/AmountInput';
+import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 
 interface CurveWithdrawModalProps {
   vault: Vault;
@@ -25,6 +26,7 @@ export const CurveWithdrawModal: React.FC<CurveWithdrawModalProps> = ({
   
   const { withdraw, redeem, isWithdrawing, isRedeeming, calculateAssetsFromShares } = useVaultActions(vault.address);
   const userBalance = useVaultBalance(vault.address);
+  const { addTransaction } = useTransactionQueue();
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
@@ -49,20 +51,22 @@ export const CurveWithdrawModal: React.FC<CurveWithdrawModalProps> = ({
 
     if (error) return;
 
-    try {
-      const amountInWei = parseUnits(amount, vault.decimals);
-      
-      if (withdrawMode === 'assets') {
-        await withdraw?.(amountInWei);
-      } else {
-        await redeem?.(amountInWei);
-      }
-      
-      onSuccess();
-    } catch (error: unknown) {
-      console.error('Withdrawal failed:', error);
-      setError(handleTransactionError(error));
-    }
+    // Add transaction to queue
+    addTransaction({
+      type: withdrawMode === 'assets' ? 'withdraw' : 'redeem',
+      vault: {
+        name: vault.name,
+        symbol: vault.symbol,
+        address: vault.address,
+      },
+      amount,
+      symbol: vault.symbol,
+      estimatedTime: 20,
+    });
+
+    // Close modal and trigger success callback
+    onSuccess();
+    onClose();
   };
 
   const calculateEstimatedAssets = () => {
@@ -142,36 +146,17 @@ export const CurveWithdrawModal: React.FC<CurveWithdrawModalProps> = ({
 
         {/* Amount Input */}
         <div className="mb-6">
-          <label className="block text-text-secondary text-sm mb-2">
-            Amount to Withdraw ({withdrawMode === 'assets' ? 'Assets' : 'Shares'})
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => handleAmountChange(e.target.value)}
-              placeholder="0.00"
-              step="0.000001"
-              min="0"
-              max={formatUserBalance()}
-              className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-3 text-white placeholder-text-secondary focus:outline-none focus:border-accent-orange transition-colors"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
-              {vault.symbol}
-            </div>
-            <button
-              onClick={handleMaxClick}
-              className="absolute right-12 top-1/2 transform -translate-y-1/2 text-accent-orange hover:text-accent-orange/80 text-sm font-medium"
-            >
-              MAX
-            </button>
-          </div>
-          {error && (
-            <p className="text-red-400 text-xs mt-2">{error}</p>
-          )}
-          <div className="text-xs text-text-secondary mt-2">
-            Available: {formatUserBalance()} {vault.symbol}
-          </div>
+          <AmountInput
+            amount={amount}
+            onAmountChange={handleAmountChange}
+            title={`Amount to Withdraw (${withdrawMode === 'assets' ? 'Assets' : 'Shares'})`}
+            symbol={vault.symbol}
+            decimals={vault.decimals}
+            availableBalance={userBalance}
+            availableLabel="Vault Shares"
+            onMaxClick={handleMaxClick}
+            error={error}
+          />
         </div>
 
         {/* Preview */}
