@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import '../styles/globals.css'
 import Layout from '@/components/layout/Layout'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { ApolloProvider } from '@/lib/graphql/provider'
 import { config, queryClient } from '@/lib/web3/config'
 
 const inter = Inter({
@@ -18,12 +19,14 @@ export default function App({ Component, pageProps }: AppProps) {
     <div className={`${inter.variable} font-sans`}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-            <Toaster position="bottom-right" />
-          </AuthProvider>
+          <ApolloProvider>
+            <AuthProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+              <Toaster position="bottom-right" />
+            </AuthProvider>
+          </ApolloProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </div>

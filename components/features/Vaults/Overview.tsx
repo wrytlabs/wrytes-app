@@ -34,8 +34,6 @@ export const SavingsOverview: React.FC<SavingsOverviewProps> = ({
         
         const avgApy = apyValues.reduce((sum, apy) => sum + apy, 0) / apyValues.length;
         const totalTvlValue = tvlValues.reduce((sum, tvl) => sum + tvl, 0);
-
-        console.log(avgApy, totalTvlValue);
         
         setTotalApy(avgApy);
         setTotalTvl(totalTvlValue);

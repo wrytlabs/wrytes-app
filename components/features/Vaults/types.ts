@@ -1,4 +1,4 @@
-import { SavingsVault } from '@/lib/vaults/config';
+import { Vault } from '@/lib/vaults/types';
 
 export interface SavingsOverviewProps {
   /** Custom stats data override */
@@ -19,13 +19,13 @@ export interface OverviewStat {
 
 export interface VaultGridProps {
   /** Array of vault configurations */
-  vaults?: SavingsVault[];
+  vaults?: Vault[];
   /** Loading state for entire grid */
   loading?: boolean;
   /** Callback when deposit is requested */
-  onDeposit?: (vault: SavingsVault) => void;
+  onDeposit?: (vault: Vault) => void;
   /** Callback when withdraw is requested */
-  onWithdraw?: (vault: SavingsVault) => void;
+  onWithdraw?: (vault: Vault) => void;
   /** Additional CSS classes */
   className?: string;
   /** Grid layout columns */
@@ -38,7 +38,7 @@ export interface VaultGridProps {
 
 export interface VaultCardProps {
   /** Vault configuration */
-  vault: SavingsVault;
+  vault: Vault;
   /** User's balance in this vault */
   userBalance?: bigint;
   /** APY percentage */
@@ -48,16 +48,16 @@ export interface VaultCardProps {
   /** Loading state for vault data */
   loading?: boolean;
   /** Callback when deposit is requested */
-  onDeposit?: (vault: SavingsVault) => void;
+  onDeposit?: (vault: Vault) => void;
   /** Callback when withdraw is requested */
-  onWithdraw?: (vault: SavingsVault) => void;
+  onWithdraw?: (vault: Vault) => void;
   /** Additional CSS classes */
   className?: string;
 }
 
 export interface VaultActionsProps {
   /** Selected vault for actions */
-  vault: SavingsVault | null;
+  vault: Vault | null;
   /** Deposit modal state */
   showDepositModal?: boolean;
   /** Withdraw modal state */
@@ -67,9 +67,9 @@ export interface VaultActionsProps {
   /** Close withdraw modal */
   onCloseWithdraw?: () => void;
   /** Success callback for deposit */
-  onDepositSuccess?: (vault: SavingsVault) => void;
+  onDepositSuccess?: (vault: Vault) => void;
   /** Success callback for withdraw */
-  onWithdrawSuccess?: (vault: SavingsVault) => void;
+  onWithdrawSuccess?: (vault: Vault) => void;
 }
 
 export interface UseVaultDataReturn {

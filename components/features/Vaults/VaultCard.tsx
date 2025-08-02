@@ -59,8 +59,6 @@ export const VaultCard: React.FC<VaultCardProps> = ({
     return formatUnits(balance, vault.decimals);
   };
 
-  console.log(untilUnlocked);
-
   return (
     <Card className={cn(
       'relative overflow-hidden group hover:scale-105 transition-transform duration-300 flex flex-col h-full',

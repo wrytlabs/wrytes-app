@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Vault } from '@/lib/vaults/config';
+import { useState, useEffect, useCallback } from 'react';
+import { Vault } from '@/lib/vaults/types';
 import { useVaultBalance } from '@/lib/web3/savings';
 import { UseVaultDataReturn } from '@/components/features/Vaults/types';
 
@@ -17,12 +17,11 @@ export const useVaultData = (vault: Vault): UseVaultDataReturn => {
   const [error, setError] = useState<string | null>(null);
 
   // Load APY, TVL, and lock time data
-  const loadVaultStats = async () => {
+  const loadVaultStats = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // Prepare promises for all data fetching
       const promises: Promise<number>[] = [
         vault.apy(),
         vault.tvl(),
@@ -50,12 +49,12 @@ export const useVaultData = (vault: Vault): UseVaultDataReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [vault]);
 
-  // Initial load
+  // Initial load and reload when vault changes
   useEffect(() => {
     loadVaultStats();
-  }, [vault.address]); // Re-load if vault changes
+  }, [loadVaultStats]);
 
   // Refresh function for manual reload
   const refresh = () => {
@@ -67,7 +66,7 @@ export const useVaultData = (vault: Vault): UseVaultDataReturn => {
     apy,
     tvl,
     untilUnlocked,
-    loading,
+    loading: loading || false,
     error,
     refresh
   };
