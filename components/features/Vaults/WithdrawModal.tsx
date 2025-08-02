@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { Vault } from '@/lib/vaults/config';
-import { useSavingsVault, useVaultBalance } from '@/lib/web3/savings';
+import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
+import { Vault } from '@/lib/vaults/types';
 
 interface WithdrawModalProps {
   vault: Vault;
@@ -23,7 +23,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   const [error, setError] = useState('');
   const [withdrawMode, setWithdrawMode] = useState<'assets' | 'shares'>('assets');
   
-  const { withdraw, redeem, isWithdrawing, isRedeeming, calculateAssetsFromShares } = useSavingsVault(vault.address);
+  const { withdraw, redeem, isWithdrawing, isRedeeming, calculateAssetsFromShares } = useVaultActions(vault.address);
   const userBalance = useVaultBalance(vault.address);
 
   const handleAmountChange = (value: string) => {

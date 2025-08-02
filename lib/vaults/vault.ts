@@ -69,7 +69,7 @@ export const erc4626ABI = [
   }
 ] as const;
 
-export const useSavingsVault = (vaultAddress: string) => {
+export const useVaultActions = (vaultAddress: string) => {
   const { address: userAddress } = useAppKitAccount();
   const [totalAssets, setTotalAssets] = useState<bigint>(0n);
   const [totalSupply, setTotalSupply] = useState<bigint>(0n);

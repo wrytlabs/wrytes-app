@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Vault } from '@/lib/vaults/types';
-import { useVaultBalance } from '@/lib/web3/savings';
+import { useVaultBalance } from '@/lib/vaults/vault';
 import { UseVaultDataReturn } from '@/components/features/Vaults/types';
 
 /**

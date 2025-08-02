@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { Vault } from '@/lib/vaults/config';
-import { useSavingsVault } from '@/lib/web3/savings';
+import { Vault } from '@/lib/vaults/types';
+import { useVaultActions } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
 
@@ -21,7 +21,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({
 }) => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
-  const { deposit, isDepositing, calculateSharesFromAssets } = useSavingsVault(vault.address);
+  const { deposit, isDepositing, calculateSharesFromAssets } = useVaultActions(vault.address);
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
