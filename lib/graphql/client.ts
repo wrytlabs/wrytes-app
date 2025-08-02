@@ -2,6 +2,7 @@ import { ApolloClient, InMemoryCache, createHttpLink, from, type FetchPolicy } f
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { RetryLink } from '@apollo/client/link/retry';
+import { HEALTH_CHECK_QUERY } from './queries/morpho';
 
 // Environment variables for GraphQL configuration
 const MORPHO_GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_MORPHO_GRAPHQL_ENDPOINT || 'https://api.morpho.org/graphql';
@@ -54,8 +55,8 @@ const retryLink = new RetryLink({
     max: 3,
     retryIf: (error, _operation) => {
       // Retry on network errors or 5xx server errors
-      return !!error && (
-        error.networkError?.message.includes('Network request failed') ||
+      return !!error && !!error.networkError && (
+        error.networkError.message?.includes('Network request failed') ||
         ('statusCode' in error.networkError && error.networkError.statusCode >= 500)
       );
     }
@@ -119,7 +120,7 @@ export const apolloClient = new ApolloClient({
 export const checkGraphQLHealth = async (): Promise<boolean> => {
   try {
     const result = await apolloClient.query({
-      query: require('./queries/morpho').HEALTH_CHECK_QUERY,
+      query: HEALTH_CHECK_QUERY,
       fetchPolicy: 'network-only',
     });
     return !!result.data;

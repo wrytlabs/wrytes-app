@@ -13,50 +13,19 @@ export const HEALTH_CHECK_QUERY = gql`
 
 // Main query to fetch vault metrics from Morpho
 export const GET_VAULT_METRICS = gql`
-  query GetVaultMetrics($vaultAddress: String!) {
-    vault(address: $vaultAddress) {
-      id
-      address
-      name
-      symbol
-      asset {
-        address
-        symbol
-        decimals
-      }
-      # APY metrics across different timeframes
-      netApy
-      dailyNetApy
-      weeklyNetApy
-      monthlyNetApy
-      
-      # Vault metrics
-      totalValueLocked
-      totalSupply
-      totalAssets
-      
-      # Historical data points
-      metricsByTime(
-        timeWindow: "1D"
-        limit: 30
-      ) {
-        timestamp
+  query VaultByAddress($address: String!, $chainId: Int) {
+    vaultByAddress(address: $address, chainId: $chainId) {
+      state {
+        dailyNetApy
+        avgNetApy
+        weeklyNetApy
+        totalAssetsUsd
+        sharePriceUsd
+        sharePrice
+        totalSupply
+        totalAssets
         netApy
-        totalValueLocked
-      }
-      
-      # Last updated timestamp
-      lastUpdated
-      
-      # Risk metrics (if available)
-      riskScore
-      utilizationRate
-      
-      # Strategy information
-      strategy {
-        name
-        description
-        riskLevel
+        lastTotalAssets
       }
     }
   }
@@ -152,51 +121,41 @@ export const SEARCH_VAULTS = gql`
 `;
 
 // TypeScript interfaces for the GraphQL responses
-export interface VaultMetrics {
-  id: string;
-  address: string;
-  name: string;
-  symbol: string;
-  asset: {
-    address: string;
-    symbol: string;
-    decimals: number;
-  };
-  netApy: number;
+export interface VaultState {
   dailyNetApy: number;
+  avgNetApy: number;
   weeklyNetApy: number;
-  monthlyNetApy: number;
-  totalValueLocked: string;
+  totalAssetsUsd: string;
+  sharePriceUsd: string;
+  sharePrice: string;
   totalSupply: string;
   totalAssets: string;
-  metricsByTime: Array<{
-    timestamp: string;
-    netApy: number;
-    totalValueLocked: string;
-  }>;
-  lastUpdated: string;
-  riskScore?: number;
-  utilizationRate?: number;
-  strategy?: {
-    name: string;
-    description: string;
-    riskLevel: string;
+  netApy: number;
+  lastTotalAssets: string;
+}
+
+export interface VaultByAddressData {
+  vaultByAddress: {
+    state: VaultState;
   };
 }
 
-export interface GetVaultMetricsData {
-  vault: VaultMetrics;
-}
-
-export interface GetVaultMetricsVariables {
-  vaultAddress: string;
+export interface VaultByAddressVariables {
+  address: string;
+  chainId?: number;
 }
 
 export interface GetMultipleVaultMetricsData {
-  vaults: Array<Pick<VaultMetrics, 
-    'id' | 'address' | 'name' | 'symbol' | 'netApy' | 'dailyNetApy' | 
-    'weeklyNetApy' | 'monthlyNetApy' | 'totalValueLocked' | 'lastUpdated' | 'riskScore'
-  >>;
+  vaults: Array<{
+    id: string;
+    address: string;
+    name: string;
+    symbol: string;
+    netApy: number;
+    dailyNetApy: number;
+    weeklyNetApy: number;
+    totalAssetsUsd: string;
+  }>;
 }
 
 export interface GetMultipleVaultMetricsVariables {

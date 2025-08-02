@@ -1,0 +1,16 @@
+export interface Vault {
+  address: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  description: string;
+  apy: () => Promise<number>;
+  tvl: () => Promise<number>;
+  riskLevel: 'low' | 'medium' | 'high';
+  chainId: number;
+  strategy: string;
+  notes?: string;
+  icon?: string;
+  color?: string;
+  untilUnlocked?: number | (() => Promise<number>);
+} 

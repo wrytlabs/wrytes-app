@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery, ApolloError } from '@apollo/client';
 import { 
   GET_VAULT_METRICS, 
-  GetVaultMetricsData, 
-  GetVaultMetricsVariables,
-  VaultMetrics
+  VaultByAddressData, 
+  VaultByAddressVariables,
+  VaultState
 } from '@/lib/graphql/queries/morpho';
 
 export interface MorphoVaultData {
@@ -32,12 +32,6 @@ export interface MorphoVaultData {
     description: string;
     riskLevel: string;
   };
-  /** Historical APY data for trends */
-  historicalData: Array<{
-    timestamp: string;
-    netApy: number;
-    tvl: string;
-  }>;
   /** Last updated timestamp */
   lastUpdated: Date;
   /** Loading state */
@@ -53,6 +47,8 @@ export interface MorphoVaultData {
 export interface UseMorphoVaultDataProps {
   /** Morpho vault address */
   vaultAddress?: string;
+  /** Chain ID for the vault */
+  chainId?: number;
   /** Whether to enable the query */
   enabled?: boolean;
   /** Refetch interval in milliseconds (default: 5 minutes) */
@@ -68,6 +64,7 @@ export interface UseMorphoVaultDataProps {
  */
 export const useMorphoVaultData = ({
   vaultAddress,
+  chainId,
   enabled = true,
   refetchInterval = 5 * 60 * 1000, // 5 minutes
   watchUpdates = false
@@ -83,16 +80,19 @@ export const useMorphoVaultData = ({
     refetch: apolloRefetch,
     startPolling,
     stopPolling
-  } = useQuery<GetVaultMetricsData, GetVaultMetricsVariables>(
+  } = useQuery<VaultByAddressData, VaultByAddressVariables>(
     GET_VAULT_METRICS,
     {
-      variables: { vaultAddress: vaultAddress || '' },
+      variables: { 
+        address: vaultAddress || '',
+        chainId: chainId || 1
+      },
       skip: !enabled || !vaultAddress,
       fetchPolicy: 'cache-and-network',
       errorPolicy: 'all',
       notifyOnNetworkStatusChange: true,
       onCompleted: (data) => {
-        if (data?.vault) {
+        if (data?.vaultByAddress?.state) {
           setLastUpdated(new Date());
         }
       },
@@ -134,8 +134,8 @@ export const useMorphoVaultData = ({
   };
 
   // Parse and format vault data
-  const parseVaultData = (vault: VaultMetrics | undefined): Partial<MorphoVaultData> => {
-    if (!vault) {
+  const parseVaultData = (state: VaultState | undefined): Partial<MorphoVaultData> => {
+    if (!state) {
       return {
         netApy: 0,
         dailyNetApy: 0,
@@ -144,32 +144,23 @@ export const useMorphoVaultData = ({
         tvl: '0',
         totalAssets: '0',
         totalSupply: '0',
-        historicalData: [],
         hasData: false
       };
     }
 
     return {
-      netApy: vault.netApy || 0,
-      dailyNetApy: vault.dailyNetApy || 0,
-      weeklyNetApy: vault.weeklyNetApy || 0,
-      monthlyNetApy: vault.monthlyNetApy || 0,
-      tvl: vault.totalValueLocked || '0',
-      totalAssets: vault.totalAssets || '0',
-      totalSupply: vault.totalSupply || '0',
-      riskScore: vault.riskScore,
-      utilizationRate: vault.utilizationRate,
-      strategy: vault.strategy,
-      historicalData: vault.metricsByTime?.map(metric => ({
-        timestamp: metric.timestamp,
-        netApy: metric.netApy,
-        tvl: metric.totalValueLocked
-      })) || [],
+      netApy: state.netApy || 0,
+      dailyNetApy: state.dailyNetApy || 0,
+      weeklyNetApy: state.weeklyNetApy || 0,
+      monthlyNetApy: state.avgNetApy || 0, // Using avgNetApy as monthly
+      tvl: state.totalAssetsUsd || '0',
+      totalAssets: state.totalAssets || '0',
+      totalSupply: state.totalSupply || '0',
       hasData: true
     };
   };
 
-  const parsedData = parseVaultData(data?.vault);
+  const parsedData = parseVaultData(data?.vaultByAddress?.state);
 
   return {
     ...parsedData,
@@ -177,7 +168,7 @@ export const useMorphoVaultData = ({
     loading,
     error: formatError(error),
     refetch,
-    hasData: !!data?.vault,
+    hasData: !!data?.vaultByAddress?.state,
     // Provide default values for required fields
     netApy: parsedData.netApy || 0,
     dailyNetApy: parsedData.dailyNetApy || 0,
@@ -186,7 +177,6 @@ export const useMorphoVaultData = ({
     tvl: parsedData.tvl || '0',
     totalAssets: parsedData.totalAssets || '0',
     totalSupply: parsedData.totalSupply || '0',
-    historicalData: parsedData.historicalData || []
   };
 };
 
