@@ -1,4 +1,5 @@
 export interface Vault {
+  kind: 'erc4626' | 'curve' | 'savings' | 'morpho';
   address: string;
   name: string;
   symbol: string;

@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
-import { useReadContract } from 'wagmi';
+import { readContract } from 'wagmi/actions';
+import { WAGMI_CONFIG } from '@/lib/web3/config';
+import { mainnet } from '@reown/appkit/networks';
 import { Vault } from '@/lib/vaults/types';
 
 // Standard ERC20 ABI for balanceOf function
@@ -20,6 +22,7 @@ export interface UseAssetTokenBalanceReturn {
   decimals: number;
   loading: boolean;
   error: string | null;
+  refresh: () => Promise<void>;
 }
 
 /**
@@ -35,38 +38,47 @@ export const useAssetTokenBalance = (vault: Vault): UseAssetTokenBalanceReturn =
   // Get the asset token configuration from the vault
   const assetToken = vault.asset;
 
-  // Use wagmi's useReadContract hook for real contract calls
-  const { data: tokenBalance, isLoading, error: contractError } = useReadContract({
-    address: assetToken?.address as `0x${string}`,
-    abi: ERC20_ABI,
-    functionName: 'balanceOf',
-    args: userAddress ? [userAddress as `0x${string}`] : undefined,
-    query: {
-      enabled: !!userAddress && !!assetToken?.address,
-    },
-  });
-
-  // Update balance when contract data changes
-  useEffect(() => {
-    if (tokenBalance !== undefined) {
-      setBalance(tokenBalance);
+  // Fetch balance using readContract
+  const fetchBalance = useCallback(async () => {
+    if (!userAddress || !assetToken?.address) {
+      setBalance(0n);
+      return;
     }
-  }, [tokenBalance]);
 
-  // Update loading state
-  useEffect(() => {
-    setLoading(isLoading);
-  }, [isLoading]);
-
-  // Update error state
-  useEffect(() => {
-    if (contractError) {
-      setError(contractError.message);
-    } else {
+    try {
+      setLoading(true);
       setError(null);
-    }
-  }, [contractError]);
 
+      const balanceResult = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: assetToken.address as `0x${string}`,
+        abi: ERC20_ABI,
+        functionName: 'balanceOf',
+        args: [userAddress as `0x${string}`],
+      });
+
+      setBalance(balanceResult as bigint);
+    } catch (error) {
+      console.error('Error fetching token balance:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch balance');
+      setBalance(0n);
+    } finally {
+      setLoading(false);
+    }
+  }, [userAddress, assetToken?.address]);
+
+  // Fetch balance when dependencies change
+  useEffect(() => {
+    fetchBalance();
+  }, [fetchBalance]);
+
+  console.log({
+    userAddress,
+    balance,
+    assetToken,
+    loading,
+    error,
+  });
 
   return {
     balance: balance || 0n,
@@ -74,5 +86,6 @@ export const useAssetTokenBalance = (vault: Vault): UseAssetTokenBalanceReturn =
     decimals: assetToken?.decimals || 18,
     loading,
     error,
+    refresh: fetchBalance,
   };
 };

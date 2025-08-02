@@ -4,6 +4,7 @@ import { WAGMI_CONFIG } from "@/lib/web3/config";
 import { mainnet } from "@reown/appkit/networks";
 
 export const daiUsdcUsdt: Vault = {
+  kind: 'curve',
   address: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
   name: 'DAI-USDC-USDT',
   symbol: 'DAI-USDC-USDT',

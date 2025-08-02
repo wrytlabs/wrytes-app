@@ -1,97 +1,55 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
-import { ConnectionController } from '@reown/appkit-controllers';
-
-// ERC4626 ABI - basic functions we need
-export const erc4626ABI = [
-  {
-    inputs: [],
-    name: 'totalAssets',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'totalSupply',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'account', type: 'address' }],
-    name: 'balanceOf',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'assets', type: 'uint256' }],
-    name: 'previewDeposit',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'shares', type: 'uint256' }],
-    name: 'previewWithdraw',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'assets', type: 'uint256' }],
-    name: 'deposit',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'shares', type: 'uint256' }],
-    name: 'withdraw',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'shares', type: 'uint256' }],
-    name: 'redeem',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [{ name: 'shares', type: 'uint256' }],
-    name: 'mint',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  }
-] as const;
+import { WAGMI_CONFIG } from '@/lib/web3/config';
+import { writeContract, readContract } from 'wagmi/actions';
+import { mainnet } from '@reown/appkit/networks';
+import { erc4626ABI } from './abi';
 
 export const useVaultActions = (vaultAddress: string) => {
   const { address: userAddress } = useAppKitAccount();
-  const [totalAssets, setTotalAssets] = useState<bigint>(0n); // Total underlying assets in the vault
-  const [totalSupply, setTotalSupply] = useState<bigint>(0n); // Total vault token supply (shares)
-  const [userShares, setUserShares] = useState<bigint>(0n); // User's vault token balance (shares)
+  const [totalAssets, setTotalAssets] = useState<bigint>(0n);
+  const [totalSupply, setTotalSupply] = useState<bigint>(0n);
+  const [userShares, setUserShares] = useState<bigint>(0n);
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
 
-  // Read vault data using Reown AppKit
+  // Read vault data using readContract
   const readContractData = useCallback(async () => {
     try {
-      // For now, we'll use mock data since Reown AppKit doesn't provide direct contract reading
-      // In a real implementation, you would use a separate RPC provider or API
-      setTotalAssets(1000000000000000000000n); // 1000 tokens
-      setTotalSupply(500000000000000000000n); // 500 shares
-      
-      if (userAddress) {
-        setUserShares(100000000000000000000n); // 100 shares for user
-      } else {
+      if (!userAddress) {
         setUserShares(0n);
+        return;
       }
+
+      // Read total assets
+      const totalAssetsResult = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
+        abi: erc4626ABI,
+        functionName: 'totalAssets',
+      });
+      setTotalAssets(totalAssetsResult as bigint);
+
+      // Read total supply
+      const totalSupplyResult = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
+        abi: erc4626ABI,
+        functionName: 'totalSupply',
+      });
+      setTotalSupply(totalSupplyResult as bigint);
+
+      // Read user shares
+      const userSharesResult = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
+        abi: erc4626ABI,
+        functionName: 'balanceOf',
+        args: [userAddress as `0x${string}`],
+      });
+      setUserShares(userSharesResult as bigint);
     } catch (error) {
       console.error('Error reading contract data:', error);
     }
@@ -106,17 +64,14 @@ export const useVaultActions = (vaultAddress: string) => {
   const handleDeposit = useCallback(async (amount: bigint) => {
     try {
       setIsDepositing(true);
-      const connectionController = ConnectionController._getClient();
-      if (!connectionController) throw new Error('No connection available');
 
-      // ERC4626 deposit: user deposits `amount` of asset tokens and receives vault tokens (shares)
-      const result = await connectionController.writeContract({
-        tokenAddress: vaultAddress as `0x${string}`,
-        fromAddress: userAddress as `0x${string}`,
-        method: 'call',
+      // ERC4626 deposit: (uint256 assets, address receiver)
+      const result = await writeContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
         abi: erc4626ABI,
-        args: [amount], // amount is in asset token units
-        chainNamespace: 'eip155'
+        functionName: 'deposit',
+        args: [amount, userAddress as `0x${string}`], // assets, receiver
       });
 
       if (result) {
@@ -137,18 +92,14 @@ export const useVaultActions = (vaultAddress: string) => {
   const handleWithdraw = useCallback(async (amount: bigint) => {
     try {
       setIsWithdrawing(true);
-      const connectionController = ConnectionController._getClient();
-      if (!connectionController) throw new Error('No connection available');
 
-      // ERC4626 withdraw: user specifies exact `amount` of asset tokens to withdraw
-      // Vault will burn the corresponding amount of shares
-      const result = await connectionController.writeContract({
-        tokenAddress: vaultAddress as `0x${string}`,
-        fromAddress: userAddress as `0x${string}`,
-        method: 'call',
+      // ERC4626 withdraw: (uint256 assets, address receiver, address owner)
+      const result = await writeContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
         abi: erc4626ABI,
-        args: [amount], // amount is in asset token units
-        chainNamespace: 'eip155'
+        functionName: 'withdraw',
+        args: [amount, userAddress as `0x${string}`, userAddress as `0x${string}`], // assets, receiver, owner
       });
 
       if (result) {
@@ -169,18 +120,14 @@ export const useVaultActions = (vaultAddress: string) => {
   const handleRedeem = useCallback(async (shares: bigint) => {
     try {
       setIsRedeeming(true);
-      const connectionController = ConnectionController._getClient();
-      if (!connectionController) throw new Error('No connection available');
 
-      // ERC4626 redeem: user specifies exact `shares` (vault tokens) to burn
-      // Vault will transfer the corresponding amount of asset tokens
-      const result = await connectionController.writeContract({
-        tokenAddress: vaultAddress as `0x${string}`,
-        fromAddress: userAddress as `0x${string}`,
-        method: 'call',
+      // ERC4626 redeem: (uint256 shares, address receiver, address owner)
+      const result = await writeContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
         abi: erc4626ABI,
-        args: [shares], // shares is in vault token units
-        chainNamespace: 'eip155'
+        functionName: 'redeem',
+        args: [shares, userAddress as `0x${string}`, userAddress as `0x${string}`], // shares, receiver, owner
       });
 
       if (result) {
@@ -201,18 +148,14 @@ export const useVaultActions = (vaultAddress: string) => {
   const handleMint = useCallback(async (shares: bigint) => {
     try {
       setIsMinting(true);
-      const connectionController = ConnectionController._getClient();
-      if (!connectionController) throw new Error('No connection available');
 
-      // ERC4626 mint: user specifies exact `shares` (vault tokens) to mint
-      // Vault will calculate and transfer the required amount of asset tokens from user
-      const result = await connectionController.writeContract({
-        tokenAddress: vaultAddress as `0x${string}`,
-        fromAddress: userAddress as `0x${string}`,
-        method: 'call',
+      // ERC4626 mint: (uint256 shares, address receiver)
+      const result = await writeContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
         abi: erc4626ABI,
-        args: [shares], // shares is in vault token units
-        chainNamespace: 'eip155'
+        functionName: 'mint',
+        args: [shares, userAddress as `0x${string}`], // shares, receiver
       });
 
       if (result) {
@@ -280,10 +223,14 @@ export const useVaultBalance = (vaultAddress: string) => {
     }
 
     try {
-      // For now, we'll use mock data since Reown AppKit doesn't provide direct contract reading
-      // In a real implementation, you would use a separate RPC provider or API to read from the vault contract
-      // Example: await readContract(client, { address: vaultAddress, abi: erc4626ABI, functionName: 'balanceOf', args: [userAddress] })
-      setBalance(100000000000000000000n); // 100 vault tokens (shares) for user
+      const balanceResult = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: vaultAddress as `0x${string}`,
+        abi: erc4626ABI,
+        functionName: 'balanceOf',
+        args: [userAddress as `0x${string}`],
+      });
+      setBalance(balanceResult as bigint);
     } catch (error) {
       console.error('Error fetching vault balance:', error);
       setBalance(0n);
@@ -308,10 +255,26 @@ export const useVaultAllowance = (vaultAddress: string, assetTokenAddress: strin
     }
 
     try {
-      // For now, we'll use mock data since Reown AppKit doesn't provide direct contract reading
-      // In a real implementation, you would use a separate RPC provider or API to read from the asset token contract
-      // Example: await readContract(client, { address: assetTokenAddress, abi: ERC20_ABI, functionName: 'allowance', args: [userAddress, vaultAddress] })
-      setAllowance(1000000000000000000000n); // 1000 tokens allowance
+      // Read allowance from the asset token contract
+      const allowanceResult = await readContract(WAGMI_CONFIG, {
+        chainId: mainnet.id,
+        address: assetTokenAddress as `0x${string}`,
+        abi: [
+          {
+            name: "allowance",
+            type: "function",
+            stateMutability: "view",
+            inputs: [
+              { internalType: "address", name: "owner", type: "address" },
+              { internalType: "address", name: "spender", type: "address" }
+            ],
+            outputs: [{ internalType: "uint256", name: "", type: "uint256" }]
+          }
+        ],
+        functionName: 'allowance',
+        args: [userAddress as `0x${string}`, vaultAddress as `0x${string}`],
+      });
+      setAllowance(allowanceResult as bigint);
     } catch (error) {
       console.error('Error fetching allowance:', error);
       setAllowance(0n);
@@ -323,4 +286,4 @@ export const useVaultAllowance = (vaultAddress: string, assetTokenAddress: strin
   }, [fetchAllowance]);
 
   return allowance;
-}; 
+};

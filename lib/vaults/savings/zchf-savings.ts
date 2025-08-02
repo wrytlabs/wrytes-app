@@ -5,6 +5,7 @@ import { formatUnits } from "viem";
 import { Vault } from "../types";
 
 export const zchfSavings: Vault = {
+  kind: 'savings',
   address: '0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC',
   name: 'ZCHF Savings',
   symbol: 'svZCHF',

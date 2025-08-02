@@ -44,9 +44,12 @@ The repository is **fully implemented and production-ready** with comprehensive 
 
 ### **Web3 & Blockchain:**
 - **Wagmi 2.16.1** - React hooks for Ethereum
-- **Viem 2.33.2** - TypeScript Ethereum library
-- **Reown AppKit 1.7.17** - Multi-wallet connection
 - **Apollo Client 3.13.9** - GraphQL data management
+- **Viem 2.33.2** - TypeScript Ethereum library
+- **WAGMI_CONFIG** - Centralized Wagmi configuration
+- **Reown AppKit** - Wallet connection
+- **Reown AppKit Networks** - Network definitions from @reown/appkit/networks
+- **readContract()** - Wagmi action for contract interactions
 
 ### **Forms & Validation:**
 - **React Hook Form 7.56.0** - Performant form library

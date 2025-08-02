@@ -4,6 +4,7 @@ import { WAGMI_CONFIG } from "@/lib/web3/config";
 import { mainnet } from "@reown/appkit/networks";
 
 export const usduUsdc: Vault = {
+  kind: 'curve',
   address: '0x771c91e699B4B23420de3F81dE2aA38C4041632b',
   name: 'USDU-USDC',
   symbol: 'USDU-USDC',

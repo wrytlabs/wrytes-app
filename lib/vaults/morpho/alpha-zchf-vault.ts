@@ -7,6 +7,7 @@ import { apolloClient } from "../../graphql/client";
 import { GET_VAULT_METRICS } from "../../graphql/queries/morpho";
 
 export const zchfVault: Vault = {
+  kind: 'morpho',
   address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
   name: 'ZCHF Vault',
   symbol: 'aZCHF',

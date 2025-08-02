@@ -6,7 +6,8 @@ import { Vault } from "../types";
 import { apolloClient } from "../../graphql/client";
 import { GET_VAULT_METRICS } from "../../graphql/queries/morpho";
 
-export const usduCoreVault: Vault = {
+export const usduCoreVault: Vault = { 
+  kind: 'morpho',
   address: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
   name: 'USDU Core',
   symbol: 'sUSDU',

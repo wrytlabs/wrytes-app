@@ -7,6 +7,7 @@ import { apolloClient } from "../../graphql/client";
 import { GET_VAULT_METRICS } from "../../graphql/queries/morpho";
 
 export const alphaUsdcCoreVault: Vault = {
+  kind: 'morpho',
   address: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
   name: 'Alpha USDC Core',
   symbol: 'fUSDC',
