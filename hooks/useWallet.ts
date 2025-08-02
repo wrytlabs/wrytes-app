@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useAppKitAccount, useDisconnect, useAppKitConnection } from '@reown/appkit-controllers/react'
+import { useAppKitAccount, useDisconnect } from '@reown/appkit-controllers/react'
 import { type Address } from 'viem'
 import { type WalletState } from '@/lib/auth/types'
-import { WAGMI_ADAPTER, WAGMI_CONFIG } from '@/lib/web3/config'
+import { WAGMI_CONFIG } from '@/lib/web3/config'
 
 /**
  * Hook for wallet connection management
@@ -10,7 +10,6 @@ import { WAGMI_ADAPTER, WAGMI_CONFIG } from '@/lib/web3/config'
  */
 export function useWallet() {
   const { address, isConnected } = useAppKitAccount()
-  const { isPending } = useAppKitConnection({});
   const { disconnect } = useDisconnect()
 
   const isConnecting = WAGMI_CONFIG.state.status === 'connecting'
@@ -28,12 +27,12 @@ export function useWallet() {
     setWalletState(prev => ({
       ...prev,
       isConnected,
-      isConnecting: isConnecting || isPending,
+      isConnecting,
       address: address as Address || null,
       chainId: WAGMI_CONFIG.getClient()?.chain.id as number || null,
       error: null,
     }))
-  }, [address, isConnected, isConnecting, isPending])
+  }, [address, isConnected, isConnecting])
 
   // Disconnect wallet
   const disconnectWallet = useCallback(async () => {
