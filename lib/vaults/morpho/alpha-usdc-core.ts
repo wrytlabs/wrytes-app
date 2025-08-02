@@ -11,6 +11,12 @@ export const alphaUsdcCoreVault: Vault = {
   name: 'Alpha USDC Core',
   symbol: 'fUSDC',
   decimals: 18,
+  asset: {
+    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    name: 'USDC',
+    symbol: 'USDC',
+    decimals: 6, 
+  },
   description: 'Earn yield on USDC deposits from native Morpho Vault',
   apy: async () => {
     try {

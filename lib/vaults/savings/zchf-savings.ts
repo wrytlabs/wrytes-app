@@ -9,6 +9,12 @@ export const zchfSavings: Vault = {
   name: 'ZCHF Savings',
   symbol: 'svZCHF',
   decimals: 18,
+  asset: {
+    address: '0xB58E61C3098d85632Df34EecfB899A1Ba80246cc', // ZCHF asset
+    name: 'Frankencoin',
+    symbol: 'ZCHF',
+    decimals: 18,
+  },
   description: 'Earn yield on ZCHF deposits from native savings module.',
   apy: async () => {
     try {

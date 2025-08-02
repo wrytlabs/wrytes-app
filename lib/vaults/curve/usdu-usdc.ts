@@ -8,6 +8,12 @@ export const usduUsdc: Vault = {
   name: 'USDU-USDC',
   symbol: 'USDU-USDC',
   decimals: 18,
+  asset: {
+    address: '0x5801D0e1C7D977D78E4890880B8E579eb4943276', // USDU as primary asset
+    name: 'USDU',
+    symbol: 'USDU',
+    decimals: 18,
+  },
   description: 'Yield farming with liquidity provision tokens from Curve',
   apy: async () => {
     try {

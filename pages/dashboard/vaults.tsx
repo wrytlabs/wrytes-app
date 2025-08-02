@@ -2,14 +2,14 @@ import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Vault } from '@/lib/vaults/types';
-import { DepositModal } from '@/components/features/Vaults/DepositModal';
-import { WithdrawModal } from '@/components/features/Vaults/WithdrawModal';
 import { VAULTS } from '@/lib/vaults/config';
 import Card from '@/components/ui/Card';
 import { PageHeader, Section } from '@/components/ui/Layout';
 import { SavingsOverview, VaultGrid } from '@/components/features/Vaults';
 import { useModal } from '@/hooks/ui/useModal';
 import { useToast } from '@/hooks/useToast';
+import { EnhancedDepositModal } from '@/components/features/Vaults/EnhancedDepositModal';
+import { WithdrawModal } from '@/components/features/Vaults/WithdrawModal';
 
 export default function VaultsPage() {
   const { success } = useToast();
@@ -95,7 +95,7 @@ export default function VaultsPage() {
 
       {/* Modals */}
       {depositModal.data && (
-        <DepositModal
+        <EnhancedDepositModal
           vault={depositModal.data}
           isOpen={depositModal.isOpen}
           onClose={depositModal.close}

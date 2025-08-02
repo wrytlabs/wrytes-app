@@ -8,6 +8,12 @@ export const daiUsdcUsdt: Vault = {
   name: 'DAI-USDC-USDT',
   symbol: 'DAI-USDC-USDT',
   decimals: 18,
+  asset: {
+    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC as primary asset
+    name: 'USDC',
+    symbol: 'USDC',
+    decimals: 6,
+  },
   description: 'Yield farming with liquidity provision tokens from Curve',
   apy: async () => {
     try {

@@ -11,6 +11,12 @@ export const zchfVault: Vault = {
   name: 'ZCHF Vault',
   symbol: 'aZCHF',
   decimals: 18,
+  asset: {
+    address: '0xb58e61c3098d85632df34eecfb899a1ed80921cb',
+    name: 'ZCHF',
+    symbol: 'ZCHF',
+    decimals: 18, 
+  },
   description: 'Earn yield on ZCHF deposits from native Morpho Vault',
   apy: async () => {
     try {

@@ -4,7 +4,6 @@ import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
 import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
-import { getAssetTokenForVault } from '@/lib/tokens/config';
 import { MultiStepModal } from '@/components/ui/Transaction';
 import { TransactionStep, TransactionStepResult } from '@/components/ui/Transaction/types';
 import { ColoredBadge } from '@/components/ui/Badge';
@@ -28,10 +27,9 @@ export const MultiStepWithdrawModal: React.FC<MultiStepWithdrawModalProps> = ({
   const [withdrawMode, setWithdrawMode] = useState<'assets' | 'shares'>('assets');
   
   const { withdraw, redeem, isWithdrawing, isRedeeming, calculateAssetsFromShares } = useVaultActions(vault.address);
-  const userBalance = useVaultBalance(vault.address);
+  const userBalance = useVaultBalance(vault.address); // This is the vault token balance (shares)
   const { untilUnlocked } = useVaultData(vault);
   
-  const assetToken = getAssetTokenForVault(vault.address);
   const isTimeLocked = untilUnlocked > 0;
 
   // Calculate estimated values
@@ -341,7 +339,7 @@ export const MultiStepWithdrawModal: React.FC<MultiStepWithdrawModalProps> = ({
               <div className="flex justify-between text-sm">
                 <span className="text-text-secondary">Estimated Receive:</span>
                 <span className="text-white font-medium">
-                  {calculateEstimatedAssets()} {assetToken?.symbol || 'Assets'}
+                  {calculateEstimatedAssets()} {vault.asset.symbol}
                 </span>
               </div>
               <div className="flex justify-between text-sm">

@@ -11,6 +11,12 @@ export const usduCoreVault: Vault = {
   name: 'USDU Core',
   symbol: 'sUSDU',
   decimals: 18,
+  asset: {
+    address: '0xdde3ec717f220fc6a29d6a4be73f91da5b718e55',
+    name: 'USDU',
+    symbol: 'USDU',
+    decimals: 18, 
+  },
   description: 'Earn yield on USDU deposits from native Morpho Vault',
   apy: async () => {
     try {

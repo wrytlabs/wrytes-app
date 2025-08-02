@@ -27,7 +27,7 @@ export const EnhancedDepositModal: React.FC<EnhancedDepositModalProps> = ({
   const [depositMode, setDepositMode] = useState<'deposit' | 'mint'>('deposit');
   
   const { deposit, mint, isDepositing, isMinting, calculateSharesFromAssets } = useVaultActions(vault.address);
-  const { balance: assetBalance, symbol: assetSymbol, decimals: assetDecimals, loading: balanceLoading } = useAssetTokenBalance(vault.address);
+  const { balance: assetBalance, symbol: assetSymbol, decimals: assetDecimals, loading: balanceLoading } = useAssetTokenBalance(vault);
   const { apy, loading: vaultLoading } = useVaultData(vault);
 
   const handleAmountChange = (value: string) => {

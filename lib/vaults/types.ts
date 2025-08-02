@@ -3,6 +3,12 @@ export interface Vault {
   name: string;
   symbol: string;
   decimals: number;
+  asset: {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
   description: string;
   apy: () => Promise<number>;
   tvl: () => Promise<number>;

@@ -5,7 +5,6 @@ import { useAssetTokenBalance } from '@/hooks/vaults/useAssetTokenBalance';
 import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';
-import { getAssetTokenForVault } from '@/lib/tokens/config';
 import { MultiStepModal } from '@/components/ui/Transaction';
 import { TransactionStep, TransactionStepResult } from '@/components/ui/Transaction/types';
 
@@ -26,22 +25,21 @@ export const MultiStepDepositModal: React.FC<MultiStepDepositModalProps> = ({
   const [depositMode, setDepositMode] = useState<'deposit' | 'mint'>('deposit');
   
   const { deposit, mint, isDepositing, isMinting } = useVaultActions(vault.address);
-  const { balance: assetBalance, symbol: assetSymbol, decimals: assetDecimals } = useAssetTokenBalance(vault.address);
+  const { balance: assetBalance, symbol: assetSymbol, decimals: assetDecimals } = useAssetTokenBalance(vault);
   const { apy } = useVaultData(vault);
   
-  const assetToken = getAssetTokenForVault(vault.address);
-  const allowance = useVaultAllowance(vault.address, assetToken?.address || '');
+  const allowance = useVaultAllowance(vault.address, vault.asset.address);
 
   // Calculate the required approval amount (with 10% buffer)
   const getApprovalAmount = () => {
-    if (!amount || !assetToken) return 0n;
+    if (!amount) return 0n;
     const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
     const amountInWei = parseUnits(amount, decimalsToUse);
     return (amountInWei * 110n) / 100n; // 10% buffer
   };
 
   const needsApproval = () => {
-    if (!amount || !assetToken) return false;
+    if (!amount) return false;
     const requiredAmount = getApprovalAmount();
     return allowance < requiredAmount;
   };
@@ -60,9 +58,6 @@ export const MultiStepDepositModal: React.FC<MultiStepDepositModalProps> = ({
         validation: async () => {
           if (!amount || parseFloat(amount) <= 0) {
             throw new Error('Invalid amount');
-          }
-          if (!assetToken) {
-            throw new Error('Asset token not found');
           }
           return true;
         },

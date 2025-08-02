@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
-import { getAssetTokenForVault } from '@/lib/tokens/config';
+import { Vault } from '@/lib/vaults/types';
 
 // Standard ERC20 ABI for balanceOf function (for future use)
 // const ERC20_ABI = [
@@ -24,16 +24,16 @@ export interface UseAssetTokenBalanceReturn {
 
 /**
  * Custom hook to fetch the underlying asset token balance for a vault
- * @param vaultAddress - The address of the vault
+ * @param vault - The vault object containing asset information
  */
-export const useAssetTokenBalance = (vaultAddress: string): UseAssetTokenBalanceReturn => {
+export const useAssetTokenBalance = (vault: Vault): UseAssetTokenBalanceReturn => {
   const { address: userAddress } = useAppKitAccount();
   const [balance, setBalance] = useState<bigint>(0n);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Get the asset token configuration for this vault
-  const assetToken = getAssetTokenForVault(vaultAddress);
+  // Get the asset token configuration from the vault
+  const assetToken = vault.asset;
 
   const fetchBalance = useCallback(async () => {
     if (!userAddress || !assetToken) {
@@ -49,6 +49,7 @@ export const useAssetTokenBalance = (vaultAddress: string): UseAssetTokenBalance
 
       // For now, we'll use mock data since Reown AppKit doesn't provide direct contract reading
       // In a real implementation, you would use a separate RPC provider or API to read from the token contract
+      // Example: await readContract(client, { address: assetToken.address, abi: ERC20_ABI, functionName: 'balanceOf', args: [userAddress] })
       
       // Mock different balances based on token type for demonstration
       let mockBalance: bigint;
