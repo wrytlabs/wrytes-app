@@ -8,7 +8,7 @@ import {
   faExternalLinkAlt
 } from '@fortawesome/free-solid-svg-icons';
 import Card from '@/components/ui/Card';
-import { SavingsVault, getRiskColor } from '@/lib/savings/config';
+import { SavingsVault } from '@/lib/savings/config';
 import { useVaultBalance } from '@/lib/web3/savings';
 import { getBlockExplorerUrl } from '@/lib/web3/config';
 import { formatUnits } from 'viem';
@@ -154,7 +154,7 @@ export const SavingsVaultCard: React.FC<SavingsVaultCardProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 mt-auto">
         <button
           onClick={() => onDeposit(vault)}
           className="flex-1 bg-accent-orange hover:bg-accent-orange/90 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
