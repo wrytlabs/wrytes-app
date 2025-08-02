@@ -46,3 +46,33 @@ export interface NavItem {
   href: string;
   external?: boolean;
 }
+
+// Re-export component types for convenience
+export type { StatCardProps, StatGridProps, StatCardSkeletonProps } from '@/components/ui/Stats';
+export type { ModalProps, ConfirmModalProps } from '@/components/ui/Modal';
+export type { PageHeaderProps, SectionProps, BreadcrumbProps } from '@/components/ui/Layout';
+export type { 
+  DashboardStatsProps, 
+  RecentActivityProps, 
+  ActivityItem 
+} from '@/components/features/Dashboard';
+export type { 
+  VaultCardProps, 
+  VaultGridProps, 
+  UseVaultDataReturn 
+} from '@/components/features/Vaults';
+export type {
+  UseContractReadProps,
+  UseContractReadReturn,
+  UseContractWriteProps,
+  UseContractWriteReturn,
+  UseBalanceProps,
+  UseBalanceReturn
+} from '@/hooks/web3';
+export type {
+  UseModalReturn,
+  UseLoadingStateReturn,
+  UseToastActionsReturn,
+  ToastOptions,
+  ToastType
+} from '@/hooks/ui';

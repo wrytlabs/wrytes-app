@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine, faBars, faTimes, faArrowUpRightFromSquare, faFolder, faChartBar } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTimes, faWallet, faLightbulb, faVault } from '@fortawesome/free-solid-svg-icons';
 import { COMPANY } from '@/lib/constants';
+import { useAuth } from '@/hooks/useAuth';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -11,6 +13,8 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { isAuthenticated, user, signOut } = useAuth();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -33,16 +37,30 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     closeMobileMenu();
   };
 
+  const handleCTAClick = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-dark text-text-primary">
       {/* Dashboard Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-dark-card border-b border-dark-surface">
-        <div className="container mx-auto px-4 py-4">
+        <div className="mx-auto px-16 py-3.5">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-4">
               <div className="w-8 h-8 bg-accent-orange rounded-lg flex items-center justify-center">
-                <FontAwesomeIcon icon={faChartLine} className="w-4 h-4 text-white" />
+                <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4 text-white" />
               </div>
               <Link href="/" className="text-xl font-bold text-white">
                 {COMPANY.name.split(' ')[0]}
@@ -51,15 +69,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             {/* Desktop CTA Button */}
-            <div className="hidden md:flex items-center">
-              <button
-                type="button"
-                onClick={() => alert('Connect Wallet clicked')}
-                className="inline-flex items-center gap-2 bg-accent-orange text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-sm font-medium"
-              >
-                Connect Wallet
-                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
-              </button>
+            <div className="hidden md:flex items-center gap-3">
+              {!isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={handleCTAClick}
+                  className="inline-flex items-center gap-2 bg-accent-orange text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-sm font-medium"
+                >
+                  <FontAwesomeIcon icon={faWallet} className="w-3 h-3" />
+                  Connect Wallet
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAuthModal(true)}
+                  className="inline-flex items-center gap-2 text-white hover:text-accent-orange transition-colors text-sm font-medium"
+                  title="Click to disconnect wallet"
+                >
+                  <div className="text-right">
+                    <p className="text-sm text-gray-400">Connected as</p>
+                    <p className="text-white font-mono text-sm hover:text-accent-orange transition-colors">
+                      {user?.walletAddress?.slice(0, 8)}...{user?.walletAddress?.slice(-6)}
+                    </p>
+                  </div>
+                </button>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -76,43 +110,56 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-4 pb-4 border-t border-dark-surface pt-4">
+            <div className="md:hidden mt-4 border-t border-dark-surface pt-4">
               <nav className="space-y-4">
                 <Link
                   href="/dashboard"
                   className="flex items-center gap-3 px-4 py-2 text-accent-orange bg-accent-orange/20 rounded-lg shadow-sm"
                   onClick={closeMobileMenu}
                 >
-                  <FontAwesomeIcon icon={faChartLine} className="w-4 h-4" />
+                  <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4" />
                   Overview
                 </Link>
                 <Link
-                  href="/dashboard/projects"
+                  href="/dashboard/vaults"
                   className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
                   onClick={closeMobileMenu}
                 >
-                  <FontAwesomeIcon icon={faFolder} className="w-4 h-4" />
-                  Projects
+                  <FontAwesomeIcon icon={faVault} className="w-4 h-4" />
+                  Vaults
                 </Link>
-                <Link
-                  href="/dashboard/analytics"
-                  className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
-                  onClick={closeMobileMenu}
-                >
-                  <FontAwesomeIcon icon={faChartBar} className="w-4 h-4" />
-                  Analytics
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    alert('Connect Wallet clicked');
-                    closeMobileMenu();
-                  }}
-                  className="inline-flex items-center gap-2 bg-accent-orange text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-sm font-medium"
-                >
-                  Connect Wallet
-                  <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
-                </button>
+                {!isAuthenticated ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleCTAClick();
+                      closeMobileMenu();
+                    }}
+                    className="inline-flex items-center gap-2 bg-accent-orange text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-sm font-medium"
+                  >
+                    <FontAwesomeIcon icon={faWallet} className="w-3 h-3" />
+                    Connect Wallet
+                  </button>
+                ) : (
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAuthModal(true);
+                        closeMobileMenu();
+                      }}
+                      className="inline-flex gap-2 mt-4 text-white hover:text-accent-orange transition-colors text-sm font-medium"
+                      title="Click to disconnect wallet"
+                    >
+                      <div className="text-right">
+                        <p className="text-sm text-gray-400">Connected as</p>
+                        <p className="text-white font-mono text-sm hover:text-accent-orange transition-colors">
+                          {user?.walletAddress?.slice(0, 8)}...{user?.walletAddress?.slice(-6)}
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+                )}
               </nav>
             </div>
           )}
@@ -141,28 +188,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   className="flex items-center gap-3 px-4 py-2 text-accent-orange bg-accent-orange/20 rounded-lg shadow-sm"
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faChartLine} className="w-4 h-4" />
+                  <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4" />
                   Overview
                 </Link>
               </li>
               <li>
                 <Link 
-                  href="/dashboard/projects" 
+                  href="/dashboard/vaults" 
                   className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faFolder} className="w-4 h-4" />
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/dashboard/analytics" 
-                  className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
-                  onClick={closeSidebar}
-                >
-                  <FontAwesomeIcon icon={faChartBar} className="w-4 h-4" />
-                  Analytics
+                  <FontAwesomeIcon icon={faVault} className="w-4 h-4" />
+                  Vaults
                 </Link>
               </li>
             </ul>
@@ -174,6 +211,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => setShowAuthModal(false)}
+      />
     </div>
   );
 } 
