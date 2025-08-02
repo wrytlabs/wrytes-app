@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes, faWallet, faLightbulb, faPiggyBank } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTimes, faWallet, faLightbulb, faVault } from '@fortawesome/free-solid-svg-icons';
 import { COMPANY } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -121,12 +121,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   Overview
                 </Link>
                 <Link
-                  href="/dashboard/savings"
+                  href="/dashboard/vaults"
                   className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
                   onClick={closeMobileMenu}
                 >
-                  <FontAwesomeIcon icon={faPiggyBank} className="w-4 h-4" />
-                  Savings
+                  <FontAwesomeIcon icon={faVault} className="w-4 h-4" />
+                  Vaults
                 </Link>
                 {!isAuthenticated ? (
                   <button
@@ -194,12 +194,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </li>
               <li>
                 <Link 
-                  href="/dashboard/savings" 
+                  href="/dashboard/vaults" 
                   className="flex items-center gap-3 px-4 py-2 text-text-secondary hover:text-accent-orange hover:bg-accent-orange/20 rounded-lg transition-all duration-200 hover:shadow-sm"
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faPiggyBank} className="w-4 h-4" />
-                  Savings
+                  <FontAwesomeIcon icon={faVault} className="w-4 h-4" />
+                  Vaults
                 </Link>
               </li>
             </ul>

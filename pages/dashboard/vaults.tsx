@@ -1,35 +1,35 @@
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { SavingsVault } from '@/lib/savings/config';
-import { DepositModal } from '@/components/savings/DepositModal';
-import { WithdrawModal } from '@/components/savings/WithdrawModal';
-import { SAVINGS_VAULTS } from '@/lib/savings/config';
+import { Vault } from '@/lib/vaults/config';
+import { DepositModal } from '@/components/features/Vaults/DepositModal';
+import { WithdrawModal } from '@/components/features/Vaults/WithdrawModal';
+import { VAULTS } from '@/lib/vaults/config';
 import Card from '@/components/ui/Card';
 import { PageHeader, Section } from '@/components/ui/Layout';
-import { SavingsOverview, VaultGrid } from '@/components/features/Savings';
+import { SavingsOverview, VaultGrid } from '@/components/features/Vaults';
 import { useModal } from '@/hooks/ui/useModal';
 import { useToast } from '@/hooks/useToast';
 
-export default function SavingsPage() {
+export default function VaultsPage() {
   const { success } = useToast();
-  const depositModal = useModal<SavingsVault>();
-  const withdrawModal = useModal<SavingsVault>();
+  const depositModal = useModal<Vault>();
+  const withdrawModal = useModal<Vault>();
 
-  const handleDeposit = (vault: SavingsVault) => {
+  const handleDeposit = (vault: Vault) => {
     depositModal.openWith(vault);
   };
 
-  const handleWithdraw = (vault: SavingsVault) => {
+  const handleWithdraw = (vault: Vault) => {
     withdrawModal.openWith(vault);
   };
 
-  const handleDepositSuccess = (vault: SavingsVault) => {
+  const handleDepositSuccess = (vault: Vault) => {
     depositModal.close();
     success(`Successfully deposited to ${vault.name}`);
   };
 
-  const handleWithdrawSuccess = (vault: SavingsVault) => {
+  const handleWithdrawSuccess = (vault: Vault) => {
     withdrawModal.close();
     success(`Successfully withdrew from ${vault.name}`);
   };
@@ -70,10 +70,10 @@ export default function SavingsPage() {
 
         <Section
           title="Available Vaults"
-          description={`${SAVINGS_VAULTS.length} vault${SAVINGS_VAULTS.length !== 1 ? 's' : ''} available`}
+          description={`${VAULTS.length} vault${VAULTS.length !== 1 ? 's' : ''} available`}
         >
           <VaultGrid
-            vaults={SAVINGS_VAULTS}
+            vaults={VAULTS}
             onDeposit={handleDeposit}
             onWithdraw={handleWithdraw}
           />

@@ -60,7 +60,7 @@ export type {
   VaultCardProps, 
   VaultGridProps, 
   UseVaultDataReturn 
-} from '@/components/features/Savings';
+} from '@/components/features/Vaults';
 export type {
   UseContractReadProps,
   UseContractReadReturn,

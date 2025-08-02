@@ -6,8 +6,9 @@ import {
   faShieldAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { StatGrid } from '@/components/ui/Stats';
-import { SAVINGS_VAULTS } from '@/lib/savings/config';
+import { VAULTS } from '@/lib/vaults/config';
 import { SavingsOverviewProps } from './types';
+import { formatCompactNumber } from '@/lib/utils/format-handling';
 
 /**
  * SavingsOverview - Stats overview for savings page
@@ -28,14 +29,13 @@ export const SavingsOverview: React.FC<SavingsOverviewProps> = ({
     const loadStats = async () => {
       try {
         setIsLoadingStats(true);
-        const apyValues = await Promise.all(SAVINGS_VAULTS.map(vault => vault.apy()));
-        const tvlValues = await Promise.all(SAVINGS_VAULTS.map(vault => vault.tvl()));
+        const apyValues = await Promise.all(VAULTS.map(vault => vault.apy()));
+        const tvlValues = await Promise.all(VAULTS.map(vault => vault.tvl()));
         
         const avgApy = apyValues.reduce((sum, apy) => sum + apy, 0) / apyValues.length;
-        const totalTvlValue = tvlValues.reduce((sum, tvl) => {
-          const tvlNum = parseFloat(tvl.replace(/[$,]/g, ''));
-          return sum + tvlNum;
-        }, 0);
+        const totalTvlValue = tvlValues.reduce((sum, tvl) => sum + tvl, 0);
+
+        console.log(avgApy, totalTvlValue);
         
         setTotalApy(avgApy);
         setTotalTvl(totalTvlValue);
@@ -54,14 +54,14 @@ export const SavingsOverview: React.FC<SavingsOverviewProps> = ({
     {
       icon: faPiggyBank,
       label: 'Total Value Locked',
-      value: `$${(totalTvl / 1000000).toFixed(1)}M`,
+      value: `$${formatCompactNumber(totalTvl, 0)}`,
       color: 'orange' as const,
       loading: isLoadingStats
     },
     {
       icon: faChartLine,
       label: 'Average APY',
-      value: `${totalApy.toFixed(1)}%`,
+      value: `${totalApy.toFixed(2)}%`,
       color: 'green' as const,
       loading: isLoadingStats
     },
@@ -74,7 +74,7 @@ export const SavingsOverview: React.FC<SavingsOverviewProps> = ({
     {
       icon: faShieldAlt,
       label: 'Active Vaults',
-      value: SAVINGS_VAULTS.length,
+      value: VAULTS.length,
       color: 'purple' as const
     }
   ];

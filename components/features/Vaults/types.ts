@@ -1,4 +1,4 @@
-import { SavingsVault } from '@/lib/savings/config';
+import { SavingsVault } from '@/lib/vaults/config';
 
 export interface SavingsOverviewProps {
   /** Custom stats data override */
@@ -79,6 +79,8 @@ export interface UseVaultDataReturn {
   apy: number;
   /** Total Value Locked */
   tvl: string;
+  /** Until unlocked in seconds (0 if not locked) */
+  untilUnlocked: number;
   /** Loading state */
   loading: boolean;
   /** Error state */

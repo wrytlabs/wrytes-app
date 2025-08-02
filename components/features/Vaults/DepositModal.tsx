@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { SavingsVault } from '@/lib/savings/config';
+import { SavingsVault } from '@/lib/vaults/config';
 import { useSavingsVault } from '@/lib/web3/savings';
 import { parseUnits, formatUnits } from 'viem';
 import { handleTransactionError } from '@/lib/utils/error-handling';

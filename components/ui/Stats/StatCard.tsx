@@ -60,8 +60,8 @@ export const StatCard: React.FC<StatCardProps> = ({
         <p className="text-text-secondary text-sm font-medium mb-1">
           {label}
         </p>
-        <div className="flex items-baseline gap-2">
-          <p className="text-3xl font-bold text-white">
+        <div>
+          <p className="text-3xl font-bold text-white mb-1">
             {formatValue(value)}
           </p>
           {trend && (

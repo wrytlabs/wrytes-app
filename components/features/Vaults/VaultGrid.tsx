@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { SAVINGS_VAULTS } from '@/lib/savings/config';
+import { VAULTS } from '@/lib/vaults/config';
 import { VaultCard } from './VaultCard';
 import { VaultGridProps } from './types';
 
@@ -9,7 +9,7 @@ import { VaultGridProps } from './types';
  * Handles responsive layout and loading states
  */
 export const VaultGrid: React.FC<VaultGridProps> = ({
-  vaults = SAVINGS_VAULTS,
+  vaults = VAULTS,
   loading = false,
   onDeposit,
   onWithdraw,

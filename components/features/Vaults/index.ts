@@ -2,7 +2,7 @@
 
 export { VaultCard } from './VaultCard';
 export { VaultGrid } from './VaultGrid';
-export { SavingsOverview } from './SavingsOverview';
+export { SavingsOverview } from './Overview';
 export type { 
   SavingsOverviewProps,
   OverviewStat,

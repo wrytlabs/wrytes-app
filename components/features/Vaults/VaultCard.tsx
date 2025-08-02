@@ -5,15 +5,17 @@ import {
   faShieldAlt, 
   faCoins,
   faVault,
-  faExternalLinkAlt
+  faExternalLinkAlt,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 import { cn } from '@/lib/utils';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
-import { useVaultData } from '@/hooks/business/useVaultData';
+import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { getBlockExplorerUrl } from '@/lib/web3/config';
 import { formatUnits } from 'viem';
 import { VaultCardProps } from './types';
+import { formatCompactNumber, formatDuration } from '@/lib/utils/format-handling';
 
 /**
  * VaultCard - Refactored vault display component
@@ -29,12 +31,12 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   onWithdraw,
   className
 }) => {
-  const { balance, apy, tvl, loading } = useVaultData(vault);
+  const { balance, apy, tvl, untilUnlocked, loading } = useVaultData(vault);
 
   // Vault icon mapping
   const getVaultIcon = (icon?: string) => {
     const iconMap = {
-      ethereum: faCoins,
+      strategy: faCoins,
       vault: faVault,
       coins: faCoins
     };
@@ -57,9 +59,11 @@ export const VaultCard: React.FC<VaultCardProps> = ({
     return formatUnits(balance, vault.decimals);
   };
 
+  console.log(untilUnlocked);
+
   return (
     <Card className={cn(
-      'relative overflow-hidden group hover:scale-105 transition-transform duration-300',
+      'relative overflow-hidden group hover:scale-105 transition-transform duration-300 flex flex-col h-full',
       className
     )}>
       {/* Header */}
@@ -77,7 +81,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               className="text-text-secondary text-sm hover:text-accent-orange transition-colors flex items-center gap-1"
             >
               {vault.symbol}
-              <FontAwesomeIcon icon={faExternalLinkAlt} className="w-3 h-3" />
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="w-3 h-3 pb-0.5" />
             </a>
           </div>
         </div>
@@ -95,7 +99,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           {loading ? (
             <div className="w-8 h-6 bg-dark-surface/30 rounded animate-pulse mx-auto"></div>
           ) : (
-            <p className="text-xl font-bold text-green-400">{apy}%</p>
+            <p className="text-xl font-bold text-green-400">{apy.toFixed(2)}%</p>
           )}
         </div>
         <div className="text-center p-3 bg-dark-surface/50 rounded-lg">
@@ -103,7 +107,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           {loading ? (
             <div className="w-12 h-6 bg-dark-surface/30 rounded animate-pulse mx-auto"></div>
           ) : (
-            <p className="text-lg font-semibold text-white">{tvl}</p>
+            <p className="text-lg font-semibold text-white">${formatCompactNumber(tvl)}</p>
           )}
         </div>
       </div>
@@ -118,17 +122,28 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         </div>
       )}
 
-      {/* Strategy Info */}
-      <div className="mb-4 p-3 bg-dark-surface/30 rounded-lg">
+      {/* Strategy Info - Fixed height */}
+      <div className="mb-4 p-3 bg-dark-surface/30 rounded-lg h-[80px] flex flex-col">
         <div className="flex items-center gap-2 mb-1">
           <FontAwesomeIcon icon={faShieldAlt} className="w-3 h-3 text-text-secondary" />
           <p className="text-text-secondary text-xs font-medium">Strategy</p>
         </div>
-        <p className="text-text-secondary text-xs">{vault.strategy}</p>
+        <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.strategy}</p>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 mt-auto">
+      {/* Notes - Optional */}
+      {vault.notes && (
+        <div className="mb-4 p-3 bg-dark-surface/30 rounded-lg h-[80px] flex flex-col">
+          <div className="flex items-center gap-2 mb-1">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="w-3 h-3 text-text-secondary" />
+            <p className="text-text-secondary text-xs font-medium">Notes</p>
+          </div>
+          <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.notes}</p>
+        </div>
+      )}
+
+      {/* Action Buttons - Always at bottom */}
+      <div className="flex gap-3 mt-auto pt-4">
         <Button
           variant="primary"
           onClick={() => onDeposit?.(vault)}
@@ -139,10 +154,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         <Button
           variant="outline"
           onClick={() => onWithdraw?.(vault)}
-          disabled={balance === 0n}
+          disabled={balance === 0n || untilUnlocked > 0}
           className="flex-1"
         >
-          Withdraw
+          {untilUnlocked > 0 ? `In ${formatDuration(untilUnlocked)}` : 'Withdraw'}
         </Button>
       </div>
     </Card>

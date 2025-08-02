@@ -65,3 +65,40 @@ export const formatCompactNumber = (value: string | number, decimals = 2): strin
 		return amount.toFixed(precision).replace(/\.?0+$/, '');
 	}
 };
+
+// Date formatting functions
+export const formatDateLocale = (timestamp: number | bigint): string => {
+	const date = dayjs(Number(timestamp) * 1000);
+	return date.toISOString().replaceAll('-', '').replaceAll(':', '').replaceAll('.', '');
+};
+
+export const formatDate = (timestamp: number | bigint): string => {
+	const date = dayjs(Number(timestamp) * 1000);
+	return date.format('YYYY-MM-DD HH:mm');
+};
+
+export const formatDateDuration = (timestamp: number | bigint): string => {
+	const date = dayjs(Number(timestamp) * 1000);
+	return dayjs.duration(date.toISOString()).humanize(true);
+};
+
+export const formatDuration = (time: number | bigint): string => {
+	const duration = dayjs.duration(Number(time), 'seconds').humanize(false);
+	return time > 0 ? duration : '-';
+};
+
+export const isDateExpired = (timestamp: number | bigint): boolean => {
+	const date = dayjs(Number(timestamp) * 1000);
+	return date.isBefore();
+};
+
+export const isDateUpcoming = (timestamp: number | bigint): boolean => {
+	const date = dayjs(Number(timestamp) * 1000);
+	return date.isAfter();
+};
+
+// String formatting functions
+export function capLetter(data: string) {
+	return data.charAt(0).toUpperCase() + data.slice(1);
+}
+
