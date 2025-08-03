@@ -1594,7 +1594,7 @@
   resolved "https://registry.yarnpkg.com/@react-types/shared/-/shared-3.31.0.tgz#014be53096c3728f0684550430807e9962365c15"
   integrity sha512-ua5U6V66gDcbLZe4P2QeyNgPp4YWD1ymGA6j3n+s8CGExtrCPe64v+g4mvpT8Bnb985R96e4zFT61+m0YCwqMg==
 
-"@reown/appkit-adapter-wagmi@^1.7.17":
+"@reown/appkit-adapter-wagmi@^1.6.4":
   version "1.7.17"
   resolved "https://registry.yarnpkg.com/@reown/appkit-adapter-wagmi/-/appkit-adapter-wagmi-1.7.17.tgz#396b350dbb1b1ec791642c21079fb11ad127c326"
   integrity sha512-QGAomIvnHKA5mISDISKSJESdWGd4LE6c3cJZ46y29Ta+irmALd90nDQQ0nV9FThNXM8te6qNF4coMNwRn4WuYg==
@@ -1629,7 +1629,7 @@
     dayjs "1.11.13"
     viem ">=2.29.0"
 
-"@reown/appkit-controllers@1.7.17", "@reown/appkit-controllers@^1.7.17":
+"@reown/appkit-controllers@1.7.17":
   version "1.7.17"
   resolved "https://registry.yarnpkg.com/@reown/appkit-controllers/-/appkit-controllers-1.7.17.tgz#5c355218307bcead4924b954a53ab8f7f3aa1d06"
   integrity sha512-rYgXf3nAzxgu1s10rSfibpAqnm/Y3wyY47v6BpN98Y57NArWqxYXhBtdRQL1ZKpSTV9OmrzwMxPNKePOmFgxZQ==
@@ -1799,7 +1799,7 @@
     "@walletconnect/logger" "2.1.2"
     zod "3.22.4"
 
-"@reown/appkit@1.7.17", "@reown/appkit@^1.7.17":
+"@reown/appkit@1.7.17", "@reown/appkit@^1.6.4":
   version "1.7.17"
   resolved "https://registry.yarnpkg.com/@reown/appkit/-/appkit-1.7.17.tgz#34cf4e4f364efc99241c89f54dc98ce14e799703"
   integrity sha512-gME4Ery7HGTNEGzLckWP7qfD2ec/1UEuUkcGskGeisUnGcAsPH9z2deFFX1szialsgzTNU4/H5ZGdWqZQA8p2w==

@@ -63,11 +63,6 @@ export const WAGMI_ADAPTER = new WagmiAdapter({
     safe({
       allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/, /dhedge.org$/],
     }),
-    walletConnect({ 
-      projectId: CONFIG.wagmiId, 
-      metadata: WAGMI_METADATA, 
-      showQrModal: false 
-    }),
     injected({ shimDisconnect: true }),
     coinbaseWallet({
       appName: WAGMI_METADATA.name,

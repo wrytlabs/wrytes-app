@@ -79,7 +79,7 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
         <div className="flex items-center justify-between p-4 border-b border-gray-500/20">
           <div className="flex items-center gap-2">
             <FontAwesomeIcon icon={faHistory} className="w-4 h-4 text-accent-orange" />
-            <h3 className="text-lg font-semibold text-white">Transaction Queue</h3>
+            <h3 className="text-lg font-semibold text-white">Queue</h3>
             {transactions.length > 0 && (
               <span className="px-2 py-0.5 text-xs bg-accent-orange/20 text-accent-orange rounded-full">
                 {transactions.length}
