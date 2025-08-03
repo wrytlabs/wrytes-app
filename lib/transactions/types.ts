@@ -1,4 +1,47 @@
-import { QueueTransaction } from '@/contexts/TransactionQueueContext';
+export type TransactionStatus = 'pending' | 'approving' | 'executing' | 'completed' | 'failed' | 'cancelled';
+
+export interface QueueTransaction {
+  id: string;
+  title: string;
+  subtitle: string;
+  contractAddress: string;
+  chainId: number;
+  type: 'approve' | 'deposit' | 'withdraw' | 'mint' | 'redeem' | 'transfer' | 'swap' | 'custom';
+  status: TransactionStatus;
+  txHash?: string;
+  error?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  progress?: number; // 0-100
+  // Transaction parameters (generic)
+  targetContract?: string;
+  functionName?: string;
+  args?: readonly unknown[];
+  value?: string;
+  gasLimit?: string;
+  // Optional metadata
+  amount?: string;
+  symbol?: string;
+  icon?: string;
+}
+
+export interface TransactionQueueContextType {
+  transactions: QueueTransaction[];
+  activeTransactionId: string | null;
+  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>) => string;
+  updateTransaction: (id: string, updates: Partial<QueueTransaction>) => void;
+  removeTransaction: (id: string) => void;
+  retryTransaction: (id: string) => void;
+  cancelTransaction: (id: string) => void;
+  clearCompleted: () => void;
+  getTransactionById: (id: string) => QueueTransaction | undefined;
+  getPendingCount: () => number;
+  getActiveTransaction: () => QueueTransaction | null;
+  executeTransaction: (id: string) => Promise<void>;
+  executeBatch: (ids: string[]) => Promise<void>;
+  executeAll: () => Promise<void>;
+  isExecuting: boolean;
+}
 
 export interface PreparedTransaction {
   target: `0x${string}`;

@@ -1,52 +1,9 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
 import { TransactionExecutor } from '@/lib/transactions/TransactionExecutor';
-
-export type TransactionStatus = 'pending' | 'approving' | 'executing' | 'completed' | 'failed' | 'cancelled';
-
-export interface QueueTransaction {
-  id: string;
-  title: string;
-  subtitle: string;
-  contractAddress: string;
-  chainId: number;
-  type: 'approve' | 'deposit' | 'withdraw' | 'mint' | 'redeem' | 'transfer' | 'swap' | 'custom';
-  status: TransactionStatus;
-  txHash?: string;
-  error?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  progress?: number; // 0-100
-  // Transaction parameters (generic)
-  targetContract?: string;
-  functionName?: string;
-  args?: readonly unknown[];
-  value?: string;
-  gasLimit?: string;
-  // Optional metadata
-  amount?: string;
-  symbol?: string;
-  icon?: string;
-}
-
-export interface TransactionQueueContextType {
-  transactions: QueueTransaction[];
-  activeTransactionId: string | null;
-  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>) => string;
-  updateTransaction: (id: string, updates: Partial<QueueTransaction>) => void;
-  removeTransaction: (id: string) => void;
-  retryTransaction: (id: string) => void;
-  cancelTransaction: (id: string) => void;
-  clearCompleted: () => void;
-  getTransactionById: (id: string) => QueueTransaction | undefined;
-  getPendingCount: () => number;
-  getActiveTransaction: () => QueueTransaction | null;
-  executeTransaction: (id: string) => Promise<void>;
-  executeBatch: (ids: string[]) => Promise<void>;
-  executeAll: () => Promise<void>;
-  isExecuting: boolean;
-}
+import { TransactionQueueStorage } from '@/lib/transactions/storage';
+import { QueueTransaction, TransactionQueueContextType } from '@/lib/transactions/types';
 
 const TransactionQueueContext = createContext<TransactionQueueContextType | undefined>(undefined);
 
@@ -169,9 +126,36 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     },
   ];
 
-  const [transactions, setTransactions] = useState<QueueTransaction[]>(mockTransactions);
-  const [activeTransactionId, setActiveTransactionId] = useState<string | null>(null);
+  // Initialize with stored data or mock data
+  const [transactions, setTransactions] = useState<QueueTransaction[]>(() => {
+    // Load from localStorage on mount
+    const stored = TransactionQueueStorage.loadTransactions();
+    return stored.length > 0 ? stored : mockTransactions;
+  });
+
+  const [activeTransactionId, setActiveTransactionId] = useState<string | null>(() => {
+    // Load from localStorage on mount
+    return TransactionQueueStorage.loadActiveTransactionId();
+  });
+
   const [isExecuting, setIsExecuting] = useState(false);
+
+  // Save to localStorage whenever transactions change
+  const saveTransactions = useCallback((newTransactions: QueueTransaction[]) => {
+    setTransactions(newTransactions);
+    TransactionQueueStorage.saveTransactions(newTransactions);
+  }, []);
+
+  // Save active transaction ID whenever it changes
+  const saveActiveTransactionId = useCallback((id: string | null) => {
+    setActiveTransactionId(id);
+    TransactionQueueStorage.saveActiveTransactionId(id);
+  }, []);
+
+  // Clean up old transactions on mount
+  useEffect(() => {
+    TransactionQueueStorage.cleanupOldTransactions();
+  }, []);
 
   const addTransaction = useCallback((
     transactionData: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>
@@ -188,48 +172,47 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       progress: 0,
     };
 
-    setTransactions(prev => [...prev, newTransaction]);
+    saveTransactions([...transactions, newTransaction]);
     
     // Auto-start if no active transaction
     if (!activeTransactionId) {
-      setActiveTransactionId(id);
+      saveActiveTransactionId(id);
     }
     
     return id;
-  }, [activeTransactionId]);
+  }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId]);
 
   const updateTransaction = useCallback((id: string, updates: Partial<QueueTransaction>) => {
-    setTransactions(prev =>
-      prev.map(tx =>
-        tx.id === id
-          ? { ...tx, ...updates, updatedAt: new Date() }
-          : tx
-      )
+    const updated = transactions.map(tx =>
+      tx.id === id
+        ? { ...tx, ...updates, updatedAt: new Date() }
+        : tx
     );
-  }, []);
+    saveTransactions(updated);
+  }, [transactions, saveTransactions]);
 
   const removeTransaction = useCallback((id: string) => {
-    setTransactions(prev => prev.filter(tx => tx.id !== id));
+    const filtered = transactions.filter(tx => tx.id !== id);
+    saveTransactions(filtered);
     
     if (activeTransactionId === id) {
-      setActiveTransactionId(null);
+      saveActiveTransactionId(null);
     }
-  }, [activeTransactionId]);
+  }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId]);
 
   const retryTransaction = useCallback((id: string) => {
     updateTransaction(id, {
       status: 'pending',
       error: undefined,
       txHash: undefined,
-      approvalTxHash: undefined,
       progress: 0,
     });
     
     // Set as active if no current active transaction
     if (!activeTransactionId) {
-      setActiveTransactionId(id);
+      saveActiveTransactionId(id);
     }
-  }, [updateTransaction, activeTransactionId]);
+  }, [updateTransaction, activeTransactionId, saveActiveTransactionId]);
 
   const cancelTransaction = useCallback((id: string) => {
     updateTransaction(id, {
@@ -238,15 +221,14 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     });
     
     if (activeTransactionId === id) {
-      setActiveTransactionId(null);
+      saveActiveTransactionId(null);
     }
-  }, [updateTransaction, activeTransactionId]);
+  }, [updateTransaction, activeTransactionId, saveActiveTransactionId]);
 
   const clearCompleted = useCallback(() => {
-    setTransactions(prev =>
-      prev.filter(tx => tx.status !== 'completed' && tx.status !== 'failed' && tx.status !== 'cancelled')
-    );
-  }, []);
+    const filtered = transactions.filter(tx => tx.status !== 'completed' && tx.status !== 'failed' && tx.status !== 'cancelled');
+    saveTransactions(filtered);
+  }, [transactions, saveTransactions]);
 
   const getTransactionById = useCallback((id: string) => {
     return transactions.find(tx => tx.id === id);
@@ -282,7 +264,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
 
     try {
       setIsExecuting(true);
-      setActiveTransactionId(id);
+      saveActiveTransactionId(id);
 
       // Update transaction status to executing
       updateTransaction(id, {
@@ -292,15 +274,15 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       });
 
       // Check if approval is needed
-      if (transaction.needsApproval) {
+      if (transaction.type === 'approve') {
         updateTransaction(id, {
           status: 'approving',
           progress: 20,
         });
 
-        const approvalNeeded = await executor.checkApprovalNeeded(transaction, userAddress);
+        const approvalNeeded = await executor.checkApprovalNeeded(transaction, userAddress as `0x${string}`);
         if (approvalNeeded) {
-          const approvalResult = await executor.executeApproval(approvalNeeded, userAddress, transaction.chainId);
+          const approvalResult = await executor.executeApproval(approvalNeeded, userAddress as `0x${string}`, transaction.chainId);
           
           if (!approvalResult.success) {
             updateTransaction(id, {
@@ -312,7 +294,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
           }
 
           updateTransaction(id, {
-            approvalTxHash: approvalResult.txHash,
+            txHash: approvalResult.txHash,
             progress: 50,
           });
         }
@@ -324,7 +306,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
         progress: 70,
       });
 
-      const result = await executor.executeTransaction(transaction, userAddress);
+      const result = await executor.executeTransaction(transaction, userAddress as `0x${string}`);
 
       if (result.success) {
         updateTransaction(id, {
@@ -347,9 +329,9 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       });
     } finally {
       setIsExecuting(false);
-      setActiveTransactionId(null);
+      saveActiveTransactionId(null);
     }
-  }, [userAddress, executor, getTransactionById, updateTransaction]);
+  }, [userAddress, executor, getTransactionById, updateTransaction, saveActiveTransactionId]);
 
   const executeBatch = useCallback(async (ids: string[]) => {
     if (!userAddress) {
@@ -383,7 +365,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       // Execute transactions sequentially
       const results = await executor.executeSequential(
         transactionsToExecute,
-        userAddress,
+        userAddress as `0x${string}`,
         (completed, total) => {
           // Update progress for all executing transactions
           const progressPerTx = 90 / total;
@@ -424,9 +406,9 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       });
     } finally {
       setIsExecuting(false);
-      setActiveTransactionId(null);
+      saveActiveTransactionId(null);
     }
-  }, [userAddress, executor, getTransactionById, updateTransaction]);
+  }, [userAddress, executor, getTransactionById, updateTransaction, saveActiveTransactionId]);
 
   const executeAll = useCallback(async () => {
     const pendingIds = transactions
