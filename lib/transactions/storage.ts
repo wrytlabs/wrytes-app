@@ -4,12 +4,39 @@ const TRANSACTION_QUEUE_KEY = 'wrytes_transaction_queue';
 const ACTIVE_TRANSACTION_KEY = 'wrytes_active_transaction';
 
 export class TransactionQueueStorage {
+  // Helper to serialize BigInt values to strings for localStorage
+  private static serializeBigInt(value: bigint): string {
+    return value.toString();
+  }
+
+  // Helper to deserialize strings back to BigInt values
+  private static deserializeBigInt(value: string): bigint {
+    return BigInt(value);
+  }
+
+  // Helper to check if a string represents a BigInt value
+  private static isBigIntString(value: string): boolean {
+    return /^\d+n$/.test(value);
+  }
+
   // Helper to serialize dates for localStorage
   private static serializeTransaction(transaction: QueueTransaction): QueueTransaction {
     return {
       ...transaction,
       createdAt: new Date(transaction.createdAt),
       updatedAt: new Date(transaction.updatedAt),
+      // Handle BigInt values in args if they exist
+      args: transaction.args?.map(arg => 
+        typeof arg === 'bigint' ? this.serializeBigInt(arg) : arg
+      ),
+      // Handle BigInt values in value field (if it's already a BigInt)
+      value: transaction.value && typeof transaction.value === 'bigint' 
+        ? this.serializeBigInt(transaction.value) 
+        : transaction.value,
+      // Handle BigInt values in gasLimit field (if it's already a BigInt)
+      gasLimit: transaction.gasLimit && typeof transaction.gasLimit === 'bigint'
+        ? this.serializeBigInt(transaction.gasLimit)
+        : transaction.gasLimit,
     };
   }
 
@@ -19,6 +46,18 @@ export class TransactionQueueStorage {
       ...data,
       createdAt: new Date(data.createdAt),
       updatedAt: new Date(data.updatedAt),
+      // Handle BigInt values in args if they exist
+      args: data.args?.map(arg => 
+        typeof arg === 'string' && this.isBigIntString(arg) ? this.deserializeBigInt(arg) : arg
+      ),
+      // Handle BigInt values in value field
+      value: data.value && typeof data.value === 'string' && this.isBigIntString(data.value) 
+        ? this.deserializeBigInt(data.value).toString() 
+        : data.value,
+      // Handle BigInt values in gasLimit field
+      gasLimit: data.gasLimit && typeof data.gasLimit === 'string' && this.isBigIntString(data.gasLimit)
+        ? this.deserializeBigInt(data.gasLimit).toString()
+        : data.gasLimit,
     };
   }
 
@@ -98,7 +137,7 @@ export class TransactionQueueStorage {
     
     const filtered = transactions.filter(tx => {
       const isOld = tx.updatedAt < oneDayAgo;
-      const isCompleted = tx.status === 'completed' || tx.status === 'failed' || tx.status === 'cancelled';
+      const isCompleted = tx.status === 'completed' || tx.status === 'failed';
       return !(isOld && isCompleted);
     });
 

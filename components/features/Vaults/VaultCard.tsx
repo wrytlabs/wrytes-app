@@ -112,11 +112,20 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       </div>
 
       {/* User Balance */}
-      <div className="mb-4 p-3 bg-accent-orange/10 rounded-lg border border-accent-orange/20">
-        <p className="text-text-secondary text-xs">Your Balance</p>
-        <p className="text-white font-semibold">
-          {formatCompactNumber(formatUnits(balance, vault.decimals))} {vault.symbol}
-        </p>
+      <div className="flex flex-col gap-2 mb-4 p-3 bg-accent-orange/10 rounded-lg border border-accent-orange/20">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-text-secondary text-xs">Your Shares</p>
+          <p className="text-right text-white font-semibold">
+            {formatCompactNumber(formatUnits(balance, vault.decimals))} {vault.symbol}
+          </p>
+        </div>
+        <div className="flex items-center justify-between gap-2 mt-1">
+          <p className="text-text-secondary text-xs">Your Value</p>
+          <p className="text-right text-white font-semibold">
+            {/* TODO: needs correct usd value. adjust if price feature is available */}
+            {`$${formatCompactNumber(formatUnits(balance, vault.decimals))}`}
+          </p>
+        </div>
       </div>
 
       {/* Strategy Info and Notes - Fixed height */}

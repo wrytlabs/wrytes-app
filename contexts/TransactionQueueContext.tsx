@@ -55,55 +55,10 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
   }, []);
 
   const addTransaction = useCallback(async (
-    transactionData: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>
+    transactionData: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' >
   ): Promise<string> => {
     const now = new Date();
     const transactionsToAdd: QueueTransaction[] = [];
-
-    // Check if auto-approval is needed
-    if (transactionData.approvalConfig && userAddress) {
-      try {
-        const approvalNeeded = await executor.checkApprovalNeeded({
-          ...transactionData,
-          id: 'temp', // temporary ID for checking
-          status: 'pending',
-          createdAt: now,
-          updatedAt: now,
-          progress: 0,
-        } as QueueTransaction, userAddress as `0x${string}`);
-
-        if (approvalNeeded) {
-          // Create approval transaction
-          const approvalId = uuidv4();
-          const approvalTx: QueueTransaction = {
-            id: approvalId,
-            title: `Approve ${transactionData.symbol || 'Token'}`,
-            subtitle: `For ${transactionData.title}`,
-            chainId: transactionData.chainId,
-            type: 'approve',
-            status: 'pending',
-            createdAt: now,
-            updatedAt: now,
-            progress: 0,
-            contractAddress: approvalNeeded.tokenAddress,
-            functionName: 'approve',
-            abi: erc20Abi,
-            args: [
-              approvalNeeded.spenderAddress, 
-              approvalNeeded.requiredAllowance * 110n / 100n // Add 10% buffer
-            ],
-            tokenAddress: approvalNeeded.tokenAddress,
-            tokenDecimals: transactionData.tokenDecimals || 18,
-            amount: transactionData.approvalConfig.amount,
-            symbol: transactionData.symbol,
-          };
-          
-          transactionsToAdd.push(approvalTx);
-        }
-      } catch (error) {
-        console.warn('Could not check approval requirement, proceeding without approval:', error);
-      }
-    }
 
     // Create the main transaction
     const mainId = uuidv4();
@@ -113,7 +68,6 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       status: 'pending',
       createdAt: now,
       updatedAt: now,
-      progress: 0,
     };
 
     transactionsToAdd.push(mainTransaction);
@@ -152,7 +106,6 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       status: 'pending',
       error: undefined,
       txHash: undefined,
-      progress: 0,
     });
     
     // Set as active if no current active transaction
@@ -161,19 +114,10 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     }
   }, [updateTransaction, activeTransactionId, saveActiveTransactionId]);
 
-  const cancelTransaction = useCallback((id: string) => {
-    updateTransaction(id, {
-      status: 'cancelled',
-      progress: 0,
-    });
-    
-    if (activeTransactionId === id) {
-      saveActiveTransactionId(null);
-    }
-  }, [updateTransaction, activeTransactionId, saveActiveTransactionId]);
+  const cancelTransaction = useCallback(removeTransaction, [removeTransaction]);
 
   const clearCompleted = useCallback(() => {
-    const filtered = transactions.filter(tx => tx.status !== 'completed' && tx.status !== 'failed' && tx.status !== 'cancelled');
+    const filtered = transactions.filter(tx => tx.status !== 'completed' && tx.status !== 'failed');
     saveTransactions(filtered);
   }, [transactions, saveTransactions]);
 
@@ -183,7 +127,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
 
   const getPendingCount = useCallback(() => {
     return transactions.filter(tx => 
-      tx.status === 'pending' || tx.status === 'approving' || tx.status === 'executing'
+      tx.status === 'pending' || tx.status === 'executing'
     ).length;
   }, [transactions]);
 
@@ -216,41 +160,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       // Update transaction status to executing
       updateTransaction(id, {
         status: 'executing',
-        progress: 10,
         error: undefined,
-      });
-
-      // Check if approval is needed
-      if (transaction.type === 'approve') {
-        updateTransaction(id, {
-          status: 'approving',
-          progress: 20,
-        });
-
-        const approvalNeeded = await executor.checkApprovalNeeded(transaction, userAddress as `0x${string}`);
-        if (approvalNeeded) {
-          const approvalResult = await executor.executeApproval(approvalNeeded, userAddress as `0x${string}`, transaction.chainId);
-          
-          if (!approvalResult.success) {
-            updateTransaction(id, {
-              status: 'failed',
-              error: `Approval failed: ${approvalResult.error}`,
-              progress: 0,
-            });
-            return;
-          }
-
-          updateTransaction(id, {
-            txHash: approvalResult.txHash,
-            progress: 50,
-          });
-        }
-      }
-
-      // Execute the main transaction
-      updateTransaction(id, {
-        status: 'executing',
-        progress: 70,
       });
 
       const result = await executor.executeTransaction(transaction, userAddress as `0x${string}`);
@@ -258,21 +168,18 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       if (result.success) {
         updateTransaction(id, {
           status: 'completed',
-          progress: 100,
           txHash: result.txHash,
         });
       } else {
         updateTransaction(id, {
           status: 'failed',
           error: result.error,
-          progress: 0,
         });
       }
     } catch (error) {
       updateTransaction(id, {
         status: 'failed',
         error: error instanceof Error ? error.message : 'Unknown error occurred',
-        progress: 0,
       });
     } finally {
       setIsExecuting(false);
@@ -304,7 +211,6 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       transactionsToExecute.forEach(tx => {
         updateTransaction(tx.id, {
           status: 'executing',
-          progress: 5,
           error: undefined,
         });
       });
@@ -312,18 +218,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       // Execute transactions sequentially
       const results = await executor.executeSequential(
         transactionsToExecute,
-        userAddress as `0x${string}`,
-        (completed, total) => {
-          // Update progress for all executing transactions
-          const progressPerTx = 90 / total;
-          transactionsToExecute.forEach((tx, index) => {
-            if (index < completed) {
-              updateTransaction(tx.id, { progress: 100 });
-            } else if (index === completed) {
-              updateTransaction(tx.id, { progress: 10 + progressPerTx * 0.8 });
-            }
-          });
-        }
+        userAddress as `0x${string}`
       );
 
       // Update final results
@@ -331,14 +226,12 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
         if (result.success) {
           updateTransaction(id, {
             status: 'completed',
-            progress: 100,
             txHash: result.txHash,
           });
         } else {
           updateTransaction(id, {
             status: 'failed',
             error: result.error,
-            progress: 0,
           });
         }
       });
@@ -348,7 +241,6 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
         updateTransaction(tx.id, {
           status: 'failed',
           error: error instanceof Error ? error.message : 'Batch execution failed',
-          progress: 0,
         });
       });
     } finally {
@@ -431,7 +323,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
 
   const getPendingTransactions = useCallback(() => {
     return transactions.filter(tx => 
-      tx.status === 'pending' || tx.status === 'approving' || tx.status === 'executing'
+      tx.status === 'pending' || tx.status === 'executing'
     );
   }, [transactions]);
 

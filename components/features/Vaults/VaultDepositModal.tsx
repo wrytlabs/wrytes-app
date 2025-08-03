@@ -9,6 +9,8 @@ import { parseUnits, formatUnits } from 'viem';
 import { ColoredBadge } from '@/components/ui/Badge';
 import { AmountInput } from '@/components/ui/AmountInput';
 import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { erc4626ABI } from '@/lib/vaults/abi';
+import { useAppKitAccount } from '@reown/appkit/react';
 
 interface VaultDepositModalProps {
   vault: Vault;
@@ -30,7 +32,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   const { isDepositing, isMinting, calculateSharesFromAssets, calculateAssetsFromShares } = useVaultActions(vault.address);
   const { assetBalance, assetSymbol, assetDecimals, loading: assetBalanceLoading } = useVaultUserData(vault);
   const { apy, loading: vaultLoading } = useVaultData(vault);
-
+  const { address: userAddress } = useAppKitAccount();
   const { addTransaction } = useTransactionQueue();
 
   const handleAmountChange = (value: string) => {
@@ -72,16 +74,21 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
       const transactionSubtitle = `Vault: ${vault.name} | Amount: ${amount} ${depositMode === 'deposit' ? assetSymbol : vault.symbol}`;
       
       // Add transaction to queue
-      const transactionId = addTransaction({
+      const queueTransaction = await addTransaction({
         title: transactionTitle,
         subtitle: transactionSubtitle,
         chainId: 1, // Ethereum mainnet
         type: depositMode === 'deposit' ? 'deposit' : 'mint',
         contractAddress: vault.address,
-        amount,
-        symbol: depositMode === 'deposit' ? assetSymbol : vault.symbol,
-        tokenDecimals: decimalsToUse,
+        abi: erc4626ABI,
+        functionName: depositMode === 'deposit' ? 'deposit' : 'mint',
+        args: [amountInWei, userAddress as `0x${string}`],
+        value: '0',
+        gasLimit: '300000'
       });
+
+      // Trigger success callback if provided
+      onSuccess();
       
       // Close modal after adding to queue
       onClose();

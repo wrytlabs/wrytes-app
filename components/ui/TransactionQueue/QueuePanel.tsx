@@ -56,7 +56,7 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
   if (!isOpen) return null;
 
   const completedTransactions = transactions.filter(tx => 
-    tx.status === 'completed' || tx.status === 'failed' || tx.status === 'cancelled'
+    tx.status === 'completed' || tx.status === 'failed'
   );
 
   const pendingTransactions = transactions.filter(tx => 
@@ -155,7 +155,7 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
           <div className="p-4 border-t border-gray-500/20 bg-dark-surface/30">
             <div className="flex items-center justify-between text-xs">
               <span className="text-text-secondary">
-                {transactions.filter(tx => tx.status === 'pending' || tx.status === 'approving' || tx.status === 'executing').length} pending
+                {transactions.filter(tx => tx.status === 'queued' || tx.status === 'pending' || tx.status === 'executing').length} pending
               </span>
               
               <Link 

@@ -1,6 +1,6 @@
 import { Abi } from 'viem';
 
-export type TransactionStatus = 'pending' | 'approving' | 'executing' | 'completed' | 'failed' | 'cancelled';
+export type TransactionStatus = 'queued' | 'pending' | 'executing' | 'completed' | 'failed';
 
 export interface ApprovalConfig {
   tokenAddress: string;    // ERC20 token to approve
@@ -13,73 +13,70 @@ export interface QueueTransaction {
   id: string;
   title: string;
   subtitle: string;
+  icon?: string;
   chainId: number;
   type: string; // Made generic - can be any transaction type
   status: TransactionStatus;
-  txHash?: string;
   error?: string;
   createdAt: Date;
   updatedAt: Date;
-  progress?: number; // 0-100
   // Transaction parameters (generic)
-  contractAddress?: string;
-  functionName?: string;
-  abi?: Abi;
+  contractAddress: string;
+  functionName: string;
+  abi: Abi;
   args?: readonly unknown[];
   value?: string;
   gasLimit?: string;
-  // Auto-approval configuration
-  approvalConfig?: ApprovalConfig;
-  // Optional metadata
+  txHash?: string;
+  // Optional metadata token or token input
   tokenAddress?: string;
   tokenDecimals?: number;
-  amount?: string;
-  symbol?: string;
-  icon?: string;
+  tokenAmount?: string;
+  tokenSymbol?: string;
+  // Optional metadata tokenOut
+  tokenOutAddress?: string;
+  tokenOutDecimals?: number;
+  tokenOutAmount?: string;
+  tokenOutSymbol?: string;
+
 }
 
 export interface TransactionQueueContextType {
   transactions: QueueTransaction[];
   activeTransactionId: string | null;
-  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>) => Promise<string>;
+  // transaction management
+  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' >) => Promise<string>;
   updateTransaction: (id: string, updates: Partial<QueueTransaction>) => void;
   removeTransaction: (id: string) => void;
   retryTransaction: (id: string) => void;
   cancelTransaction: (id: string) => void;
   clearCompleted: () => void;
+  // enhanced querying
   getTransactionById: (id: string) => QueueTransaction | undefined;
   getPendingCount: () => number;
   getActiveTransaction: () => QueueTransaction | null;
+  getTransactionsByStatus: (status: TransactionStatus) => QueueTransaction[];
+  getTransactionsByType: (type: string) => QueueTransaction[];
+  getPendingTransactions: () => QueueTransaction[];
+  // execution
   executeTransaction: (id: string) => Promise<void>;
   executeBatch: (ids: string[]) => Promise<void>;
   executeAll: () => Promise<void>;
   isExecuting: boolean;
-  // NEW: Queue management methods
+  // queue management
   moveTransactionUp: (id: string) => void;
   moveTransactionDown: (id: string) => void;
   reorderTransactions: (orderedIds: string[]) => void;
   clearAll: () => void;
   bulkExecute: (ids: string[]) => Promise<void>;
   bulkRemove: (ids: string[]) => void;
-  // NEW: Enhanced querying
-  getTransactionsByStatus: (status: TransactionStatus) => QueueTransaction[];
-  getTransactionsByType: (type: string) => QueueTransaction[];
-  getPendingTransactions: () => QueueTransaction[];
-}
-
-export interface PreparedTransaction {
-  target: `0x${string}`;
-  data: `0x${string}`;
-  value: bigint;
-  gasLimit?: bigint;
-  description: string;
 }
 
 export interface BatchExecutionOptions {
   maxGasLimit?: bigint;
   gasPrice?: bigint;
   useMulticall?: boolean;
-  walletType?: 'safe' | 'metamask' | 'other';
+  walletType?: 'safe' | 'metamask' | 'walletconnect' | 'aragon' | 'other';
 }
 
 export interface ExecutionResult {
@@ -102,17 +99,11 @@ export interface BatchExecutionResult {
 }
 
 export interface TransactionPreparation {
+  chainId: number;
   contractAddress: `0x${string}`;
   functionName: string;
-  args: readonly unknown[];
+  abi: Abi;
+  args?: readonly unknown[];
   value?: bigint;
   gasLimit?: bigint;
-}
-
-export interface ApprovalTransaction {
-  tokenAddress: `0x${string}`;
-  spenderAddress: `0x${string}`;
-  amount: bigint;
-  currentAllowance: bigint;
-  requiredAllowance: bigint;
 }
