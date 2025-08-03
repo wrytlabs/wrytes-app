@@ -151,7 +151,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           disabled={balance === 0n || untilUnlocked > 0}
           className="flex-1"
         >
-          {untilUnlocked > 0 ? `In ${formatDuration(untilUnlocked)}` : 'Withdraw'}
+          {untilUnlocked > 0 ? `In ${formatDuration(untilUnlocked)}` : 'Redeem'}
         </Button>
       </div>
     </Card>
