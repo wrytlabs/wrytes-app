@@ -13,6 +13,7 @@ import { PageHeaderProps } from './types';
 export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   description,
+  icon,
   badge,
   actions,
   breadcrumbs,
@@ -69,7 +70,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {/* Title and Description */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold text-white truncate">
+            <h1 className="text-3xl font-bold text-white truncate flex items-center gap-3">
+              {icon && (
+                <FontAwesomeIcon icon={icon} className="text-accent-orange" />
+              )}
               {title}
             </h1>
             

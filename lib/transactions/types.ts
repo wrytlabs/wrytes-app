@@ -1,12 +1,20 @@
+import { Abi } from 'viem';
+
 export type TransactionStatus = 'pending' | 'approving' | 'executing' | 'completed' | 'failed' | 'cancelled';
+
+export interface ApprovalConfig {
+  tokenAddress: string;    // ERC20 token to approve
+  spenderAddress: string;  // Contract that needs approval (vault, router, etc.)
+  amount: string;          // Amount needed for approval
+  checkAllowance: boolean; // Whether to check current allowance first
+}
 
 export interface QueueTransaction {
   id: string;
   title: string;
   subtitle: string;
-  contractAddress: string;
   chainId: number;
-  type: 'approve' | 'deposit' | 'withdraw' | 'mint' | 'redeem' | 'transfer' | 'swap' | 'custom';
+  type: string; // Made generic - can be any transaction type
   status: TransactionStatus;
   txHash?: string;
   error?: string;
@@ -14,12 +22,17 @@ export interface QueueTransaction {
   updatedAt: Date;
   progress?: number; // 0-100
   // Transaction parameters (generic)
-  targetContract?: string;
+  contractAddress?: string;
   functionName?: string;
+  abi?: Abi;
   args?: readonly unknown[];
   value?: string;
   gasLimit?: string;
+  // Auto-approval configuration
+  approvalConfig?: ApprovalConfig;
   // Optional metadata
+  tokenAddress?: string;
+  tokenDecimals?: number;
   amount?: string;
   symbol?: string;
   icon?: string;
@@ -28,7 +41,7 @@ export interface QueueTransaction {
 export interface TransactionQueueContextType {
   transactions: QueueTransaction[];
   activeTransactionId: string | null;
-  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>) => string;
+  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>) => Promise<string>;
   updateTransaction: (id: string, updates: Partial<QueueTransaction>) => void;
   removeTransaction: (id: string) => void;
   retryTransaction: (id: string) => void;
@@ -41,6 +54,17 @@ export interface TransactionQueueContextType {
   executeBatch: (ids: string[]) => Promise<void>;
   executeAll: () => Promise<void>;
   isExecuting: boolean;
+  // NEW: Queue management methods
+  moveTransactionUp: (id: string) => void;
+  moveTransactionDown: (id: string) => void;
+  reorderTransactions: (orderedIds: string[]) => void;
+  clearAll: () => void;
+  bulkExecute: (ids: string[]) => Promise<void>;
+  bulkRemove: (ids: string[]) => void;
+  // NEW: Enhanced querying
+  getTransactionsByStatus: (status: TransactionStatus) => QueueTransaction[];
+  getTransactionsByType: (type: string) => QueueTransaction[];
+  getPendingTransactions: () => QueueTransaction[];
 }
 
 export interface PreparedTransaction {

@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faVault } from '@fortawesome/free-solid-svg-icons';
 import { Vault } from '@/lib/vaults/types';
 import { VAULTS } from '@/lib/vaults/config';
 import Card from '@/components/ui/Card';
@@ -45,6 +45,7 @@ export default function VaultsPage() {
         <PageHeader
           title="Savings Vaults"
           description="Earn yield on your assets with automated DeFi strategies"
+          icon={faVault}
           badge={{ text: "LIVE", variant: "success" }}
         />
 

@@ -2,11 +2,10 @@ import { WAGMI_CONFIG } from '@/lib/web3/config';
 import { writeContract, readContract, simulateContract } from 'wagmi/actions';
 import { mainnet } from '@reown/appkit/networks';
 import { erc4626ABI } from '@/lib/vaults/abi';
-import { erc20Abi } from 'viem';
-import { parseUnits, formatUnits } from 'viem';
-import { QueueTransaction } from '@/contexts/TransactionQueueContext';
+import { erc20Abi, parseUnits } from 'viem';
 import { 
-  PreparedTransaction, 
+  QueueTransaction,
+  ApprovalConfig, 
   ExecutionResult, 
   TransactionPreparation,
   ApprovalTransaction 
@@ -23,82 +22,106 @@ export class TransactionExecutor {
   }
 
   /**
-   * Prepare a queue transaction for execution
+   * Prepare a queue transaction for execution - now fully generic
    */
   public async prepareTransaction(
     queueTx: QueueTransaction, 
     userAddress: `0x${string}`
   ): Promise<TransactionPreparation> {
+    // Validate required fields for generic execution
+    if (!queueTx.contractAddress) {
+      throw new Error('Transaction missing contractAddress');
+    }
+    
+    if (!queueTx.functionName) {
+      throw new Error('Transaction missing functionName');
+    }
+
+    if (!queueTx.args) {
+      throw new Error('Transaction missing args');
+    }
+
     const contractAddress = queueTx.contractAddress as `0x${string}`;
 
-    // If transaction has explicit function name and args, use them
-    if (queueTx.functionName && queueTx.args) {
+    return {
+      contractAddress,
+      functionName: queueTx.functionName,
+      args: queueTx.args,
+      value: queueTx.value ? BigInt(queueTx.value) : 0n,
+      gasLimit: queueTx.gasLimit ? BigInt(queueTx.gasLimit) : 200000n,
+    };
+  }
+
+  /**
+   * Check if transaction needs approval using the new generic ApprovalConfig
+   */
+  public async checkApprovalNeeded(
+    queueTx: QueueTransaction,
+    userAddress: `0x${string}`
+  ): Promise<ApprovalTransaction | null> {
+    // Use the new approvalConfig if provided
+    if (queueTx.approvalConfig) {
+      return this.checkGenericApproval(queueTx.approvalConfig, userAddress, queueTx.chainId);
+    }
+
+    // Legacy fallback for backward compatibility
+    return this.checkLegacyApproval(queueTx, userAddress);
+  }
+
+  /**
+   * Generic approval checking for any token/spender pair
+   */
+  private async checkGenericApproval(
+    approvalConfig: ApprovalConfig,
+    userAddress: `0x${string}`,
+    chainId: number = mainnet.id
+  ): Promise<ApprovalTransaction | null> {
+    if (!approvalConfig.checkAllowance) {
+      return null;
+    }
+
+    try {
+      const tokenAddress = approvalConfig.tokenAddress as `0x${string}`;
+      const spenderAddress = approvalConfig.spenderAddress as `0x${string}`;
+      const requiredAmount = parseUnits(approvalConfig.amount, 18); // Default to 18 decimals
+
+      // Check current allowance
+      const currentAllowance = await readContract(WAGMI_CONFIG, {
+        chainId,
+        address: tokenAddress,
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [userAddress, spenderAddress],
+      }) as bigint;
+
+      // If allowance is insufficient, return approval transaction data
+      if (currentAllowance < requiredAmount) {
+        return {
+          tokenAddress,
+          spenderAddress,
+          amount: requiredAmount,
+          currentAllowance,
+          requiredAllowance: requiredAmount,
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.warn('Could not check generic approval, assuming approval needed:', error);
       return {
-        contractAddress,
-        functionName: queueTx.functionName,
-        args: queueTx.args,
-        value: queueTx.value ? BigInt(queueTx.value) : 0n,
-        gasLimit: queueTx.gasLimit ? BigInt(queueTx.gasLimit) : 150000n,
+        tokenAddress: approvalConfig.tokenAddress as `0x${string}`,
+        spenderAddress: approvalConfig.spenderAddress as `0x${string}`,
+        amount: parseUnits(approvalConfig.amount, 18),
+        currentAllowance: 0n,
+        requiredAllowance: parseUnits(approvalConfig.amount, 18),
       };
-    }
-
-    // Fallback: derive from transaction type and amount (legacy support)
-    if (!queueTx.amount) {
-      throw new Error('Transaction missing required parameters: either (functionName + args) or amount must be provided');
-    }
-
-    const amount = parseUnits(queueTx.amount, this.getTokenDecimals(queueTx));
-
-    switch (queueTx.type) {
-      case 'approve':
-        return {
-          contractAddress,
-          functionName: 'approve',
-          args: [queueTx.targetContract || userAddress, amount],
-          gasLimit: 50000n,
-        };
-
-      case 'deposit':
-        return {
-          contractAddress,
-          functionName: 'deposit',
-          args: [amount, userAddress], // assets, receiver
-          gasLimit: 150000n,
-        };
-
-      case 'withdraw':
-        return {
-          contractAddress,
-          functionName: 'withdraw',
-          args: [amount, userAddress, userAddress], // assets, receiver, owner
-          gasLimit: 150000n,
-        };
-
-      case 'mint':
-        return {
-          contractAddress,
-          functionName: 'mint',
-          args: [amount, userAddress], // shares, receiver
-          gasLimit: 150000n,
-        };
-
-      case 'redeem':
-        return {
-          contractAddress,
-          functionName: 'redeem',
-          args: [amount, userAddress, userAddress], // shares, receiver, owner
-          gasLimit: 150000n,
-        };
-
-      default:
-        throw new Error(`Unsupported transaction type: ${queueTx.type}`);
     }
   }
 
   /**
-   * Check if transaction needs approval and prepare approval transaction
+   * Legacy approval checking for backward compatibility
    */
-  public async checkApprovalNeeded(
+  private async checkLegacyApproval(
     queueTx: QueueTransaction,
     userAddress: `0x${string}`
   ): Promise<ApprovalTransaction | null> {
@@ -107,7 +130,7 @@ export class TransactionExecutor {
       return null;
     }
 
-    // Only deposit and mint operations need approval
+    // Only deposit and mint operations need approval in legacy mode
     if (queueTx.type !== 'deposit' && queueTx.type !== 'mint') {
       return null;
     }
@@ -118,7 +141,7 @@ export class TransactionExecutor {
       return null; // No amount to approve
     }
 
-    const amount = parseUnits(queueTx.amount, this.getTokenDecimals(queueTx));
+    const amount = parseUnits(queueTx.amount, queueTx.tokenDecimals || 18);
 
     try {
       // Get the underlying asset address from the vault
@@ -191,7 +214,7 @@ export class TransactionExecutor {
   }
 
   /**
-   * Execute a single transaction
+   * Execute a single transaction - now fully generic
    */
   public async executeTransaction(
     queueTx: QueueTransaction,
@@ -201,8 +224,12 @@ export class TransactionExecutor {
       // Prepare the transaction
       const preparation = await this.prepareTransaction(queueTx, userAddress);
 
-      // Get the appropriate ABI based on transaction type
-      const abi = this.getAbiForTransaction(queueTx);
+      // Use provided ABI or fallback to type-based ABI selection
+      const abi = queueTx.abi || this.getAbiForTransaction(queueTx);
+
+      if (!abi) {
+        throw new Error('No ABI provided for transaction execution');
+      }
 
       // Simulate the transaction first to catch errors early
       await simulateContract(WAGMI_CONFIG, {
@@ -210,7 +237,7 @@ export class TransactionExecutor {
         address: preparation.contractAddress,
         abi,
         functionName: preparation.functionName as any,
-        args: preparation.args,
+        args: preparation.args as any,
         account: userAddress,
         value: preparation.value,
       });
@@ -221,7 +248,7 @@ export class TransactionExecutor {
         address: preparation.contractAddress,
         abi,
         functionName: preparation.functionName as any,
-        args: preparation.args,
+        args: preparation.args as any,
         gas: preparation.gasLimit,
         value: preparation.value,
       });
@@ -308,12 +335,18 @@ export class TransactionExecutor {
       const preparation = await this.prepareTransaction(queueTx, userAddress);
       
       // Use simulateContract to get gas estimate
+      const abi = queueTx.abi || this.getAbiForTransaction(queueTx);
+      
+      if (!abi) {
+        return 200000n; // Default gas limit if no ABI available
+      }
+
       const simulation = await simulateContract(WAGMI_CONFIG, {
-        chainId: mainnet.id,
+        chainId: queueTx.chainId || mainnet.id,
         address: preparation.contractAddress,
-        abi: erc4626ABI,
+        abi,
         functionName: preparation.functionName as any,
-        args: preparation.args,
+        args: preparation.args as any,
         account: userAddress,
       });
 
@@ -327,9 +360,15 @@ export class TransactionExecutor {
   }
 
   /**
-   * Get the appropriate ABI for a transaction type
+   * Get the appropriate ABI for a transaction type (legacy fallback)
    */
   private getAbiForTransaction(queueTx: QueueTransaction) {
+    // If transaction already has an ABI, use it
+    if (queueTx.abi) {
+      return queueTx.abi;
+    }
+
+    // Legacy type-based ABI selection for backward compatibility
     switch (queueTx.type) {
       case 'approve':
       case 'transfer':
@@ -340,28 +379,8 @@ export class TransactionExecutor {
       case 'redeem':
         return erc4626ABI;
       default:
-        // For custom transactions, assume ERC20 if no specific ABI is needed
-        return erc20Abi;
-    }
-  }
-
-  /**
-   * Get token decimals for the transaction
-   */
-  private getTokenDecimals(queueTx: QueueTransaction): number {
-    // For deposit/mint, use asset decimals
-    // For withdraw/redeem, use vault token decimals
-    // This is a simplified version - in production, you'd fetch this from contracts
-    switch (queueTx.type) {
-      case 'approve':
-      case 'deposit':
-      case 'mint':
-        return 6; // USDC/USDT have 6 decimals
-      case 'withdraw':
-      case 'redeem':
-        return 18; // Most vault tokens have 18 decimals
-      default:
-        return 18;
+        // For custom transactions, return null to force explicit ABI provision
+        return null;
     }
   }
 

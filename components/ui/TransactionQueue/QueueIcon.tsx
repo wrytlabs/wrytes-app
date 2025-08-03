@@ -33,19 +33,19 @@ export const QueueIcon: React.FC<QueueIconProps> = ({ onClick, className = "" })
       `}
       title={`${pendingCount} pending transactions`}
     >
-      <FontAwesomeIcon icon={getIcon()} className="w-5 h-5" />
-      
-      {/* Badge */}
-      {(pendingCount > 0 || transactions.length > 0) && (
-        <span className={`
-          absolute -top-1 -right-1 w-5 h-5 
-          flex items-center justify-center
-          text-xs font-bold text-white rounded-full
-          ${pendingCount > 0 ? 'bg-blue-500' : 'bg-green-500'}
-        `}>
-          {pendingCount > 0 ? pendingCount : transactions.length}
-        </span>
-      )}
+      <span className="flex flex-col items-center justify-center h-full">
+        <FontAwesomeIcon icon={getIcon()} className="w-5 h-5" />
+        {(pendingCount > 0 || transactions.length > 0) && (
+          <span className={`
+            absolute -top-1 -right-1 w-5 h-5 
+            flex items-center justify-center
+            text-xs font-bold text-white rounded-full
+            ${pendingCount > 0 ? 'bg-blue-500' : 'bg-green-500'}
+          `}>
+            {pendingCount > 0 ? pendingCount : transactions.length}
+          </span>
+        )}
+      </span>
     </button>
   );
 };

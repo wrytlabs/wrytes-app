@@ -45,16 +45,15 @@ export const CurveDepositModal: React.FC<CurveDepositModalProps> = ({
 
     // Add transaction to queue instead of executing directly
     addTransaction({
+      title: `Deposit ${amount} ${vault.symbol}`,
+      subtitle: `${vault.name} (${vault.address.slice(0,6)}...)`,
+      chainId: 1, // Ethereum mainnet
       type: 'deposit',
-      vault: {
-        name: vault.name,
-        symbol: vault.symbol,
-        address: vault.address,
-      },
+      contractAddress: vault.address,
+      // Note: For a real implementation, you'd need the actual function name, ABI, and args
+      // This is a simplified example
       amount,
       symbol: vault.symbol,
-      needsApproval: false, // Curve pools typically don't need approval
-      estimatedTime: 20,
     });
 
     // Close modal and trigger success callback

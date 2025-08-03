@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
+import { erc20Abi } from 'viem';
 import { TransactionExecutor } from '@/lib/transactions/TransactionExecutor';
 import { TransactionQueueStorage } from '@/lib/transactions/storage';
-import { QueueTransaction, TransactionQueueContextType } from '@/lib/transactions/types';
+import { QueueTransaction, TransactionQueueContextType, TransactionStatus } from '@/lib/transactions/types';
 
 const TransactionQueueContext = createContext<TransactionQueueContextType | undefined>(undefined);
 
@@ -23,114 +24,10 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
   const { address: userAddress } = useAppKitAccount();
   const executor = TransactionExecutor.getInstance();
 
-  // Mock transactions for demonstration
-  const mockTransactions: QueueTransaction[] = [
-    {
-      id: 'mock-1',
-      title: 'Approve USDC',
-      subtitle: 'Alpha USDC Core (0xb0f0...4BA9)',
-      contractAddress: '0xA0b86a33E6441eeE9d6Ba34EB7F3e5A59ABDaAa5', // USDC contract
-      chainId: 1,
-      type: 'approve',
-      status: 'pending',
-      progress: 0,
-      createdAt: new Date(Date.now() - 3 * 60 * 1000), // 3 minutes ago
-      updatedAt: new Date(),
-      targetContract: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
-      functionName: 'approve',
-      args: ['0xb0f05E4De970A1aaf77f8C2F823953a367504BA9', '1000500000'], // spender, amount
-      amount: '1000.50',
-      symbol: 'USDC',
-    },
-    {
-      id: 'mock-2',
-      title: 'Deposit USDC',
-      subtitle: 'Alpha USDC Core (0xb0f0...4BA9)',
-      contractAddress: '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9',
-      chainId: 1,
-      type: 'deposit',
-      status: 'pending',
-      progress: 0,
-      createdAt: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
-      updatedAt: new Date(),
-      functionName: 'deposit',
-      args: ['1000500000', '0x742dD1B962c1F3B1C1Ad4b7eA1a7c0a3e0e0b52a'], // assets, receiver
-      amount: '1000.50',
-      symbol: 'USDC',
-    },
-    {
-      id: 'mock-3',
-      title: 'Withdraw zCHF',
-      subtitle: 'ZCHF Savings (0x637F...F8BC)',
-      contractAddress: '0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC',
-      chainId: 1,
-      type: 'withdraw',
-      status: 'completed',
-      progress: 100,
-      txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-      createdAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
-      updatedAt: new Date(Date.now() - 8 * 60 * 1000), // completed 8 minutes ago
-      functionName: 'withdraw',
-      args: ['500000000000000000000', '0x742dD1B962c1F3B1C1Ad4b7eA1a7c0a3e0e0b52a', '0x742dD1B962c1F3B1C1Ad4b7eA1a7c0a3e0e0b52a'], // assets, receiver, owner
-      amount: '500.0',
-      symbol: 'zCHF',
-    },
-    {
-      id: 'mock-4',
-      title: 'Mint USDU',
-      subtitle: 'USDU Core (0xce22...c0a)',
-      contractAddress: '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a',
-      chainId: 1,
-      type: 'mint',
-      status: 'failed',
-      error: 'Insufficient gas fee. Please increase gas limit and try again.',
-      createdAt: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
-      updatedAt: new Date(Date.now() - 12 * 60 * 1000), // failed 12 minutes ago
-      functionName: 'mint',
-      args: ['2500000000000000000000', '0x742dD1B962c1F3B1C1Ad4b7eA1a7c0a3e0e0b52a'], // shares, receiver
-      amount: '2500',
-      symbol: 'USDU',
-    },
-    {
-      id: 'mock-5',
-      title: 'Approve 3CRV',
-      subtitle: 'DAI/USDC/USDT (0x6c3F...6E490)',
-      contractAddress: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
-      chainId: 1,
-      type: 'approve',
-      status: 'pending',
-      progress: 0,
-      createdAt: new Date(Date.now() - 45 * 1000), // 45 seconds ago
-      updatedAt: new Date(Date.now() - 45 * 1000),
-      targetContract: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
-      functionName: 'approve',
-      args: ['0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490', '750250000000000000000'], // spender, amount
-      amount: '750.25',
-      symbol: '3CRV',
-    },
-    {
-      id: 'mock-6',
-      title: 'Deposit 3CRV',
-      subtitle: 'DAI/USDC/USDT (0x6c3F...6E490)',
-      contractAddress: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
-      chainId: 1,
-      type: 'deposit',
-      status: 'pending',
-      progress: 0,
-      createdAt: new Date(Date.now() - 30 * 1000), // 30 seconds ago
-      updatedAt: new Date(Date.now() - 30 * 1000),
-      functionName: 'deposit',
-      args: ['750250000000000000000', '0x742dD1B962c1F3B1C1Ad4b7eA1a7c0a3e0e0b52a'], // assets, receiver
-      amount: '750.25',
-      symbol: '3CRV',
-    },
-  ];
-
   // Initialize with stored data or mock data
   const [transactions, setTransactions] = useState<QueueTransaction[]>(() => {
     // Load from localStorage on mount
-    const stored = TransactionQueueStorage.loadTransactions();
-    return stored.length > 0 ? stored : mockTransactions;
+    return TransactionQueueStorage.loadTransactions();
   });
 
   const [activeTransactionId, setActiveTransactionId] = useState<string | null>(() => {
@@ -157,30 +54,80 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     TransactionQueueStorage.cleanupOldTransactions();
   }, []);
 
-  const addTransaction = useCallback((
+  const addTransaction = useCallback(async (
     transactionData: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'progress'>
-  ): string => {
-    const id = uuidv4();
+  ): Promise<string> => {
     const now = new Date();
-    
-    const newTransaction: QueueTransaction = {
+    const transactionsToAdd: QueueTransaction[] = [];
+
+    // Check if auto-approval is needed
+    if (transactionData.approvalConfig && userAddress) {
+      try {
+        const approvalNeeded = await executor.checkApprovalNeeded({
+          ...transactionData,
+          id: 'temp', // temporary ID for checking
+          status: 'pending',
+          createdAt: now,
+          updatedAt: now,
+          progress: 0,
+        } as QueueTransaction, userAddress as `0x${string}`);
+
+        if (approvalNeeded) {
+          // Create approval transaction
+          const approvalId = uuidv4();
+          const approvalTx: QueueTransaction = {
+            id: approvalId,
+            title: `Approve ${transactionData.symbol || 'Token'}`,
+            subtitle: `For ${transactionData.title}`,
+            chainId: transactionData.chainId,
+            type: 'approve',
+            status: 'pending',
+            createdAt: now,
+            updatedAt: now,
+            progress: 0,
+            contractAddress: approvalNeeded.tokenAddress,
+            functionName: 'approve',
+            abi: erc20Abi,
+            args: [
+              approvalNeeded.spenderAddress, 
+              approvalNeeded.requiredAllowance * 110n / 100n // Add 10% buffer
+            ],
+            tokenAddress: approvalNeeded.tokenAddress,
+            tokenDecimals: transactionData.tokenDecimals || 18,
+            amount: transactionData.approvalConfig.amount,
+            symbol: transactionData.symbol,
+          };
+          
+          transactionsToAdd.push(approvalTx);
+        }
+      } catch (error) {
+        console.warn('Could not check approval requirement, proceeding without approval:', error);
+      }
+    }
+
+    // Create the main transaction
+    const mainId = uuidv4();
+    const mainTransaction: QueueTransaction = {
       ...transactionData,
-      id,
+      id: mainId,
       status: 'pending',
       createdAt: now,
       updatedAt: now,
       progress: 0,
     };
 
-    saveTransactions([...transactions, newTransaction]);
+    transactionsToAdd.push(mainTransaction);
+
+    // Add all transactions to the queue
+    saveTransactions([...transactions, ...transactionsToAdd]);
     
     // Auto-start if no active transaction
-    if (!activeTransactionId) {
-      saveActiveTransactionId(id);
+    if (!activeTransactionId && transactionsToAdd.length > 0) {
+      saveActiveTransactionId(transactionsToAdd[0].id);
     }
     
-    return id;
-  }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId]);
+    return mainId; // Return the main transaction ID
+  }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId, executor, userAddress]);
 
   const updateTransaction = useCallback((id: string, updates: Partial<QueueTransaction>) => {
     const updated = transactions.map(tx =>
@@ -420,6 +367,74 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     }
   }, [transactions, executeBatch]);
 
+  // NEW: Queue management methods
+  const moveTransactionUp = useCallback((id: string) => {
+    const currentIndex = transactions.findIndex(tx => tx.id === id);
+    if (currentIndex > 0) {
+      const newTransactions = [...transactions];
+      [newTransactions[currentIndex], newTransactions[currentIndex - 1]] = 
+        [newTransactions[currentIndex - 1], newTransactions[currentIndex]];
+      saveTransactions(newTransactions);
+    }
+  }, [transactions, saveTransactions]);
+
+  const moveTransactionDown = useCallback((id: string) => {
+    const currentIndex = transactions.findIndex(tx => tx.id === id);
+    if (currentIndex >= 0 && currentIndex < transactions.length - 1) {
+      const newTransactions = [...transactions];
+      [newTransactions[currentIndex], newTransactions[currentIndex + 1]] = 
+        [newTransactions[currentIndex + 1], newTransactions[currentIndex]];
+      saveTransactions(newTransactions);
+    }
+  }, [transactions, saveTransactions]);
+
+  const reorderTransactions = useCallback((orderedIds: string[]) => {
+    const orderedTransactions = orderedIds
+      .map(id => transactions.find(tx => tx.id === id))
+      .filter((tx): tx is QueueTransaction => tx !== undefined);
+    
+    // Add any transactions not in the ordered list at the end
+    const remainingTransactions = transactions.filter(
+      tx => !orderedIds.includes(tx.id)
+    );
+    
+    saveTransactions([...orderedTransactions, ...remainingTransactions]);
+  }, [transactions, saveTransactions]);
+
+  const clearAll = useCallback(() => {
+    saveTransactions([]);
+    saveActiveTransactionId(null);
+  }, [saveTransactions, saveActiveTransactionId]);
+
+  const bulkExecute = useCallback(async (ids: string[]) => {
+    await executeBatch(ids);
+  }, [executeBatch]);
+
+  const bulkRemove = useCallback((ids: string[]) => {
+    const filtered = transactions.filter(tx => !ids.includes(tx.id));
+    saveTransactions(filtered);
+    
+    // Clear active transaction if it was removed
+    if (activeTransactionId && ids.includes(activeTransactionId)) {
+      saveActiveTransactionId(null);
+    }
+  }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId]);
+
+  // NEW: Enhanced querying methods
+  const getTransactionsByStatus = useCallback((status: TransactionStatus) => {
+    return transactions.filter(tx => tx.status === status);
+  }, [transactions]);
+
+  const getTransactionsByType = useCallback((type: string) => {
+    return transactions.filter(tx => tx.type === type);
+  }, [transactions]);
+
+  const getPendingTransactions = useCallback(() => {
+    return transactions.filter(tx => 
+      tx.status === 'pending' || tx.status === 'approving' || tx.status === 'executing'
+    );
+  }, [transactions]);
+
   const contextValue: TransactionQueueContextType = {
     transactions,
     activeTransactionId,
@@ -436,6 +451,17 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     executeBatch,
     executeAll,
     isExecuting,
+    // NEW: Queue management methods
+    moveTransactionUp,
+    moveTransactionDown,
+    reorderTransactions,
+    clearAll,
+    bulkExecute,
+    bulkRemove,
+    // NEW: Enhanced querying
+    getTransactionsByStatus,
+    getTransactionsByType,
+    getPendingTransactions,
   };
 
   return (

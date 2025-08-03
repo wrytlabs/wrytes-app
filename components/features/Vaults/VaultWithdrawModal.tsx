@@ -3,10 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
-import { handleTransactionError } from '@/lib/utils/error-handling';
 import { Vault } from '@/lib/vaults/types';
 import { AmountInput } from '@/components/ui/AmountInput';
 import { ColoredBadge } from '@/components/ui/Badge';
+import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 
 interface VaultWithdrawModalProps {
   vault: Vault;
@@ -27,6 +27,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
   
   const { withdraw, redeem, isWithdrawing, isRedeeming, calculateAssetsFromShares } = useVaultActions(vault.address);
   const userBalance = useVaultBalance(vault.address);
+  const { addTransaction } = useTransactionQueue();
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
@@ -54,16 +55,29 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
     try {
       const amountInWei = parseUnits(amount, vault.decimals);
       
-      if (withdrawMode === 'assets') {
-        await withdraw?.(amountInWei);
-      } else {
-        await redeem?.(amountInWei);
-      }
+      const transactionTitle = withdrawMode === 'assets' 
+        ? `Withdraw ${amount} assets from ${vault.name}`
+        : `Redeem ${amount} ${vault.symbol} shares from ${vault.name}`;
       
-      onSuccess();
+      const transactionSubtitle = `Vault: ${vault.name} | Amount: ${amount} ${withdrawMode === 'assets' ? 'assets' : vault.symbol}`;
+      
+      // Add transaction to queue
+      const transactionId = addTransaction({
+        title: transactionTitle,
+        subtitle: transactionSubtitle,
+        chainId: 1, // Ethereum mainnet
+        type: withdrawMode === 'assets' ? 'withdraw' : 'redeem',
+        contractAddress: vault.address,
+        amount,
+        symbol: vault.symbol,
+        tokenDecimals: vault.decimals,
+      });
+      
+      // Close modal after adding to queue
+      onClose();
     } catch (error: unknown) {
-      console.error('Withdrawal failed:', error);
-      setError(handleTransactionError(error));
+      console.error('Failed to add transaction to queue:', error);
+      setError('Failed to add transaction to queue');
     }
   };
 

@@ -1,4 +1,4 @@
-import { QueueTransaction } from '@/contexts/TransactionQueueContext';
+import { QueueTransaction } from '@/lib/transactions/types';
 
 export interface QueueIconProps {
   onClick: () => void;

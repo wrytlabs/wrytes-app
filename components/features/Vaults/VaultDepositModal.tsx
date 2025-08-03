@@ -6,9 +6,9 @@ import { useVaultActions } from '@/lib/vaults/vault';
 import { useAssetTokenBalance } from '@/hooks/vaults/useAssetTokenBalance';
 import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
-import { handleTransactionError } from '@/lib/utils/error-handling';
 import { ColoredBadge } from '@/components/ui/Badge';
 import { AmountInput } from '@/components/ui/AmountInput';
+import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 
 interface VaultDepositModalProps {
   vault: Vault;
@@ -27,7 +27,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   const [error, setError] = useState('');
   const [depositMode, setDepositMode] = useState<'deposit' | 'mint'>('deposit');
   
-  const { deposit, mint, isDepositing, isMinting, calculateSharesFromAssets } = useVaultActions(vault.address);
+  const { isDepositing, isMinting, calculateSharesFromAssets } = useVaultActions(vault.address);
   const { balance: assetBalance, symbol: assetSymbol, decimals: assetDecimals, loading: balanceLoading } = useAssetTokenBalance(vault);
   const { apy, loading: vaultLoading } = useVaultData(vault);
 
@@ -51,6 +51,8 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
     }
   };
 
+  const { addTransaction } = useTransactionQueue();
+
   const handleDeposit = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       setError('Please enter a valid amount');
@@ -63,16 +65,29 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
       const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
       const amountInWei = parseUnits(amount, decimalsToUse);
       
-      if (depositMode === 'deposit') {
-        await deposit?.(amountInWei);
-      } else {
-        await mint?.(amountInWei);
-      }
+      const transactionTitle = depositMode === 'deposit' 
+        ? `Deposit ${amount} ${assetSymbol} to ${vault.name}`
+        : `Mint ${amount} ${vault.symbol} shares from ${vault.name}`;
       
-      onSuccess();
+      const transactionSubtitle = `Vault: ${vault.name} | Amount: ${amount} ${depositMode === 'deposit' ? assetSymbol : vault.symbol}`;
+      
+      // Add transaction to queue
+      const transactionId = addTransaction({
+        title: transactionTitle,
+        subtitle: transactionSubtitle,
+        chainId: 1, // Ethereum mainnet
+        type: depositMode === 'deposit' ? 'deposit' : 'mint',
+        contractAddress: vault.address,
+        amount,
+        symbol: depositMode === 'deposit' ? assetSymbol : vault.symbol,
+        tokenDecimals: decimalsToUse,
+      });
+      
+      // Close modal after adding to queue
+      onClose();
     } catch (error: unknown) {
-      console.error('Deposit failed:', error);
-      setError(handleTransactionError(error));
+      console.error('Failed to add transaction to queue:', error);
+      setError('Failed to add transaction to queue');
     }
   };
 

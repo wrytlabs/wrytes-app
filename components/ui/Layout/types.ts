@@ -1,3 +1,4 @@
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { ReactNode } from 'react';
 
 export interface PageHeaderProps {
@@ -5,6 +6,8 @@ export interface PageHeaderProps {
   title: string;
   /** Optional description text */
   description?: string;
+  /** Optional icon to display before the title */
+  icon?: IconDefinition;
   /** Optional badge indicator */
   badge?: {
     text: string;

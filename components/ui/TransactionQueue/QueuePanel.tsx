@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faTrash, faHistory, faPlay, faPlayCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faTrash, faHistory, faPlayCircle } from '@fortawesome/free-solid-svg-icons';
 import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 import { QueuePanelProps } from './types';
 import { QueueItem } from './QueueItem';
@@ -152,11 +153,20 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
         {/* Footer */}
         {transactions.length > 0 && (
           <div className="p-4 border-t border-gray-500/20 bg-dark-surface/30">
-            <div className="flex items-center justify-between text-xs text-text-secondary">
-              <span>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-text-secondary">
                 {transactions.filter(tx => tx.status === 'pending' || tx.status === 'approving' || tx.status === 'executing').length} pending
               </span>
-              <span>
+              
+              <Link 
+                href="/dashboard/queue"
+                className="text-accent-orange hover:text-accent-orange/80 transition-colors font-medium hover:underline"
+                onClick={onClose}
+              >
+                View Queue →
+              </Link>
+              
+              <span className="text-text-secondary">
                 {transactions.filter(tx => tx.status === 'completed').length} completed
               </span>
             </div>
