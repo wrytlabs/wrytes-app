@@ -65,7 +65,14 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             <FontAwesomeIcon icon={getVaultIcon(vault.icon)} className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">{vault.name}</h3>
+            <a
+              href={vault.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xl font-bold text-white hover:text-accent-orange transition-colors cursor-pointer"
+            >
+              {vault.name}
+            </a>
             <a
               href={getBlockExplorerUrl(`token/${vault.address}`, vault.chainId)}
               target="_blank"

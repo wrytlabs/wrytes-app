@@ -95,6 +95,7 @@ export const usduUsdc: Vault = {
   riskLevel: 'low',
   chainId: 1,
   strategy: 'Liquidity provision + yield optimization',
+  link: `https://www.curve.finance/dex/ethereum/pools/factory-stable-ng-506/deposit/`,
   icon: 'coins',
   color: 'blue'
 }; 

@@ -18,6 +18,7 @@ export interface Vault {
   strategy: string;
   notes?: string;
   icon?: string;
+  link?: string;
   color?: string;
   untilUnlocked?: number | (() => Promise<number>);
 } 

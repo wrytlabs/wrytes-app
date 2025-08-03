@@ -117,6 +117,7 @@ export const zchfSavings: Vault = {
   riskLevel: 'low',
   chainId: 1,
   strategy: 'Native yield from the savings module.',
+  link: `https://app.frankencoin.com/savings`,
   notes: 'The average weighted interest introduces a locking period up to 3 days.',
   icon: 'piggy-bank',
   color: 'green'

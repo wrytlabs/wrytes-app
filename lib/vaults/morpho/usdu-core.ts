@@ -84,6 +84,7 @@ export const usduCoreVault: Vault = {
   riskLevel: 'low',
   chainId: 1,
   strategy: 'USDU staking + yield farming + reward incentives',
+  link: `https://app.morpho.org/ethereum/vault/0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a`,
   notes: 'This vault is curated by USDU Core Aragon DAO',
   icon: 'vault',
   color: 'orange'
