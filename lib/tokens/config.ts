@@ -46,26 +46,6 @@ export const TOKENS: Record<string, TokenConfig> = {
   }
 };
 
-// Mapping of vault addresses to their underlying asset tokens
-export const VAULT_ASSET_MAPPING: Record<string, string> = {
-  // Morpho vaults
-  '0xb0f05E4De970A1aaf77f8C2F823953a367504BA9': 'USDC', // Alpha USDC Core
-  '0xce22b5fb17ccbc0c5d87dc2e0df47dd71e3adc0a': 'USDU', // USDU Core
-  '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63': 'ZCHF', // ZCHF Vault
-  
-  // Savings vaults
-  '0x637F00cAb9665cB07d91bfB9c6f3fa8faBFEF8BC': 'ZCHF', // ZCHF Savings
-  
-  // Curve pools (multi-asset, but we'll use primary token)
-  '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7': 'USDC', // DAI-USDC-USDT (using USDC as primary)
-  '0x771c91e699B4B23420de3F81dE2aA38C4041632b': 'USDU', // USDU-USDC (using USDU as primary)
-};
-
-export const getAssetTokenForVault = (vaultAddress: string): TokenConfig | undefined => {
-  const tokenSymbol = VAULT_ASSET_MAPPING[vaultAddress];
-  return tokenSymbol ? TOKENS[tokenSymbol] : undefined;
-};
-
 export const getTokenBySymbol = (symbol: string): TokenConfig | undefined => {
   return TOKENS[symbol];
 };

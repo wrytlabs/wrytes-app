@@ -78,7 +78,7 @@ export const CurveDepositModal: React.FC<CurveDepositModalProps> = ({
     setAmount('1000');
   };
 
-  // Mock balance for demonstration - in production this would come from useAssetTokenBalance
+      // Mock balance for demonstration - in production this would come from useCurveUserData
   const mockBalance = parseUnits('10000', vault.decimals);
 
   useEffect(() => {

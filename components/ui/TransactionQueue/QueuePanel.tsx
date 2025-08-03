@@ -93,7 +93,7 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
               <button
                 onClick={executeAll}
                 disabled={isExecuting}
-                className="px-3 py-1.5 bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium rounded-md transition-colors"
+                className="px-3 py-1.5 bg-accent-orange hover:bg-accent-orange/80 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium rounded-md transition-colors"
                 title="Execute all pending transactions"
               >
                 <FontAwesomeIcon icon={faPlayCircle} className="w-3 h-3 mr-1" />

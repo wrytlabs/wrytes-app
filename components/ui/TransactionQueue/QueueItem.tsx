@@ -5,9 +5,6 @@ import {
   faRedo, 
   faTimes, 
   faTrash,
-  faArrowDown,
-  faArrowUp,
-  faCoins,
   faPlay
 } from '@fortawesome/free-solid-svg-icons';
 import { QueueItemProps } from './types';
@@ -22,56 +19,6 @@ export const QueueItem: React.FC<QueueItemProps> = ({
   onRemove
 }) => {
   const { executeTransaction, isExecuting } = useTransactionQueue();
-  const getTransactionIcon = () => {
-    switch (transaction.type) {
-      case 'approve':
-        return faCoins;
-      case 'deposit':
-      case 'mint':
-        return faArrowDown;
-      case 'withdraw':
-      case 'redeem':
-        return faArrowUp;
-      case 'transfer':
-        return faArrowUp;
-      case 'swap':
-        return faCoins;
-      default:
-        return faCoins;
-    }
-  };
-
-  const getTransactionColor = () => {
-    switch (transaction.type) {
-      case 'approve':
-        return 'text-yellow-400 bg-yellow-400/20';
-      case 'deposit':
-      case 'mint':
-        return 'text-green-400 bg-green-400/20';
-      case 'withdraw':
-      case 'redeem':
-        return 'text-red-400 bg-red-400/20';
-      case 'transfer':
-        return 'text-blue-400 bg-blue-400/20';
-      case 'swap':
-        return 'text-purple-400 bg-purple-400/20';
-      default:
-        return 'text-accent-orange bg-accent-orange/20';
-    }
-  };
-
-  const formatContractAddress = (address: string) => {
-    if (!address) return '';
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
-    });
-  };
 
   const canExecute = transaction.status === 'pending' || transaction.status === 'failed';
   const canRetry = transaction.status === 'failed';
@@ -103,19 +50,11 @@ export const QueueItem: React.FC<QueueItemProps> = ({
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          {/* Transaction Type Icon */}
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getTransactionColor()}`}>
-            <FontAwesomeIcon icon={getTransactionIcon()} className="w-4 h-4" />
-          </div>
-
           {/* Transaction Info */}
           <div>
             <div className="flex items-center gap-2">
               <span className="text-white font-medium text-sm">
                 {transaction.title}
-              </span>
-              <span className="text-text-secondary text-xs">
-                {formatTime(transaction.createdAt)}
               </span>
             </div>
             <div className="text-text-secondary text-xs mt-0.5">
@@ -131,9 +70,20 @@ export const QueueItem: React.FC<QueueItemProps> = ({
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1">
+      {/* Progress and Actions Row */}
+      <div className="flex items-center justify-between mt-3">
+        {/* Progress - Left aligned */}
+        <div className="flex-1">
+          <TransactionProgress
+            status={transaction.status}
+            progress={transaction.progress}
+          />
+        </div>
+
+        {/* Actions - Right aligned */}
+        <div className="flex items-center gap-1 ml-4">
           {transaction.txHash && (
             <a
               href={getBlockExplorerUrl(`tx/${transaction.txHash}`, 1)}
@@ -191,12 +141,6 @@ export const QueueItem: React.FC<QueueItemProps> = ({
           )}
         </div>
       </div>
-
-      {/* Progress */}
-      <TransactionProgress
-        status={transaction.status}
-        progress={transaction.progress}
-      />
 
       {/* Error Message */}
       {transaction.error && (

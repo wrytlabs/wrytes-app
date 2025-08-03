@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Vault } from '@/lib/vaults/types';
 import { useVaultActions } from '@/lib/vaults/vault';
-import { useAssetTokenBalance } from '@/hooks/vaults/useAssetTokenBalance';
+import { useVaultUserData } from '@/hooks/vaults/useVaultUserData';
 import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
 import { ColoredBadge } from '@/components/ui/Badge';
@@ -21,15 +21,17 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   vault,
   isOpen,
   onClose,
-  onSuccess
+  onSuccess // when added to the queue
 }) => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [depositMode, setDepositMode] = useState<'deposit' | 'mint'>('deposit');
   
-  const { isDepositing, isMinting, calculateSharesFromAssets } = useVaultActions(vault.address);
-  const { balance: assetBalance, symbol: assetSymbol, decimals: assetDecimals, loading: balanceLoading } = useAssetTokenBalance(vault);
+  const { isDepositing, isMinting, calculateSharesFromAssets, calculateAssetsFromShares } = useVaultActions(vault.address);
+  const { assetBalance, assetSymbol, assetDecimals, loading: assetBalanceLoading } = useVaultUserData(vault);
   const { apy, loading: vaultLoading } = useVaultData(vault);
+
+  const { addTransaction } = useTransactionQueue();
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
@@ -39,7 +41,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
     if (value && parseFloat(value) > 0) {
       const numValue = parseFloat(value);
       const maxDecimals = depositMode === 'deposit' ? assetDecimals : vault.decimals;
-      const availableBalance = depositMode === 'deposit' ? assetBalance : assetBalance; // For now, use asset balance for both
+      const availableBalance = getAvailableBalance();
       const availableBalanceFormatted = parseFloat(formatUnits(availableBalance, maxDecimals));
       
       if (numValue > availableBalanceFormatted) {
@@ -50,8 +52,6 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
       setError('Amount must be greater than 0');
     }
   };
-
-  const { addTransaction } = useTransactionQueue();
 
   const handleDeposit = async () => {
     if (!amount || parseFloat(amount) <= 0) {
@@ -91,6 +91,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
     }
   };
 
+  //to render in the preview
   const calculateEstimatedShares = () => {
     if (!amount || parseFloat(amount) <= 0) return '0';
     try {
@@ -108,14 +109,15 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
     }
   };
 
+  //to render in the preview
   const calculateEstimatedAssets = () => {
     if (!amount || parseFloat(amount) <= 0) return '0';
     try {
       if (depositMode === 'mint') {
         // In mint mode, calculate assets needed from shares
         const amountInWei = parseUnits(amount, vault.decimals);
-        // This would need an assetsFromShares calculation - for now return amount
-        return amount;
+        const assets = calculateAssetsFromShares(amountInWei);
+        return formatUnits(assets, assetDecimals);
       } else {
         // In deposit mode, the amount is already in assets
         return amount;
@@ -125,6 +127,10 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
     }
   };
 
+  const getAvailableBalance = () => {
+    return depositMode === 'deposit' ? assetBalance : calculateSharesFromAssets(assetBalance);
+  };
+
   const handleMaxClick = () => {
     if (depositMode === 'deposit') {
       // In deposit mode, use full asset balance
@@ -132,17 +138,13 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
       setAmount(maxAmount);
     } else {
       // In mint mode, use estimated shares from available assets
-      const estimatedShares = calculateEstimatedSharesFromAssets();
-      setAmount(estimatedShares);
-    }
-  };
-
-  const calculateEstimatedSharesFromAssets = () => {
-    try {
-      const shares = calculateSharesFromAssets(assetBalance);
-      return formatUnits(shares, vault.decimals);
-    } catch {
-      return '0';
+      try {
+        const shares = calculateSharesFromAssets(assetBalance);
+        const maxAmount = formatUnits(shares, vault.decimals);
+        setAmount(maxAmount);
+      } catch {
+        setAmount('0');
+      }
     }
   };
 
@@ -170,7 +172,8 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
 
   useEffect(() => {
     setError('');
-  }, [depositMode]);
+    handleAmountChange(amount);
+  }, [depositMode, amount, handleAmountChange]);
 
   if (!isOpen) return null;
 
@@ -244,11 +247,11 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
             title={getInputTitle()}
             symbol={getInputSymbol()}
             decimals={getInputDecimals()}
-            availableBalance={assetBalance}
-            availableLabel={`Available ${assetSymbol}`}
+            availableBalance={getAvailableBalance()}
+            availableLabel={`Available:`}
             onMaxClick={handleMaxClick}
             error={error}
-            disabled={balanceLoading}
+            disabled={assetBalanceLoading}
           />
         </div>
 
@@ -261,7 +264,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
             </div>
           ) : (
             <div className="flex justify-between text-sm">
-              <span className="text-text-secondary">Estimated Assets:</span>
+              <span className="text-text-secondary">Needed Assets:</span>
               <span className="text-white font-medium">{calculateEstimatedAssets()} {assetSymbol}</span>
             </div>
           )}
@@ -270,10 +273,6 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
             <span className="text-green-400 font-medium">
               {vaultLoading ? 'Loading...' : `${apy.toFixed(2)}%`}
             </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-text-secondary">Deposit Mode:</span>
-            <span className="text-white">{depositMode === 'deposit' ? 'Assets' : 'Shares'}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">Risk Level:</span>

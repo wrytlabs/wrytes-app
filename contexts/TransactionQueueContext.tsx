@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import { v4 as uuidv4 } from 'uuid';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
 import { erc20Abi } from 'viem';
-import { TransactionExecutor } from '@/lib/transactions/TransactionExecutor';
+import { TransactionExecutor } from '@/lib/transactions/executor';
 import { TransactionQueueStorage } from '@/lib/transactions/storage';
 import { QueueTransaction, TransactionQueueContextType, TransactionStatus } from '@/lib/transactions/types';
 

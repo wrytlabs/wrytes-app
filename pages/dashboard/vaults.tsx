@@ -112,8 +112,6 @@ export default function VaultsPage() {
           onSuccess={() => handleWithdrawSuccess(withdrawModal.data!)}
         />
       )}
-
-      {/* TODO: Add a modal for the curve vault actions */}
     </>
   );
 }
