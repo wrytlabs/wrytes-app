@@ -8,7 +8,7 @@ import {
   faPlay
 } from '@fortawesome/free-solid-svg-icons';
 import { QueueItemProps } from './types';
-import { TransactionProgress } from './TransactionProgress';
+import { QueueItemStatus } from './QueueItemStatus';
 import { getBlockExplorerUrl } from '@/lib/web3/config';
 import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 
@@ -20,26 +20,24 @@ export const QueueItem: React.FC<QueueItemProps> = ({
 }) => {
   const { executeTransaction, isExecuting } = useTransactionQueue();
 
-  const canExecute = transaction.status === 'pending' || transaction.status === 'failed';
+  const canExecute = transaction.status === 'queued' || transaction.status === 'pending' || transaction.status === 'failed';
   const canRetry = transaction.status === 'failed';
-  const canCancel = transaction.status === 'pending' || transaction.status === 'approving';
-  const canRemove = transaction.status === 'completed' || transaction.status === 'failed' || transaction.status === 'cancelled';
-  const isCurrentlyExecuting = isExecuting && (transaction.status === 'executing' || transaction.status === 'approving');
+  const canCancel = transaction.status === 'queued' || transaction.status === 'pending';
+  const canRemove = transaction.status === 'completed' || transaction.status === 'failed';
+  const isCurrentlyExecuting = isExecuting && (transaction.status === 'queued' || transaction.status === 'pending' || transaction.status === 'executing');
 
   const getBorderColor = () => {
     switch (transaction.status) {
+      case 'queued':
+        return 'border-text-secondary/40';
       case 'pending':
         return 'border-text-secondary/40';
-      case 'approving':
-        return 'border-yellow-400/40';
       case 'executing':
         return 'border-blue-400/40';
       case 'completed':
         return 'border-green-400/40';
       case 'failed':
         return 'border-red-400/40';
-      case 'cancelled':
-        return 'border-text-secondary/40';
       default:
         return 'border-dark-border';
     }
@@ -76,9 +74,8 @@ export const QueueItem: React.FC<QueueItemProps> = ({
       <div className="flex items-center justify-between mt-3">
         {/* Progress - Left aligned */}
         <div className="flex-1">
-          <TransactionProgress
+          <QueueItemStatus
             status={transaction.status}
-            progress={transaction.progress}
           />
         </div>
 

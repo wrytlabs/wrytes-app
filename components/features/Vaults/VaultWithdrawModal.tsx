@@ -9,6 +9,8 @@ import { parseUnits, formatUnits } from 'viem';
 import { ColoredBadge } from '@/components/ui/Badge';
 import { AmountInput } from '@/components/ui/AmountInput';
 import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { useAppKitAccount } from '@reown/appkit-controllers/react';
+import { erc4626ABI } from '@/lib/vaults/abi';
 
 interface VaultWithdrawModalProps {
   vault: Vault;
@@ -32,6 +34,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
   const { apy, loading: vaultLoading } = useVaultData(vault);
   
   const { addTransaction } = useTransactionQueue();
+  const { address: userAddress } = useAppKitAccount();
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
@@ -71,17 +74,34 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
       
       const transactionSubtitle = `Vault: ${vault.name} | Amount: ${amount} ${withdrawMode === 'withdraw' ? assetSymbol : vault.symbol}`;
       
-      // Add transaction to queue
-      const transactionId = addTransaction({
+      // Add transaction to queue with proper ERC4626 function parameters
+      const transactionId = await addTransaction({
         title: transactionTitle,
         subtitle: transactionSubtitle,
         chainId: 1, // Ethereum mainnet
         type: withdrawMode === 'withdraw' ? 'withdraw' : 'redeem',
         contractAddress: vault.address,
-        amount,
-        symbol: withdrawMode === 'withdraw' ? assetSymbol : vault.symbol,
+        abi: erc4626ABI,
+        functionName: withdrawMode === 'withdraw' ? 'withdraw' : 'redeem',
+        args: withdrawMode === 'withdraw' 
+          ? [amountInWei, userAddress as `0x${string}`, userAddress as `0x${string}`] // assets, receiver, owner
+          : [amountInWei, userAddress as `0x${string}`, userAddress as `0x${string}`], // shares, receiver, owner
+        value: '0',
+        gasLimit: '300000',
+        // Token metadata for UI display
+        tokenAddress: vault.asset.address,
         tokenDecimals: decimalsToUse,
+        tokenAmount: amount,
+        tokenSymbol: withdrawMode === 'withdraw' ? assetSymbol : vault.symbol,
+        // Vault metadata
+        tokenOutAddress: withdrawMode === 'withdraw' ? vault.asset.address : vault.address,
+        tokenOutDecimals: withdrawMode === 'withdraw' ? assetDecimals : vault.decimals,
+        tokenOutAmount: withdrawMode === 'withdraw' ? amount : calculateEstimatedAssets(),
+        tokenOutSymbol: withdrawMode === 'withdraw' ? assetSymbol : vault.symbol,
       });
+      
+      // Trigger success callback if provided
+      onSuccess();
       
       // Close modal after adding to queue
       onClose();

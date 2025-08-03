@@ -17,8 +17,6 @@ export interface QueueItemProps {
   onCancel: (id: string) => void;
   onRemove: (id: string) => void;
 }
-
-export interface TransactionProgressProps {
+export interface QueueItemStatusProps {
   status: QueueTransaction['status'];
-  progress?: number;
 }

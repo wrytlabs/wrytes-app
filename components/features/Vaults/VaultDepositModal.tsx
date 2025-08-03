@@ -84,7 +84,17 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
         functionName: depositMode === 'deposit' ? 'deposit' : 'mint',
         args: [amountInWei, userAddress as `0x${string}`],
         value: '0',
-        gasLimit: '300000'
+        gasLimit: '300000',
+        // Token metadata for UI display
+        tokenAddress: vault.asset.address,
+        tokenDecimals: decimalsToUse,
+        tokenAmount: amount,
+        tokenSymbol: depositMode === 'deposit' ? assetSymbol : vault.symbol,
+        // Vault metadata
+        tokenOutAddress: depositMode === 'deposit' ? vault.address : vault.asset.address,
+        tokenOutDecimals: depositMode === 'deposit' ? vault.decimals : assetDecimals,
+        tokenOutAmount: depositMode === 'deposit' ? calculateEstimatedShares() : amount,
+        tokenOutSymbol: depositMode === 'deposit' ? vault.symbol : assetSymbol,
       });
 
       // Trigger success callback if provided

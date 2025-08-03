@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
-import { erc20Abi } from 'viem';
 import { TransactionExecutor } from '@/lib/transactions/executor';
 import { TransactionQueueStorage } from '@/lib/transactions/storage';
 import { QueueTransaction, TransactionQueueContextType, TransactionStatus } from '@/lib/transactions/types';
@@ -81,7 +80,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     }
     
     return mainId; // Return the main transaction ID
-  }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId, executor, userAddress]);
+  }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId]);
 
   const updateTransaction = useCallback((id: string, updates: Partial<QueueTransaction>) => {
     const updated = transactions.map(tx =>

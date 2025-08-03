@@ -8,27 +8,26 @@ import {
   faBan,
   faShieldAlt 
 } from '@fortawesome/free-solid-svg-icons';
-import { TransactionProgressProps } from './types';
+import { QueueItemStatusProps } from './types';
 
-export const TransactionProgress: React.FC<TransactionProgressProps> = ({
+export const QueueItemStatus: React.FC<QueueItemStatusProps> = ({
   status,
-  progress = 0
 }) => {
   const getStatusConfig = () => {
     switch (status) {
-      case 'pending':
+      case 'queued':
         return {
           icon: faClock,
           color: 'text-text-secondary',
           bgColor: 'bg-text-secondary/20',
-          text: 'Pending'
+          text: 'Queued'
         };
-      case 'approving':
+      case 'pending':
         return {
           icon: faShieldAlt,
           color: 'text-yellow-400',
           bgColor: 'bg-yellow-400/20',
-          text: 'Approving...'
+          text: 'Pending...'
         };
       case 'executing':
         return {
@@ -50,13 +49,6 @@ export const TransactionProgress: React.FC<TransactionProgressProps> = ({
           color: 'text-red-400',
           bgColor: 'bg-red-400/20',
           text: 'Failed'
-        };
-      case 'cancelled':
-        return {
-          icon: faBan,
-          color: 'text-text-secondary',
-          bgColor: 'bg-text-secondary/20',
-          text: 'Cancelled'
         };
       default:
         return {
@@ -87,18 +79,6 @@ export const TransactionProgress: React.FC<TransactionProgressProps> = ({
             {config.text}
           </span>
         </div>
-
-        {/* Progress Bar */}
-        {(status === 'approving' || status === 'executing') && (
-          <div className="mt-1 w-full bg-dark-surface rounded-full h-1.5">
-            <div 
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                status === 'approving' ? 'bg-yellow-400' : 'bg-blue-400'
-              }`}
-              style={{ width: `${Math.min(progress, 100)}%` }}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

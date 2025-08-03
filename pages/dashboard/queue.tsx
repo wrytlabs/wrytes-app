@@ -190,7 +190,7 @@ export default function QueueManagePage() {
                       {/* Execute Button */}
                       <Button
                         onClick={() => executeTransaction(transaction.id)}
-                        disabled={isExecuting || transaction.status === 'completed' || transaction.status === 'cancelled'}
+                        disabled={isExecuting || transaction.status === 'completed' || transaction.status === 'failed'}
                         variant="primary"
                         size="sm"
                         className="px-3 py-1"
