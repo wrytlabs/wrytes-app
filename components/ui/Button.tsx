@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   const variants = {
     primary: 'bg-accent-orange text-white hover:bg-opacity-90 shadow-md hover:shadow-lg',
     secondary: 'bg-dark-card text-text-primary hover:bg-opacity-80 border border-text-muted',
-    outline: 'border text-accent-orange hover:bg-accent-orange hover:text-white',
+    outline: 'border border-accent-orange text-accent-orange hover:bg-accent-orange hover:text-white',
   };
 
   const sizes = {

@@ -11,11 +11,11 @@ import { SavingsOverviewProps } from './types';
 import { formatCompactNumber } from '@/lib/utils/format-handling';
 
 /**
- * SavingsOverview - Stats overview for savings page
+ * Overview - Stats overview for vaults page
  * Extracts and reuses the stats calculation logic
  * Uses new StatCard components for consistent display
  */
-export const SavingsOverview: React.FC<SavingsOverviewProps> = ({
+export const Overview: React.FC<SavingsOverviewProps> = ({
   stats,
   loading = false,
   className
@@ -93,4 +93,4 @@ export const SavingsOverview: React.FC<SavingsOverviewProps> = ({
   );
 };
 
-export default SavingsOverview;
+export default Overview;

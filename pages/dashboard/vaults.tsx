@@ -5,7 +5,7 @@ import { Vault } from '@/lib/vaults/types';
 import { VAULTS } from '@/lib/vaults/config';
 import Card from '@/components/ui/Card';
 import { PageHeader, Section } from '@/components/ui/Layout';
-import { SavingsOverview, VaultGrid } from '@/components/features/Vaults';
+import { Overview, VaultGrid } from '@/components/features/Vaults';
 import { useModal } from '@/hooks/ui/useModal';
 import { useToast } from '@/hooks/useToast';
 import { VaultDepositModal } from '@/components/features/Vaults/VaultDepositModal';
@@ -49,7 +49,7 @@ export default function VaultsPage() {
           badge={{ text: "LIVE", variant: "success" }}
         />
 
-        <SavingsOverview />
+        <Overview />
 
         <Section>
           <Card>

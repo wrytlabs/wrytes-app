@@ -14,6 +14,7 @@ import {
 import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 import { cn } from '@/lib/utils';
 import { Button, Card, StatGrid, PageHeader, showToast } from '@/components/ui';
+import { Section } from '@/components/ui/Layout';
 
 export default function QueueManagePage() {
   const {
@@ -118,160 +119,195 @@ export default function QueueManagePage() {
           icon={faHistory}
         />
 
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={executeAll}
-            disabled={isExecuting}
-            variant="primary"
-            size="md"
-            icon={<FontAwesomeIcon icon={faPlay} className="w-4 h-4 mr-2" />}
-          >
-            Execute All ({pendingCount})
-          </Button>
-
-          <Button
-            onClick={clearAll}
-            variant="outline"
-            size="md"
-            icon={<FontAwesomeIcon icon={faBroom} className="w-4 h-4 mr-2" />}
-            className="text-red-400 border-red-400 hover:bg-red-400/20 hover:text-white"
+        {/* Queue Actions */}
+        <Section>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <Button
+              onClick={executeAll}
+              disabled={isExecuting || pendingCount === 0}
+              variant="primary"
+              size="md"
+              icon={<FontAwesomeIcon icon={faPlay} className="w-4 h-4 mr-2" />}
+              className="flex-1 sm:flex-none"
             >
-            Clear All
-          </Button>
-        </div>
+              Execute All ({pendingCount})
+            </Button>
 
-        {/* Stats using StatGrid component */}
-        <StatGrid
-          stats={queueStats}
-          columns={{
-            base: 1,
-            md: 2,
-            lg: 4
-          }}
-        />
+            <Button
+              onClick={clearAll}
+              disabled={transactions.length === 0}
+              variant="outline"
+              size="md"
+              icon={<FontAwesomeIcon icon={faBroom} className="w-4 h-4 mr-2" />}
+              className="text-red-400 border-red-400 hover:bg-red-400/20 hover:text-white flex-1 sm:flex-none"
+              >
+              Clear All
+            </Button>
+          </div>
+        </Section>
 
-        {/* Transaction List using Card component and RecentActivity styling */}
-        <Card>
-          <h2 className="text-xl font-bold text-white mb-4">Transaction Queue</h2>
+        {/* Stats */}
+        <Section>
+          <StatGrid
+            stats={queueStats}
+            columns={{
+              base: 1,
+              md: 4,
+            }}
+          />
+        </Section>
+
+        {/* Transaction List */}
+        <Section
+          title="Transaction Queue"
+          description={`${transactions.length} transaction${transactions.length !== 1 ? 's' : ''} in queue`}
+        >
           {transactions.length === 0 ? (
-            <div className="text-center py-8">
-              <FontAwesomeIcon icon={faHistory} className="w-16 h-16 text-text-secondary mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">No transactions found</h3>
-              <p className="text-text-secondary">
-                Your transaction queue is empty
-              </p>
-            </div>
+            <Card>
+              <div className="text-center py-12">
+                <FontAwesomeIcon icon={faHistory} className="w-16 h-16 text-text-secondary mb-4" />
+                <h3 className="text-lg font-semibold text-white mb-2">No transactions found</h3>
+                <p className="text-text-secondary">
+                  Your transaction queue is empty
+                </p>
+              </div>
+            </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 grid grid-cols-1">
               {transactions.map((transaction, index) => (
-                <div
-                  key={transaction.id}
-                  className="p-4 bg-dark-surface/50 rounded-lg transition-all duration-200 hover:bg-dark-surface/70"
+                 <Card
+                 key={transaction.id}
                 >
-                  {/* Main Transaction Row */}
-                  <div className="flex items-center gap-4">
-                    {/* Queue Controls - First */}
-                    <div className="flex flex-col gap-1">
-                      <button
-                        onClick={() => moveTransactionUp(transaction.id)}
-                        disabled={index === 0}
-                        className="p-1.5 text-text-secondary hover:text-accent-orange disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        title="Move up"
-                      >
-                        <FontAwesomeIcon icon={faArrowUp} className="w-3 h-3" />
-                      </button>
-
-                      <button
-                        onClick={() => moveTransactionDown(transaction.id)}
-                        disabled={index === transactions.length - 1}
-                        className="p-1.5 text-text-secondary hover:text-accent-orange disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        title="Move down"
-                      >
-                        <FontAwesomeIcon icon={faArrowDown} className="w-3 h-3" />
-                      </button>
-                    </div>
-
-                    {/* Transaction Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-white font-medium truncate">
-                          {transaction.title}
-                        </p>
-                        <div className={cn(
-                          'flex items-center gap-1 text-xs font-medium',
-                          transaction.status === 'completed' ? 'text-green-400' :
-                          transaction.status === 'failed' ? 'text-red-400' :
-                          transaction.status === 'executing' ? 'text-blue-400' :
-                          'text-yellow-400'
-                        )}>
-                          <div className={cn(
-                            'w-2 h-2 rounded-full',
-                            transaction.status === 'completed' ? 'bg-green-400' :
-                            transaction.status === 'failed' ? 'bg-red-400' :
-                            transaction.status === 'executing' ? 'bg-blue-400' :
-                            'bg-yellow-400'
-                          )} />
-                          {transaction.status}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="text-text-secondary text-sm">
-                          {transaction.subtitle}
-                        </p>
-                        <span className="text-text-secondary text-sm">•</span>
-                        <p className="text-text-secondary text-sm">
-                          {new Date(transaction.createdAt).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2">
-                      {/* Execute Button */}
-                      <Button
-                        onClick={() => executeTransaction(transaction.id)}
-                        disabled={isExecuting || transaction.status === 'completed'}
-                        variant="primary"
-                        size="sm"
-                        className="px-3 py-1"
-                      >
-                        Execute
-                      </Button>
-                      
-                      {/* Simulate Button */}
-                      <Button
-                        onClick={() => handleSimulate(transaction.id)}
-                        disabled={isExecuting || transaction.status === 'completed'}
-                        variant="primary"
-                        size="sm"
-                        className="px-3 py-1"
-                      >
-                        Simulate
-                      </Button>
-
-                      {/* Remove Button */}
-                      <Button
-                        onClick={() => removeTransaction(transaction.id)}
-                        variant="outline"
-                        size="sm"
-                        className="text-red-400 border-red-400 hover:bg-red-400/20 hover:text-white"
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    {/* Queue Controls - Top Left on Mobile, Left on Desktop */}
+                    <div className="flex flex-row sm:flex-col gap-2 self-start">
+                      <div className="flex md:flex-col items-center gap-2">
+                        <Button
+                          onClick={() => moveTransactionUp(transaction.id)}
+                          disabled={index === 0}
+                          variant="outline"
+                          size="sm"
+                          className="p-1.5 text-text-secondary hover:text-accent-orange border-text-muted hover:border-accent-orange"
+                          icon={<FontAwesomeIcon icon={faArrowUp} className="w-3 h-3" />}
                         >
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
+                          {""}
+                        </Button>
 
-                  {/* Error Message - Below the main row */}
-                  {transaction.error && (
-                    <div className="mt-3 p-2 bg-red-500/10 rounded text-red-400 text-xs max-h-30 overflow-y-auto w-full" style={{ overflowX: 'hidden' }}>
-                      {transaction.error}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                        <Button
+                          onClick={() => moveTransactionDown(transaction.id)}
+                          disabled={index === transactions.length - 1}
+                          variant="outline"
+                          size="sm"
+                          className="p-1.5 text-text-secondary hover:text-accent-orange border-text-muted hover:border-accent-orange"
+                          icon={<FontAwesomeIcon icon={faArrowDown} className="w-3 h-3" />}
+                        >
+                          {""}
+                        </Button>
+                      </div>
+                     
+                     {/* Status Indicator - Mobile Only */}
+                     <div className="flex sm:hidden items-center gap-2 ml-2">
+                       <div className={cn(
+                         'flex items-center gap-1 text-xs font-medium',
+                         transaction.status === 'completed' ? 'text-green-400' :
+                         transaction.status === 'failed' ? 'text-red-400' :
+                         transaction.status === 'executing' ? 'text-blue-400' :
+                         'text-yellow-400'
+                       )}>
+                         <div className={cn(
+                           'w-2 h-2 rounded-full',
+                           transaction.status === 'completed' ? 'bg-green-400' :
+                           transaction.status === 'failed' ? 'bg-red-400' :
+                           transaction.status === 'executing' ? 'bg-blue-400' :
+                           'bg-yellow-400'
+                         )} />
+                         {transaction.status}
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* Transaction Info */}
+                   <div className="flex-1 min-w-0">
+                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                       <p className="text-white font-medium truncate">
+                         {transaction.title}
+                       </p>
+                       {/* Status Indicator - Desktop Only */}
+                       <div className={cn(
+                         'hidden sm:flex items-center gap-1 text-xs font-medium',
+                         transaction.status === 'completed' ? 'text-green-400' :
+                         transaction.status === 'failed' ? 'text-red-400' :
+                         transaction.status === 'executing' ? 'text-blue-400' :
+                         'text-yellow-400'
+                       )}>
+                         <div className={cn(
+                           'w-2 h-2 rounded-full',
+                           transaction.status === 'completed' ? 'bg-green-400' :
+                           transaction.status === 'failed' ? 'bg-red-400' :
+                           transaction.status === 'executing' ? 'bg-blue-400' :
+                           'bg-yellow-400'
+                         )} />
+                         {transaction.status}
+                       </div>
+                     </div>
+                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
+                       <p className="text-text-secondary text-sm">
+                         {transaction.subtitle}
+                       </p>
+                       <span className="hidden sm:inline text-text-secondary text-sm">•</span>
+                       <p className="text-text-secondary text-sm">
+                         {new Date(transaction.createdAt).toLocaleString()}
+                       </p>
+                     </div>
+                   </div>
+
+                   {/* Action Buttons */}
+                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                     {/* Execute Button */}
+                     <Button
+                       onClick={() => executeTransaction(transaction.id)}
+                       disabled={isExecuting || transaction.status === 'completed'}
+                       variant="primary"
+                       size="sm"
+                       className="px-3 py-1"
+                     >
+                       Execute
+                     </Button>
+                     
+                     {/* Simulate Button */}
+                     <Button
+                       onClick={() => handleSimulate(transaction.id)}
+                       disabled={isExecuting || transaction.status === 'completed'}
+                       variant="primary"
+                       size="sm"
+                       className="px-3 py-1"
+                     >
+                       Simulate
+                     </Button>
+
+                     {/* Remove Button */}
+                     <Button
+                       onClick={() => removeTransaction(transaction.id)}
+                       variant="outline"
+                       size="sm"
+                       className="text-red-400 border-red-400 hover:bg-red-400/20 hover:text-white"
+                       >
+                       Remove
+                     </Button>
+                   </div>
+                 </div>
+
+                 {/* Error Message - Below the main row */}
+                 {transaction.error && (
+                   <div className="mt-3 p-2 bg-red-500/10 rounded text-red-400 text-xs max-h-30 overflow-y-auto w-full" style={{ overflowX: 'hidden' }}>
+                     {transaction.error}
+                   </div>
+                 )}
+               </Card>
+             ))}
+           </div>
           )}
-        </Card>
+        </Section>
       </div>
     </>
   );
