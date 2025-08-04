@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Vault } from '@/lib/vaults/types';
-import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
+import { useVaultActions, } from '@/lib/vaults/vault';
 import { useVaultUserData } from '@/hooks/vaults/useVaultUserData';
 import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
 import { ColoredBadge } from '@/components/ui/Badge';
 import { AmountInput } from '@/components/ui/AmountInput';
-import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
 import { erc4626ABI } from '@/lib/vaults/abi';
 
@@ -30,7 +30,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
   const [withdrawMode, setWithdrawMode] = useState<'withdraw' | 'redeem'>('redeem');
   
   const { isWithdrawing, isRedeeming, calculateAssetsFromShares, calculateSharesFromAssets } = useVaultActions(vault.address);
-  const { vaultBalance, vaultDecimals, vaultSymbol, assetDecimals, assetSymbol, loading: assetBalanceLoading } = useVaultUserData(vault);
+  const { vaultBalance, vaultDecimals, assetDecimals, assetSymbol, loading: assetBalanceLoading } = useVaultUserData(vault);
   const { apy, loading: vaultLoading } = useVaultData(vault);
   
   const { addTransaction } = useTransactionQueue();

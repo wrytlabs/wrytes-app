@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faList, faClock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 import { QueueIconProps } from './types';
 
 export const QueueIcon: React.FC<QueueIconProps> = ({ onClick, className = "" }) => {

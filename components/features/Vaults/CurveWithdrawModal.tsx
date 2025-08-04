@@ -5,7 +5,7 @@ import { useVaultActions, useVaultBalance } from '@/lib/vaults/vault';
 import { parseUnits, formatUnits } from 'viem';
 import { Vault } from '@/lib/vaults/types';
 import { AmountInput } from '@/components/ui/AmountInput';
-import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 
 interface CurveWithdrawModalProps {
   vault: Vault;
@@ -58,10 +58,12 @@ export const CurveWithdrawModal: React.FC<CurveWithdrawModalProps> = ({
       chainId: 1, // Ethereum mainnet
       type: withdrawMode === 'assets' ? 'withdraw' : 'redeem',
       contractAddress: vault.address,
-      // Note: For a real implementation, you'd need the actual function name, ABI, and args
-      // This is a simplified example
-      amount,
-      symbol: vault.symbol,
+      functionName: withdrawMode === 'assets' ? 'withdraw' : 'redeem',
+      abi: [] as any, // TODO: Add proper ABI
+      args: [] as readonly unknown[],
+      // Store amount and symbol in optional metadata fields
+      tokenAmount: amount,
+      tokenSymbol: vault.symbol,
     });
 
     // Close modal and trigger success callback

@@ -61,10 +61,4 @@ export type {
   VaultGridProps, 
   UseVaultDataReturn 
 } from '@/components/features/Vaults';
-export type {
-  UseModalReturn,
-  UseLoadingStateReturn,
-  UseToastActionsReturn,
-  ToastOptions,
-  ToastType
-} from '@/hooks/ui';
+export type { UseModalReturn } from '@/hooks/ui/types';

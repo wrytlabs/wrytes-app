@@ -1,4 +1,5 @@
 import { Abi } from 'viem';
+import { simulateContract } from '@wagmi/core/actions';
 
 export type TransactionStatus = 'queued' | 'pending' | 'executing' | 'completed' | 'failed';
 
@@ -18,8 +19,8 @@ export interface QueueTransaction {
   type: string; // Made generic - can be any transaction type
   status: TransactionStatus;
   error?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
   // Transaction parameters (generic)
   contractAddress: string;
   functionName: string;
@@ -45,7 +46,7 @@ export interface TransactionQueueContextType {
   transactions: QueueTransaction[];
   activeTransactionId: string | null;
   // transaction management
-  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' >[]) => Promise<string[]>;
+  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status'>[] | Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => Promise<string[]>;
   updateTransaction: (id: string, updates: Partial<QueueTransaction>) => Promise<void>;
   removeTransaction: (id: string) => void;
   retryTransaction: (id: string) => void;
@@ -62,6 +63,7 @@ export interface TransactionQueueContextType {
   executeTransaction: (id: string) => Promise<void>;
   executeBatch: (ids: string[]) => Promise<void>;
   executeAll: () => Promise<void>;
+  simulateTransaction: (id: string) => Promise<ExecutionResult>;
   isExecuting: boolean;
   // queue management
   moveTransactionUp: (id: string) => void;
@@ -82,6 +84,7 @@ export interface BatchExecutionOptions {
 export interface ExecutionResult {
   success: boolean;
   txHash?: string;
+  simulation?: ReturnType<typeof simulateContract>;
   error?: string;
   gasUsed?: bigint;
   blockNumber?: bigint;

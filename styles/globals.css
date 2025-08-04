@@ -90,3 +90,38 @@ html {
     transform: translateY(-10px);
   }
 }
+
+/* Custom Toast Styles - React Hot Toast */
+div[data-hot-toast-wrapper] div[role="status"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 16px !important;
+  position: relative !important;
+}
+
+div[data-hot-toast-wrapper] div[role="status"] > svg {
+  flex-shrink: 0 !important;
+}
+
+div[data-hot-toast-wrapper] div[role="status"] > div {
+  flex: 1 !important;
+  width: 100% !important;
+}
+
+/* Alternative selectors for react-hot-toast */
+.toast-container > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  position: relative !important;
+}
+
+.toast-container > div > svg {
+  flex-shrink: 0 !important;
+}
+
+.toast-container > div > div {
+  flex: 1 !important;
+}
+

@@ -10,7 +10,8 @@ import {
 import { QueueItemProps } from './types';
 import { QueueItemStatus } from './QueueItemStatus';
 import { getBlockExplorerUrl } from '@/lib/web3/config';
-import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
+import Button from '../Button';
 
 export const QueueItem: React.FC<QueueItemProps> = ({
   transaction,
@@ -92,47 +93,15 @@ export const QueueItem: React.FC<QueueItemProps> = ({
           )}
 
           {canExecute && !isCurrentlyExecuting && (
-            <button
+            <Button
               onClick={() => executeTransaction(transaction.id)}
               disabled={isExecuting}
-              className="p-1.5 text-green-400 hover:text-green-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Execute transaction"
+              variant="primary"
+              size="sm"
+              icon={<FontAwesomeIcon icon={faPlay} className="w-3 h-3" />}
             >
-              <FontAwesomeIcon icon={faPlay} className="w-3 h-3" />
-            </button>
-          )}
-
-          {canRetry && !isCurrentlyExecuting && (
-            <button
-              onClick={() => onRetry(transaction.id)}
-              disabled={isExecuting}
-              className="p-1.5 text-yellow-400 hover:text-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Retry transaction"
-            >
-              <FontAwesomeIcon icon={faRedo} className="w-3 h-3" />
-            </button>
-          )}
-
-          {canCancel && !isCurrentlyExecuting && (
-            <button
-              onClick={() => onCancel(transaction.id)}
-              disabled={isExecuting}
-              className="p-1.5 text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Cancel transaction"
-            >
-              <FontAwesomeIcon icon={faTimes} className="w-3 h-3" />
-            </button>
-          )}
-
-          {canRemove && !isCurrentlyExecuting && (
-            <button
-              onClick={() => onRemove(transaction.id)}
-              disabled={isExecuting}
-              className="p-1.5 text-text-secondary hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Remove from queue"
-            >
-              <FontAwesomeIcon icon={faTrash} className="w-3 h-3" />
-            </button>
+              Execute
+            </Button>
           )}
         </div>
       </div>

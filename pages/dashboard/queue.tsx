@@ -11,12 +11,9 @@ import {
   faExclamationTriangle,
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
-import Button from '@/components/ui/Button';
-import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
-import { StatGrid } from '@/components/ui/Stats';
-import Card from '@/components/ui/Card';
+import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 import { cn } from '@/lib/utils';
-import { PageHeader } from '@/components/ui/Layout';
+import { Button, Card, StatGrid, PageHeader, showToast } from '@/components/ui';
 
 export default function QueueManagePage() {
   const {
@@ -26,6 +23,7 @@ export default function QueueManagePage() {
     clearAll,
     executeAll,
     executeTransaction,
+    simulateTransaction,
     removeTransaction,
     getTransactionsByStatus,
     getPendingCount,
@@ -63,6 +61,47 @@ export default function QueueManagePage() {
       color: 'purple' as const,
     }
   ];
+
+  // Handle simulation with toast notifications
+  const handleSimulate = async (transactionId: string) => {
+    try {
+      const result = await simulateTransaction(transactionId);
+      
+      if (result?.success) {
+        const transaction = transactions.find(tx => tx.id === transactionId);
+        showToast.success(
+          `Simulation successful for "${transaction?.title || 'Transaction'}"`,
+          {
+            duration: 4000,
+            id: `simulate-success-${transactionId}`,
+          }
+        );
+        
+        // You could also be helpful for debugging
+        if (result.simulation) {
+          console.log('Simulation data:', result.simulation);
+        }
+      } else {
+        const transaction = transactions.find(tx => tx.id === transactionId);
+        showToast.error(
+          `Simulation failed for "${transaction?.title || 'Transaction'}": ${result?.error || 'Unknown error'}`,
+          {
+            duration: 6000,
+            id: `simulate-error-${transactionId}`,
+          }
+        );
+      }
+    } catch (error) {
+      showToast.error(
+        'Failed to simulate transaction',
+        {
+          duration: 6000,
+          id: `simulate-error-catch-${transactionId}`,
+        }
+      );
+      console.error('Simulation error:', error);
+    }
+  };
 
   return (
     <>
@@ -181,7 +220,7 @@ export default function QueueManagePage() {
                         </p>
                         <span className="text-text-secondary text-sm">•</span>
                         <p className="text-text-secondary text-sm">
-                          {transaction.createdAt.toLocaleTimeString()}
+                          {new Date(transaction.createdAt).toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -197,6 +236,17 @@ export default function QueueManagePage() {
                         className="px-3 py-1"
                       >
                         Execute
+                      </Button>
+                      
+                      {/* Simulate Button */}
+                      <Button
+                        onClick={() => handleSimulate(transaction.id)}
+                        disabled={isExecuting || transaction.status === 'completed'}
+                        variant="primary"
+                        size="sm"
+                        className="px-3 py-1"
+                      >
+                        Simulate
                       </Button>
 
                       {/* Remove Button */}

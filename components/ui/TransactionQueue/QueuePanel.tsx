@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faTrash, faHistory, faPlayCircle } from '@fortawesome/free-solid-svg-icons';
-import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 import { QueuePanelProps } from './types';
 import { QueueItem } from './QueueItem';
 

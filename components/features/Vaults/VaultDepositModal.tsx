@@ -8,7 +8,7 @@ import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
 import { ColoredBadge } from '@/components/ui/Badge';
 import { AmountInput } from '@/components/ui/AmountInput';
-import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
+import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 import { erc4626ABI } from '@/lib/vaults/abi';
 import { useAppKitAccount } from '@reown/appkit/react';
 import { formatCompactNumber, shortenAddress } from '@/lib/utils/format-handling';

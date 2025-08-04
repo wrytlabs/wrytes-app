@@ -54,6 +54,41 @@ export class TransactionExecutor {
   }
 
   /**
+   * Simulate a single transaction - now fully generic
+   */
+  public async simulateTransaction(
+    queueTx: QueueTransaction,
+    userAddress: `0x${string}`,
+  ): Promise<ExecutionResult> {
+    try {
+      // Prepare the transaction
+      const preparation = await this.prepareTransaction(queueTx, userAddress);
+
+      // Simulate the transaction first to catch errors early
+      const simulation = await simulateContract(WAGMI_CONFIG, {
+          chainId: preparation.chainId,
+          address: preparation.contractAddress,
+          abi: preparation.abi,
+          functionName: preparation.functionName,
+          args: preparation.args,
+          account: userAddress,
+          value: preparation.value,
+        });
+      
+      return {
+        success: true,
+        simulation: simulation as unknown as ReturnType<typeof simulateContract>,
+      };
+    } catch (error) {
+      console.error('Transaction execution failed:', error);
+      return {
+        success: false,
+        error: this.formatError(error),
+      };
+    }
+  }
+
+  /**
    * Execute a single transaction - now fully generic
    */
   public async executeTransaction(
@@ -183,7 +218,6 @@ export class TransactionExecutor {
    * Format error messages for user display
    */
   private formatError(error: unknown): string {
-    console.log('error', error);
     if (error instanceof Error) {
       // Extract user-friendly messages from common errors
       if (error.message.includes('User rejected')) {
@@ -195,7 +229,7 @@ export class TransactionExecutor {
       if (error.message.includes('ERC20InsufficientAllowance')) {
         return 'Insufficient allowance';
       }
-      return error.message;
+      return error.message.split('\n').splice(0, 5).join('\n');
     }
     return 'Unknown error occurred';
   }
