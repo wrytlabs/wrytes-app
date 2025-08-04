@@ -11,6 +11,7 @@ import { AmountInput } from '@/components/ui/AmountInput';
 import { useTransactionQueue } from '@/contexts/TransactionQueueContext';
 import { erc4626ABI } from '@/lib/vaults/abi';
 import { useAppKitAccount } from '@reown/appkit/react';
+import { formatCompactNumber, shortenAddress } from '@/lib/utils/format-handling';
 
 interface VaultDepositModalProps {
   vault: Vault;
@@ -67,14 +68,35 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
       const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
       const amountInWei = parseUnits(amount, decimalsToUse);
       
+      // approve tx
+      const approveTitle = `Approve ${formatCompactNumber(amount)} ${assetSymbol} to Vault ${vault.name}`;
+      const approveSubtitle = `Receiver of shares is ${shortenAddress(userAddress as `0x${string}`)}`;
+
+      // vault action tx
       const transactionTitle = depositMode === 'deposit' 
-        ? `Deposit ${amount} ${assetSymbol} to ${vault.name}`
-        : `Mint ${amount} ${vault.symbol} shares from ${vault.name}`;
-      
-      const transactionSubtitle = `Vault: ${vault.name} | Amount: ${amount} ${depositMode === 'deposit' ? assetSymbol : vault.symbol}`;
+        ? `Deposit ${formatCompactNumber(amount)} ${assetSymbol} to ${vault.name}`
+        : `Mint ${formatCompactNumber(amount)} ${vault.symbol} shares from ${vault.name}`;
+      const transactionSubtitle = `Receiver of shares is ${shortenAddress(userAddress as `0x${string}`)}`;
       
       // Add transaction to queue
-      const queueTransaction = await addTransaction({
+      const queueTransactions = await addTransaction([
+        {
+          title: approveTitle,
+          subtitle: approveSubtitle,
+          chainId: 1, // Ethereum mainnet
+          type: 'approve',
+          contractAddress: vault.asset.address,
+          abi: erc4626ABI,
+          functionName: 'approve',
+          args: [vault.address, amountInWei],
+          value: '0',
+          // Token metadata for UI display
+          tokenAddress: vault.asset.address,
+          tokenDecimals: decimalsToUse,
+          tokenAmount: amount,
+          tokenSymbol: depositMode === 'deposit' ? assetSymbol : vault.symbol,
+        },
+        {
         title: transactionTitle,
         subtitle: transactionSubtitle,
         chainId: 1, // Ethereum mainnet
@@ -84,7 +106,6 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
         functionName: depositMode === 'deposit' ? 'deposit' : 'mint',
         args: [amountInWei, userAddress as `0x${string}`],
         value: '0',
-        gasLimit: '300000',
         // Token metadata for UI display
         tokenAddress: vault.asset.address,
         tokenDecimals: decimalsToUse,
@@ -95,7 +116,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
         tokenOutDecimals: depositMode === 'deposit' ? vault.decimals : assetDecimals,
         tokenOutAmount: depositMode === 'deposit' ? calculateEstimatedShares() : amount,
         tokenOutSymbol: depositMode === 'deposit' ? vault.symbol : assetSymbol,
-      });
+      }]);
 
       // Trigger success callback if provided
       onSuccess();

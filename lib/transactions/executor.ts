@@ -58,22 +58,25 @@ export class TransactionExecutor {
    */
   public async executeTransaction(
     queueTx: QueueTransaction,
-    userAddress: `0x${string}`
+    userAddress: `0x${string}`,
+    simulate: boolean = true
   ): Promise<ExecutionResult> {
     try {
       // Prepare the transaction
       const preparation = await this.prepareTransaction(queueTx, userAddress);
 
       // Simulate the transaction first to catch errors early
-      await simulateContract(WAGMI_CONFIG, {
-        chainId: preparation.chainId,
-        address: preparation.contractAddress,
-        abi: preparation.abi,
-        functionName: preparation.functionName,
-        args: preparation.args,
-        account: userAddress,
-        value: preparation.value,
-      });
+      if (simulate) {
+        await simulateContract(WAGMI_CONFIG, {
+          chainId: preparation.chainId,
+          address: preparation.contractAddress,
+          abi: preparation.abi,
+          functionName: preparation.functionName,
+          args: preparation.args,
+          account: userAddress,
+          value: preparation.value,
+        });
+      }
 
       // Execute the transaction
       const txHash = await writeContract(WAGMI_CONFIG, {
@@ -114,7 +117,7 @@ export class TransactionExecutor {
       
       try {
         // Execute the transaction
-        const result = await this.executeTransaction(queueTx, userAddress);
+        const result = await this.executeTransaction(queueTx, userAddress, false);
         results.push({ id: queueTx.id, result });
 
         // Add delay between transactions to avoid nonce issues
@@ -180,16 +183,17 @@ export class TransactionExecutor {
    * Format error messages for user display
    */
   private formatError(error: unknown): string {
+    console.log('error', error);
     if (error instanceof Error) {
       // Extract user-friendly messages from common errors
-      if (error.message.includes('insufficient')) {
-        return 'Insufficient balance or allowance';
-      }
-      if (error.message.includes('gas')) {
-        return 'Transaction failed due to gas issues';
-      }
-      if (error.message.includes('rejected')) {
+      if (error.message.includes('User rejected')) {
         return 'Transaction was rejected by user';
+      }
+      if (error.message.includes('insufficient')) {
+        return 'Insufficient balance';
+      }
+      if (error.message.includes('ERC20InsufficientAllowance')) {
+        return 'Insufficient allowance';
       }
       return error.message;
     }

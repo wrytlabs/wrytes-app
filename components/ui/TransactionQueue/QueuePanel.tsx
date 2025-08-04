@@ -60,7 +60,7 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
   );
 
   const pendingTransactions = transactions.filter(tx => 
-    tx.status === 'pending' || tx.status === 'failed'
+    tx.status === 'queued' || tx.status === 'pending' || tx.status === 'executing'
   );
 
   const hasCompletedTransactions = completedTransactions.length > 0;
@@ -135,9 +135,7 @@ export const QueuePanel: React.FC<QueuePanelProps> = ({
             </div>
           ) : (
             <div className="p-4 space-y-3">
-              {transactions
-                .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-                .map(transaction => (
+              {transactions.map(transaction => (
                   <QueueItem
                     key={transaction.id}
                     transaction={transaction}

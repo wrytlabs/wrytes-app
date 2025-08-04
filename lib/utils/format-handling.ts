@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { Address, getAddress } from 'viem';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -102,3 +103,15 @@ export function capLetter(data: string) {
 	return data.charAt(0).toUpperCase() + data.slice(1);
 }
 
+export const shortenString = (str: string, start = 8, end = 6) => {
+	return str.substring(0, start) + '...' + str.substring(str.length - end);
+};
+
+export const shortenAddress = (address: Address): string => {
+	try {
+		const formattedAddress = getAddress(address);
+		return shortenString(formattedAddress);
+	} catch {
+		throw new TypeError("Invalid input, address can't be parsed");
+	}
+};

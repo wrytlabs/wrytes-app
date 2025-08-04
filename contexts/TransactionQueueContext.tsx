@@ -54,35 +54,35 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
   }, []);
 
   const addTransaction = useCallback(async (
-    transactionData: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' >
-  ): Promise<string> => {
+    transactionData: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' >[]
+  ): Promise<string[]> => {
     const now = new Date();
-    const transactionsToAdd: QueueTransaction[] = [];
+    const transactionsToAdd: QueueTransaction[] = [...transactions];
 
-    // Create the main transaction
-    const mainId = uuidv4();
-    const mainTransaction: QueueTransaction = {
-      ...transactionData,
-      id: mainId,
-      status: 'pending',
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    transactionsToAdd.push(mainTransaction);
+    for (const tx of transactionData) {
+      const id = uuidv4();
+      const transaction: QueueTransaction = {
+        ...tx,
+        id,
+        status: 'queued',
+        createdAt: now,
+        updatedAt: now,
+      };
+      transactionsToAdd.push(transaction);
+    }    
 
     // Add all transactions to the queue
-    saveTransactions([...transactions, ...transactionsToAdd]);
+    saveTransactions(transactionsToAdd);
     
     // Auto-start if no active transaction
     if (!activeTransactionId && transactionsToAdd.length > 0) {
       saveActiveTransactionId(transactionsToAdd[0].id);
     }
     
-    return mainId; // Return the main transaction ID
+    return transactionsToAdd.map(tx => tx.id);
   }, [transactions, activeTransactionId, saveTransactions, saveActiveTransactionId]);
 
-  const updateTransaction = useCallback((id: string, updates: Partial<QueueTransaction>) => {
+  const updateTransaction = useCallback(async (id: string, updates: Partial<QueueTransaction>) => {
     const updated = transactions.map(tx =>
       tx.id === id
         ? { ...tx, ...updates, updatedAt: new Date() }
@@ -126,7 +126,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
 
   const getPendingCount = useCallback(() => {
     return transactions.filter(tx => 
-      tx.status === 'pending' || tx.status === 'executing'
+      tx.status === 'queued' || tx.status === 'pending' || tx.status === 'executing' || tx.status === 'failed'
     ).length;
   }, [transactions]);
 
@@ -147,7 +147,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
       return;
     }
 
-    if (transaction.status !== 'pending' && transaction.status !== 'failed') {
+    if (transaction.status !== 'queued' && transaction.status !== 'pending' && transaction.status !== 'failed') {
       console.error('Transaction is not in executable state:', transaction.status);
       return;
     }
@@ -195,45 +195,74 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
     const transactionsToExecute = ids
       .map(id => getTransactionById(id))
       .filter((tx): tx is QueueTransaction => 
-        tx !== undefined && (tx.status === 'pending' || tx.status === 'failed')
+        tx !== undefined && (tx.status === 'queued' || tx.status === 'pending' || tx.status === 'failed')
       );
 
     if (transactionsToExecute.length === 0) {
       console.error('No executable transactions found');
       return;
     }
-
+      
     try {
       setIsExecuting(true);
-
-      // Mark all transactions as executing
-      transactionsToExecute.forEach(tx => {
-        updateTransaction(tx.id, {
-          status: 'executing',
+        
+      // Mark all transactions as pending
+      const pendingTransactions: QueueTransaction[] = [];
+      for (const tx of transactionsToExecute) {
+        const transaction: QueueTransaction = {
+          ...tx,
+          status: 'pending',
           error: undefined,
-        });
-      });
+        };
+        pendingTransactions.push(transaction);
+      } 
 
-      // Execute transactions sequentially
-      const results = await executor.executeSequential(
-        transactionsToExecute,
-        userAddress as `0x${string}`
-      );
+      saveTransactions(pendingTransactions);
 
-      // Update final results
-      results.forEach(({ id, result }) => {
-        if (result.success) {
-          updateTransaction(id, {
-            status: 'completed',
-            txHash: result.txHash,
-          });
-        } else {
-          updateTransaction(id, {
-            status: 'failed',
-            error: result.error,
-          });
-        }
-      });
+      // // Execute transactions sequentially
+      // const results = await executor.executeSequential(
+      //   transactionsToExecute,
+      //   userAddress as `0x${string}`
+      // );
+
+      // console.log('results', results);
+
+      // // Update final results
+      // results.forEach(async ({ id, result }) => {
+      //   if (result.success) {
+      //     await updateTransaction(id, {
+      //       status: 'completed',
+      //       txHash: result.txHash,
+      //     });
+      //   } else {
+      //     await updateTransaction(id, {
+      //       status: 'failed',
+      //       error: result.error,
+      //     });
+      //   }
+      // });
+
+      for (const tx of transactionsToExecute) {
+            // Update transaction status to executing
+            updateTransaction(tx.id, {
+              status: 'executing',
+              error: undefined,
+            });
+      
+            const result = await executor.executeTransaction(tx, userAddress as `0x${string}`, false);
+      
+            if (result.success) {
+              updateTransaction(tx.id, {
+                status: 'completed',
+                txHash: result.txHash,
+              });
+            } else {
+              updateTransaction(tx.id, {
+                status: 'failed',
+                error: result.error,
+              });
+            }
+      }
     } catch (error) {
       // Mark all as failed on batch error
       transactionsToExecute.forEach(tx => {
@@ -250,7 +279,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
 
   const executeAll = useCallback(async () => {
     const pendingIds = transactions
-      .filter(tx => tx.status === 'pending' || tx.status === 'failed')
+      .filter(tx => tx.status === 'queued' || tx.status === 'pending' || tx.status === 'failed')
       .map(tx => tx.id);
     
     if (pendingIds.length > 0) {
@@ -322,7 +351,7 @@ export const TransactionQueueProvider: React.FC<TransactionQueueProviderProps> =
 
   const getPendingTransactions = useCallback(() => {
     return transactions.filter(tx => 
-      tx.status === 'pending' || tx.status === 'executing'
+      tx.status === 'queued' || tx.status === 'pending' || tx.status === 'executing' || tx.status === 'failed'
     );
   }, [transactions]);
 

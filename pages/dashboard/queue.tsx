@@ -80,24 +80,25 @@ export default function QueueManagePage() {
         />
 
         <div className="flex items-center gap-3">
-          {pendingCount > 0 && (
-            <button
-              onClick={executeAll}
-              disabled={isExecuting}
-              className="px-4 py-2 bg-green-500/20 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
-            >
-              <FontAwesomeIcon icon={faPlay} className="w-4 h-4 mr-2" />
-              Execute All ({pendingCount})
-            </button>
-          )}
-
-          <button
-            onClick={clearAll}
-            className="px-4 py-2 bg-red-500/20 hover:bg-red-600 text-white font-medium rounded-lg transition-colors"
+          <Button
+            onClick={executeAll}
+            disabled={isExecuting}
+            variant="primary"
+            size="md"
+            icon={<FontAwesomeIcon icon={faPlay} className="w-4 h-4 mr-2" />}
           >
-            <FontAwesomeIcon icon={faBroom} className="w-4 h-4 mr-2" />
+            Execute All ({pendingCount})
+          </Button>
+
+          <Button
+            onClick={clearAll}
+            variant="outline"
+            size="md"
+            icon={<FontAwesomeIcon icon={faBroom} className="w-4 h-4 mr-2" />}
+            className="text-red-400 border-red-400 hover:bg-red-400/20 hover:text-white"
+            >
             Clear All
-          </button>
+          </Button>
         </div>
 
         {/* Stats using StatGrid component */}
@@ -190,7 +191,7 @@ export default function QueueManagePage() {
                       {/* Execute Button */}
                       <Button
                         onClick={() => executeTransaction(transaction.id)}
-                        disabled={isExecuting || transaction.status === 'completed' || transaction.status === 'failed'}
+                        disabled={isExecuting || transaction.status === 'completed'}
                         variant="primary"
                         size="sm"
                         className="px-3 py-1"
@@ -203,8 +204,8 @@ export default function QueueManagePage() {
                         onClick={() => removeTransaction(transaction.id)}
                         variant="outline"
                         size="sm"
-                        className="px-3 py-1 text-red-400 border-red-400 hover:bg-red-400 hover:text-white"
-                      >
+                        className="text-red-400 border-red-400 hover:bg-red-400/20 hover:text-white"
+                        >
                         Remove
                       </Button>
                     </div>

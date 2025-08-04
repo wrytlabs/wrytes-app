@@ -45,8 +45,8 @@ export interface TransactionQueueContextType {
   transactions: QueueTransaction[];
   activeTransactionId: string | null;
   // transaction management
-  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' >) => Promise<string>;
-  updateTransaction: (id: string, updates: Partial<QueueTransaction>) => void;
+  addTransaction: (transaction: Omit<QueueTransaction, 'id' | 'createdAt' | 'updatedAt' | 'status' >[]) => Promise<string[]>;
+  updateTransaction: (id: string, updates: Partial<QueueTransaction>) => Promise<void>;
   removeTransaction: (id: string) => void;
   retryTransaction: (id: string) => void;
   cancelTransaction: (id: string) => void;

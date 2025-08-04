@@ -51,20 +51,18 @@ export const QueueItem: React.FC<QueueItemProps> = ({
           {/* Transaction Info */}
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-white font-medium text-sm">
-                {transaction.title}
-              </span>
-            </div>
-            <div className="text-text-secondary text-xs mt-0.5">
               <a
                 href={getBlockExplorerUrl(`address/${transaction.contractAddress}`, transaction.chainId)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-accent-orange transition-colors cursor-pointer"
+                className="text-white font-medium text-sm hover:text-accent-orange transition-colors cursor-pointer"
                 title={`View contract: ${transaction.contractAddress}`}
               >
-                {transaction.subtitle}
+                {transaction.title}
               </a>
+            </div>
+            <div className="text-text-secondary text-xs mt-0.5">
+              {transaction.subtitle}
             </div>
           </div>
         </div>
