@@ -26,12 +26,12 @@ export default function VaultsPage() {
 
   const handleDepositSuccess = (vault: Vault) => {
     depositModal.close();
-    success(`Successfully deposited to ${vault.name}`);
+    success(`Added deposit to ${vault.name} to queue`);
   };
 
   const handleWithdrawSuccess = (vault: Vault) => {
     withdrawModal.close();
-    success(`Successfully withdrew from ${vault.name}`);
+    success(`Added withdrawal from ${vault.name} to queue`);
   };
 
   return (

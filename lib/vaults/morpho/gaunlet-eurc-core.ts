@@ -6,26 +6,26 @@ import { Vault } from "../types";
 import { apolloClient } from "../../graphql/client";
 import { GET_VAULT_METRICS } from "../../graphql/queries/morpho";
 
-export const zchfVault: Vault = {
+export const gauntletEurcCoreVault: Vault = { 
   kind: 'morpho',
-  address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
-  name: 'Alpha ZCHF Vault',
-  symbol: 'aZCHF',
+  address: '0x2ed10624315b74a78f11FAbedAa1A228c198aEfB',
+  name: 'Gauntlet EURC Core',
+  symbol: 'gteurcc',
   decimals: 18,
   asset: {
-    address: '0xb58e61c3098d85632df34eecfb899a1ed80921cb',
-    name: 'ZCHF',
-    symbol: 'ZCHF',
+    address: '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c',
+    name: 'Euro Coin',
+    symbol: 'EURC',
     decimals: 18, 
   },
-  description: 'Earn yield on ZCHF deposits from native Morpho Vault',
+  description: 'Earn yield on EURC deposits from native Morpho Vault',
   apy: async () => {
     try {
       // Try to get Morpho data first
       const result = await apolloClient.query({
         query: GET_VAULT_METRICS,
         variables: { 
-          address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
+          address: '0x2ed10624315b74a78f11FAbedAa1A228c198aEfB',
           chainId: 1
         },
         fetchPolicy: 'network-only',
@@ -49,7 +49,7 @@ export const zchfVault: Vault = {
       const result = await apolloClient.query({
         query: GET_VAULT_METRICS,
         variables: { 
-          address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
+          address: '0x2ed10624315b74a78f11FAbedAa1A228c198aEfB',
           chainId: 1
         },
         fetchPolicy: 'network-only',
@@ -57,12 +57,12 @@ export const zchfVault: Vault = {
 
       if (result.data?.vaultByAddress?.state?.totalAssetsUsd) {
         return Number(result.data.vaultByAddress.state.totalAssetsUsd);
-      } 
+      }
 
       // Fallback to contract call
       const totalAssets = await readContract(WAGMI_CONFIG, {
         chainId: mainnet.id,
-        address: '0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63',
+        address: '0x2ed10624315b74a78f11FAbedAa1A228c198aEfB',
         abi: [
           {
             name: "totalAssets",
@@ -74,7 +74,8 @@ export const zchfVault: Vault = {
         ],
         functionName: 'totalAssets',
       });
-      return Number(formatUnits(totalAssets, 6));
+
+      return Number(formatUnits(totalAssets, 18));
     } catch (error) {
       console.error('Error reading Morpho vault TVL:', error);
       return 0;
@@ -82,9 +83,9 @@ export const zchfVault: Vault = {
   },
   riskLevel: 'low',
   chainId: 1,
-  strategy: 'ZCHF staking + yield farming + reward incentives',
-  link: `https://app.morpho.org/ethereum/vault/0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63`,
-  notes: 'This vault is curated by AlphaPing',
+  strategy: 'EURC staking + yield farming + reward incentives',
+  link: `https://app.morpho.org/ethereum/vault/0x2ed10624315b74a78f11FAbedAa1A228c198aEfB`,
+  notes: 'This vault is curated by Gauntlet Core',
   icon: 'vault',
   color: 'orange'
 }; 

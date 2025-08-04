@@ -70,7 +70,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
       
       const transactionTitle = withdrawMode === 'withdraw' 
         ? `Withdraw ${amount} ${assetSymbol} from ${vault.name}`
-        : `Redeem ${amount} ${vault.symbol} shares from ${vault.name}`;
+        : `Redeem ${amount} ${vault.symbol} from ${vault.name}`;
       
       const transactionSubtitle = `Vault: ${vault.name} | Amount: ${amount} ${withdrawMode === 'withdraw' ? assetSymbol : vault.symbol}`;
       

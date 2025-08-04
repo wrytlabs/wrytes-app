@@ -5,12 +5,16 @@ import { zchfSavings } from "./savings/zchf-savings";
 import { usduUsdc } from "./curve/usdu-usdc";
 import { zchfVault } from "./morpho/alpha-zchf-vault";
 import { daiUsdcUsdt } from "./curve/dai-usdc-usdt";
+import { gauntletEurcCoreVault } from "./morpho/gaunlet-eurc-core";
+import { alphaWethCoreVault } from "./morpho/alpha-wETH-core";
 
 export const VAULTS: Vault[] = [
   // Morpho
   alphaUsdcCoreVault,
-  usduCoreVault,
+  alphaWethCoreVault,
   zchfVault,
+  gauntletEurcCoreVault,
+  usduCoreVault,
 
   // Savings
   zchfSavings,

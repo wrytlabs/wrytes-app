@@ -69,14 +69,14 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
       const amountInWei = parseUnits(amount, decimalsToUse);
       
       // approve tx
-      const approveTitle = `Approve ${formatCompactNumber(amount)} ${assetSymbol} to Vault ${vault.name}`;
-      const approveSubtitle = `Receiver of shares is ${shortenAddress(userAddress as `0x${string}`)}`;
+      const approveTitle = `Approve ${formatCompactNumber(amount)} ${assetSymbol} to ${vault.name}`;
+      const approveSubtitle = `Receiver is ${shortenAddress(userAddress as `0x${string}`)}`;
 
       // vault action tx
       const transactionTitle = depositMode === 'deposit' 
         ? `Deposit ${formatCompactNumber(amount)} ${assetSymbol} to ${vault.name}`
         : `Mint ${formatCompactNumber(amount)} ${vault.symbol} shares from ${vault.name}`;
-      const transactionSubtitle = `Receiver of shares is ${shortenAddress(userAddress as `0x${string}`)}`;
+      const transactionSubtitle = `Receiver is ${shortenAddress(userAddress as `0x${string}`)}`;
       
       // Add transaction to queue
       const queueTransactions = await addTransaction([
