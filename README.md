@@ -1,4 +1,4 @@
-# Wrytes - DeFi Vault Management Platform
+# Wrytes - Professional DeFi Management Platform
 
 <div align="center">
 
@@ -8,13 +8,31 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?logo=tailwind-css)
 ![Wagmi](https://img.shields.io/badge/Wagmi-2.16.1-purple?logo=wagmi)
 
-**A production-ready DeFi vault management platform built for Wrytes AG**
+**A comprehensive DeFi management platform built for professional users**
 
 [Live Demo](https://wrytes.io) • [Documentation](./CLAUDE.md) • [API Docs](https://api.wrytes.io)
 
 </div>
 
 ---
+
+## 🎯 **Platform Vision**
+
+**Wrytes** is not just a vault management application - it's a **comprehensive DeFi management platform** designed with a **generic, extensible architecture**. The vault feature is merely the **first implementation** of a broader vision for professional DeFi portfolio management.
+
+### **🏗️ Core Design Philosophy:**
+- **🔄 Generic & Modular Architecture** - Every feature is designed to be extensible and reusable
+- **🧩 Component Reusability** - Maximize reuse of existing components before building new ones
+- **📱 Mobile-First Responsive** - Consistent patterns across all features
+- **🏢 Enterprise-Grade** - Built for professional/institutional users with proper error handling
+- **🔧 Feature-Based Structure** - Each major feature is self-contained and pluggable
+
+### **🚀 Platform Roadmap:**
+- **🏦 Vault Management** (Current) - Multi-protocol yield optimization
+- **📊 Portfolio Analytics** (Future) - Cross-protocol performance tracking
+- **⚙️ Strategy Builder** (Future) - Custom DeFi strategy creation
+- **🛡️ Risk Management** (Future) - Professional risk assessment tools
+- **🏛️ Institutional Tools** (Future) - Compliance and reporting features
 
 ## 🏢 About Wrytes AG
 
@@ -24,17 +42,7 @@
 - **Software Development & R&D** - Custom blockchain applications
 - **Yield Optimization** - Multi-protocol vault strategies
 
-## 🚀 What is This Platform?
-
-Wrytes is a sophisticated **DeFi vault management platform** that combines:
-
-- 🏦 **Multi-Protocol Integration** - Morpho, Curve, and custom savings vaults
-- 🔐 **Web3 Authentication** - Wallet-based auth with role management
-- 📊 **Real-Time Data** - Live APY, TVL, and performance metrics
-- 🎛️ **Admin Dashboard** - Complete user and system management
-- 🇨🇭 **Swiss Engineering** - Precision, reliability, and security
-
-## ✨ Key Features
+## ✨ Current Features
 
 ### 🔗 **Web3 Integration**
 - **Multi-Wallet Support** - MetaMask, WalletConnect, Coinbase, Safe
@@ -42,7 +50,7 @@ Wrytes is a sophisticated **DeFi vault management platform** that combines:
 - **Contract Interactions** - Seamless vault deposits/withdrawals
 - **Real-Time Balances** - Live user portfolio tracking
 
-### 🏦 **Vault Management**
+### 🏦 **Vault Management** *(First Feature)*
 - **Morpho Vaults** - Alpha USDC Core, USDU Core, ZCHF Vault
 - **Curve Pools** - DAI/USDC/USDT, USDU/USDC liquidity provision  
 - **Savings Vaults** - ZCHF native savings with time locks
@@ -94,32 +102,54 @@ Wrytes is a sophisticated **DeFi vault management platform** that combines:
 
 ```
 wrytes/
-├── pages/                    # Next.js Page Router
-│   ├── dashboard/           # Dashboard pages
-│   │   ├── index.tsx        # Main dashboard
-│   │   └── vaults.tsx       # Vault management
-│   └── admin/               # Admin panel
-├── components/              # React components
-│   ├── features/           # Feature-specific components
-│   │   ├── Dashboard/      # Dashboard components
-│   │   ├── Vaults/         # Vault management UI
-│   │   └── Admin/          # Admin panel components
-│   ├── ui/                 # Reusable UI components
-│   └── layout/             # Layout components
-├── lib/                    # Business logic & integrations
-│   ├── vaults/            # Vault configurations
-│   │   ├── morpho/        # Morpho vault configs
-│   │   ├── curve/         # Curve pool configs
-│   │   └── savings/       # Savings vault configs
-│   ├── graphql/           # Apollo Client & queries
-│   ├── auth/              # Authentication services
-│   └── web3/              # Web3 configuration
-├── hooks/                  # Custom React hooks
-│   ├── vaults/            # Vault data hooks
-│   ├── morpho/            # Morpho-specific hooks
-│   └── auth/              # Authentication hooks
-└── contexts/              # React Context providers
+├── components/              # 🧩 Reusable UI Components
+│   ├── ui/                 # Generic UI primitives (ALWAYS REUSE THESE)
+│   │   ├── Button.tsx      # Multi-variant button system
+│   │   ├── Card.tsx        # Flexible card component
+│   │   ├── Modal/          # Modal system with variants
+│   │   ├── Stats/          # Metric display components
+│   │   └── TransactionQueue/ # Generic transaction management
+│   ├── features/           # 🚀 Feature-specific components
+│   │   ├── Dashboard/      # Dashboard feature module
+│   │   ├── Vaults/         # Vault management (FIRST FEATURE)
+│   │   └── [Future]/       # Future feature modules
+│   ├── layout/             # 📐 Layout components
+│   └── sections/           # 🏠 Landing page sections
+├── hooks/                  # 🔗 Custom React hooks
+│   ├── ui/                 # Generic UI hooks
+│   ├── web3/               # Web3 interaction hooks
+│   ├── vaults/             # Vault-specific hooks
+│   └── [feature]/          # Feature-specific hooks
+├── lib/                    # 🛠️ Business logic & integrations
+│   ├── vaults/             # Vault configurations (extensible)
+│   ├── web3/               # Web3 configuration
+│   ├── graphql/            # GraphQL client & queries
+│   └── utils/              # Utility functions
+├── redux/                  # 📊 Global state management
+│   └── slices/             # Feature-specific slices
+└── pages/                  # 🚀 Next.js pages
 ```
+
+## 🧩 **Component Reusability Strategy**
+
+### **CRITICAL: Always Reuse Existing Components**
+
+**Before building new components, check these locations:**
+
+1. **`components/ui/`** - Generic UI primitives
+   - `Button.tsx` - Supports primary, secondary, ghost variants
+   - `Card.tsx` - Flexible card with header, content, footer
+   - `Modal/` - Complete modal system with confirm variants
+   - `Stats/` - Metric display with various layouts
+   - `TransactionQueue/` - Generic transaction management
+
+2. **`components/features/[existing-feature]/`** - Feature-specific patterns
+   - Reuse patterns from `Vaults/` for similar data management
+   - Adapt `Dashboard/` patterns for analytics features
+
+3. **`hooks/ui/`** - Generic UI hooks
+   - `useModal.ts` - Modal state management
+   - `useToast.ts` - Toast notification system
 
 ## 🚀 Quick Start
 
@@ -199,10 +229,10 @@ yarn analyze      # Analyze bundle size
 - **TypeScript Interfaces** - Comprehensive type definitions
 
 ### **State Management**
-- **React Context** - Global authentication and user state
+- **Redux Toolkit** - Global application state (transactions, user preferences)
 - **Apollo Client Cache** - GraphQL data caching and normalization
+- **React Context** - Authentication and theme management
 - **Local State** - Component-level UI state
-- **Custom Hooks** - Shared business logic and data fetching
 
 ### **Data Flow**
 ```
@@ -223,7 +253,7 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 - **🛠️ Moderator** - Limited admin functions
 - **👤 User** - Standard app access
 
-## 🏦 Vault System
+## 🏦 Vault System *(First Feature)*
 
 ### **Supported Protocols**
 
@@ -241,6 +271,46 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 - **📊 Contract Calls** - Direct blockchain data (fallback)
 - **💾 Apollo Cache** - 5-minute cache for performance
 
+## 🚀 **Feature Development Guidelines**
+
+### **New Feature Implementation Pattern:**
+
+1. **Create Feature Directory:**
+   ```
+   components/features/[FeatureName]/
+   ├── index.ts              # Feature exports
+   ├── types.ts              # Feature-specific types
+   ├── [FeatureName].tsx     # Main feature component
+   └── [sub-components].tsx  # Feature sub-components
+   ```
+
+2. **Create Feature Hooks:**
+   ```
+   hooks/[feature]/
+   ├── index.ts              # Hook exports
+   ├── use[Feature]Data.ts   # Data fetching
+   └── use[Feature]Actions.ts # Feature actions
+   ```
+
+3. **Add to Navigation:**
+   ```
+   lib/navigation/dashboard.ts
+   ```
+
+4. **Follow Existing Patterns:**
+   - Use `Vaults/` as reference for data-heavy features
+   - Use `Dashboard/` as reference for analytics features
+   - Reuse `ui/` components extensively
+
+### **Feature Integration Checklist:**
+- [ ] Reuse existing UI components from `components/ui/`
+- [ ] Create feature-specific hooks in `hooks/[feature]/`
+- [ ] Add to navigation system
+- [ ] Implement proper loading states
+- [ ] Add error boundaries
+- [ ] Include proper TypeScript types
+- [ ] Add to Redux if global state needed
+
 ## 🚧 Development Roadmap
 
 ### **Phase 1: Foundation** ✅ *Completed*
@@ -256,18 +326,18 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 - [x] Admin dashboard implementation
 
 ### **Phase 3: Vault Management** ✅ *Completed*
-- [x] Multi-protocol vault integration
+- [x] Multi-protocol vault integration *(First Feature)*
 - [x] Real-time APY and TVL data
 - [x] Morpho GraphQL API integration
 - [x] Vault deposit/withdrawal UI
 
-### **Phase 4: Advanced Features** 🔄 *In Progress*
-- [ ] Transaction execution (deposit/withdraw)
-- [ ] Portfolio analytics and reporting
-- [ ] Yield farming strategy automation
+### **Phase 4: Platform Expansion** 🔄 *In Progress*
+- [ ] Portfolio Analytics - Cross-protocol performance tracking
+- [ ] Strategy Builder - Custom DeFi strategy creation
+- [ ] Risk Management - Professional risk assessment tools
 - [ ] Mobile app development
 
-### **Phase 5: Enterprise** 📋 *Planned*
+### **Phase 5: Enterprise Features** 📋 *Planned*
 - [ ] Institutional client onboarding
 - [ ] Advanced risk management tools
 - [ ] Regulatory compliance features
@@ -288,14 +358,14 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 
 ### **🚀 2025 Q4 - Platform Launch**
 - Morpho protocol integration with GraphQL
-- Vault management system completion
+- Vault management system completion *(First Feature)*
 - Admin dashboard and user management
 - Production deployment and testing
 
 ### **📊 Current Status**
 - **Lines of Code**: ~15,000+ TypeScript/TSX
 - **Components**: 50+ reusable UI components
-- **Vaults Supported**: 6 across 3 protocols
+- **Vaults Supported**: 6 across 3 protocols *(First Feature)*
 - **Test Coverage**: Comprehensive TypeScript coverage
 
 ## 🤝 Contributing
@@ -316,6 +386,7 @@ We welcome contributions from the community! Please read our contributing guidel
 - **ESLint + Prettier** - Consistent code formatting
 - **Comprehensive type definitions** - Full type safety
 - **Component testing** - Test critical functionality
+- **Component reusability** - Always check existing components first
 
 ## 📄 License
 
@@ -340,5 +411,16 @@ This project is proprietary software of **Wrytes AG**. All rights reserved.
 **Built with 🇨🇭 Swiss precision by [Wrytes AG](https://wrytes.io)**
 
 *Empowering DeFi with professional-grade tools*
+
+**Remember: This is a Platform, Not Just a Vault App**
+
+The vault feature is the **first implementation** of a broader DeFi management platform. Every decision should consider:
+
+1. **How will this scale to other protocols?**
+2. **Can this pattern be reused for future features?**
+3. **Is this component generic enough for other use cases?**
+4. **Does this follow the established architecture patterns?**
+
+**Think platform-first, feature-second.**
 
 </div>
