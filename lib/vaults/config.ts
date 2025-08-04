@@ -7,6 +7,7 @@ import { zchfVault } from "./morpho/alpha-zchf-vault";
 import { daiUsdcUsdt } from "./curve/dai-usdc-usdt";
 import { gauntletEurcCoreVault } from "./morpho/gaunlet-eurc-core";
 import { alphaWethCoreVault } from "./morpho/alpha-wETH-core";
+import { stakedFalconUsd } from "./savings/staked-falcon-usd";
 
 export const VAULTS: Vault[] = [
   // Morpho
@@ -17,6 +18,7 @@ export const VAULTS: Vault[] = [
   usduCoreVault,
 
   // Savings
+  stakedFalconUsd,
   zchfSavings,
 
   // Curve

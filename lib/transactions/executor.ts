@@ -229,7 +229,7 @@ export class TransactionExecutor {
       if (error.message.includes('ERC20InsufficientAllowance')) {
         return 'Insufficient allowance';
       }
-      return error.message.split('\n').splice(0, 5).join('\n');
+      return error.message.split('\n').splice(0, 3).join('\n');
     }
     return 'Unknown error occurred';
   }
