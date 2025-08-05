@@ -6,7 +6,8 @@ import {
   faCoins,
   faVault,
   faExternalLinkAlt,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faUsers
 } from '@fortawesome/free-solid-svg-icons';
 import { cn } from '@/lib/utils';
 import Card from '@/components/ui/Card';
@@ -137,11 +138,25 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         </div>
         <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.strategy}</p>
 
-        <div className="flex items-center gap-2 mb-1">
-            <FontAwesomeIcon icon={faExclamationTriangle} className="w-3 h-3 text-text-secondary" />
-            <p className="text-text-secondary text-xs font-medium">Notes</p>
+        { vault.managedBy && (
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <FontAwesomeIcon icon={faUsers} className="w-3 h-3 text-text-secondary" />
+              <p className="text-text-secondary text-xs font-medium">Curated / Managed By</p>
+            </div>
+            <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.managedBy}</p>
           </div>
-          <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.notes}</p>
+        )}
+
+        { vault.notes && (
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <FontAwesomeIcon icon={faExclamationTriangle} className="w-3 h-3 text-text-secondary" />
+              <p className="text-text-secondary text-xs font-medium">Notes</p>
+            </div>
+            <p className="text-text-secondary text-xs flex-1 h-[40px] pb-2">{vault.notes}</p>
+          </div>
+        )}
       </div>
       </div>
 

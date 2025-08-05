@@ -55,7 +55,7 @@ export const stakedFalconUsd: Vault = {
 
         if (response.ok) {
           const data = await response.json();
-          return Number(data.tvl);
+          return Number(data.usdf_staked);
         }
       } catch (apiError) {
         console.warn('Falcon API TVL fetch failed, falling back to contract:', apiError);
@@ -86,6 +86,7 @@ export const stakedFalconUsd: Vault = {
   riskLevel: 'low',
   chainId: 1,
   strategy: 'Native yield from the staking module',
+  managedBy: 'Falcon Finance',
   link: `https://app.falcon.finance/earn/classic`,
   icon: 'piggy-bank',
   color: 'green'

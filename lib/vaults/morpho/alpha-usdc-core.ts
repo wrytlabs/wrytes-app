@@ -84,7 +84,7 @@ export const alphaUsdcCoreVault: Vault = {
   chainId: 1,
   strategy: 'USDC staking + yield farming + reward incentives',
   link: `https://app.morpho.org/ethereum/vault/0xb0f05E4De970A1aaf77f8C2F823953a367504BA9`,
-  notes: 'This vault is curated by AlphaPing',
+  managedBy: 'AlphaPing',
   icon: 'vault',
   color: 'orange'
 }; 

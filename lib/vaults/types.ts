@@ -16,6 +16,7 @@ export interface Vault {
   riskLevel: 'low' | 'medium' | 'high';
   chainId: number;
   strategy: string;
+  managedBy?: string;
   notes?: string;
   icon?: string;
   link?: string;

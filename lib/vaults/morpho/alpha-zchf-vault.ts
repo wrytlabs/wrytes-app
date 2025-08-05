@@ -84,7 +84,7 @@ export const zchfVault: Vault = {
   chainId: 1,
   strategy: 'ZCHF staking + yield farming + reward incentives',
   link: `https://app.morpho.org/ethereum/vault/0xFa7ED49Eb24A6117D8a3168EEE69D26b45C40C63`,
-  notes: 'This vault is curated by AlphaPing',
+  managedBy: 'AlphaPing',
   icon: 'vault',
   color: 'orange'
 }; 

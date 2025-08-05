@@ -85,7 +85,7 @@ export const gauntletEurcCoreVault: Vault = {
   chainId: 1,
   strategy: 'EURC staking + yield farming + reward incentives',
   link: `https://app.morpho.org/ethereum/vault/0x2ed10624315b74a78f11FAbedAa1A228c198aEfB`,
-  notes: 'This vault is curated by Gauntlet Core',
+  managedBy: 'Gauntlet Core',
   icon: 'vault',
   color: 'orange'
 }; 

@@ -84,7 +84,7 @@ export const alphaWethCoreVault: Vault = {
   chainId: 1,
   strategy: 'WETH staking + yield farming + reward incentives',
   link: `https://app.morpho.org/ethereum/vault/0x47fe8Ab9eE47DD65c24df52324181790b9F47EfC`,
-  notes: 'This vault is curated by AlphaPing',
+  managedBy: 'AlphaPing',
   icon: 'vault',
   color: 'orange'
 }; 
