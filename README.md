@@ -28,7 +28,8 @@
 - **🔧 Feature-Based Structure** - Each major feature is self-contained and pluggable
 
 ### **🚀 Platform Roadmap:**
-- **🏦 Vault Management** (Current) - Multi-protocol yield optimization
+- **🏦 Vault Management** (Current) - Multi-protocol yield optimization with enhanced UX
+- **🔄 Transaction Queue** (Current) - Redux-powered batch transaction management
 - **📊 Portfolio Analytics** (Future) - Cross-protocol performance tracking
 - **⚙️ Strategy Builder** (Future) - Custom DeFi strategy creation
 - **🛡️ Risk Management** (Future) - Professional risk assessment tools
@@ -51,16 +52,18 @@
 - **Real-Time Balances** - Live user portfolio tracking
 
 ### 🏦 **Vault Management** *(First Feature)*
-- **Morpho Vaults** - Alpha USDC Core, USDU Core, ZCHF Vault
+- **Morpho Vaults** - Alpha USDC Core, USDU Core, ZCHF Vault with enhanced GraphQL integration
 - **Curve Pools** - DAI/USDC/USDT, USDU/USDC liquidity provision  
-- **Savings Vaults** - ZCHF native savings with time locks
-- **Dynamic APY** - Real-time yield calculations from multiple sources
+- **Savings Vaults** - ZCHF native savings, Staked Falcon USD
+- **Dynamic APY** - Real-time yield calculations from multiple protocol adapters
+- **Enhanced UX** - Improved modals with `managedBy` field display
 
 ### 🎨 **User Experience**
 - **Dark Theme UI** - Professional Swiss design aesthetic
 - **Responsive Design** - Mobile-first, works on all devices
 - **Loading States** - Skeleton components and smooth transitions
 - **Error Handling** - Graceful fallbacks and user-friendly messages
+- **Transaction Queue** - Redux-powered batch transaction management UI
 
 ### 🛡️ **Security & Compliance**
 - **Role-Based Access** - Admin, moderator, user permissions
@@ -78,7 +81,7 @@
 ### **Web3 & Blockchain**
 - **[Wagmi 2.16.1](https://wagmi.sh/)** - React hooks for Ethereum
 - **[Viem 2.33.2](https://viem.sh/)** - TypeScript Ethereum library
-- **[Reown AppKit 1.7.17](https://reown.com/)** - Multi-wallet connection
+- **[Reown AppKit 1.6.4](https://reown.com/)** - Multi-wallet connection
 - **[Apollo Client 3.13.9](https://www.apollographql.com/)** - GraphQL state management
 
 ### **UI & Styling**
@@ -86,6 +89,11 @@
 - **[Framer Motion 12.23.12](https://www.framer.com/motion/)** - Advanced animations
 - **[Headless UI 2.2.7](https://headlessui.com/)** - Accessible UI components
 - **[FontAwesome 7.0.0](https://fontawesome.com/)** - Professional icon system
+
+### **State Management**
+- **[Redux Toolkit 2.8.2](https://redux-toolkit.js.org/)** - Global state management
+- **[React Redux 9.2.0](https://react-redux.js.org/)** - React bindings for Redux
+- **[Redux Persist 6.0.0](https://github.com/rt2zz/redux-persist)** - State persistence
 
 ### **Forms & Validation**
 - **[React Hook Form 7.61.1](https://react-hook-form.com/)** - Performant forms
@@ -116,9 +124,11 @@ wrytes/
 │   ├── layout/             # 📐 Layout components
 │   └── sections/           # 🏠 Landing page sections
 ├── hooks/                  # 🔗 Custom React hooks
+│   ├── adapter/            # Protocol adapter hooks (Falcon, Morpho)
+│   ├── redux/              # Redux state hooks
 │   ├── ui/                 # Generic UI hooks
-│   ├── web3/               # Web3 interaction hooks
 │   ├── vaults/             # Vault-specific hooks
+│   ├── web3/               # Web3 interaction hooks
 │   └── [feature]/          # Feature-specific hooks
 ├── lib/                    # 🛠️ Business logic & integrations
 │   ├── vaults/             # Vault configurations (extensible)
@@ -149,7 +159,13 @@ wrytes/
 
 3. **`hooks/ui/`** - Generic UI hooks
    - `useModal.ts` - Modal state management
-   - `useToast.ts` - Toast notification system
+
+4. **`hooks/adapter/`** - Protocol-specific data fetching hooks
+   - `useFalconData.ts` - Falcon protocol integration
+   - `useMorphoVaultData.ts` - Enhanced Morpho vault data fetching
+
+5. **`hooks/redux/`** - Redux state management hooks
+   - `useTransactionQueue.ts` - Transaction queue management
 
 ## 🚀 Quick Start
 
@@ -229,14 +245,14 @@ yarn analyze      # Analyze bundle size
 - **TypeScript Interfaces** - Comprehensive type definitions
 
 ### **State Management**
-- **Redux Toolkit** - Global application state (transactions, user preferences)
+- **Redux Toolkit** - Global application state (transactions, user preferences, queue management)
 - **Apollo Client Cache** - GraphQL data caching and normalization
 - **React Context** - Authentication and theme management
 - **Local State** - Component-level UI state
 
 ### **Data Flow**
 ```
-User Action → Component → Custom Hook → API/Contract → Apollo Cache → UI Update
+User Action → Component → Custom Hook/Adapter → API/Contract → Apollo Cache/Redux → UI Update
 ```
 
 ## 🔐 Authentication System
@@ -259,17 +275,21 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 
 | Protocol | Vault | Address | Features |
 |----------|--------|---------|----------|
-| **Morpho** | Alpha USDC Core | `0xb0f0...8C8` | Real-time APY via GraphQL |
+| **Morpho** | Alpha USDC Core | `0xb0f0...8C8` | Real-time APY via enhanced GraphQL |
 | **Morpho** | USDU Core | `0xce22...0a` | Automated yield optimization |
 | **Morpho** | Alpha ZCHF Vault | `0x...` | Swiss franc denominated |
+| **Morpho** | Gauntlet EURC Core | `0x...` | Euro-denominated vault |
 | **Curve** | DAI/USDC/USDT | `0x...` | Stable coin liquidity |
 | **Curve** | USDU/USDC | `0x...` | USDU pair trading |
 | **Savings** | ZCHF Savings | `0x637F...BC` | Time-locked savings |
+| **Savings** | Staked Falcon USD | `0x...` | Falcon protocol integration |
 
 ### **Data Sources**
-- **🔗 Morpho GraphQL API** - Real-time vault metrics
+- **🔗 Morpho GraphQL API** - Enhanced real-time vault metrics via adapter hooks
+- **🦅 Falcon Protocol** - Integrated via `useFalconData` adapter hook
 - **📊 Contract Calls** - Direct blockchain data (fallback)
 - **💾 Apollo Cache** - 5-minute cache for performance
+- **🔄 Redux Store** - Transaction queue and user preferences
 
 ## 🚀 **Feature Development Guidelines**
 
@@ -292,6 +312,12 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
    └── use[Feature]Actions.ts # Feature actions
    ```
 
+   **OR use Protocol Adapters:**
+   ```
+   hooks/adapter/
+   ├── use[Protocol]Data.ts  # Protocol-specific data fetching
+   ```
+
 3. **Add to Navigation:**
    ```
    lib/navigation/dashboard.ts
@@ -304,12 +330,13 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 
 ### **Feature Integration Checklist:**
 - [ ] Reuse existing UI components from `components/ui/`
-- [ ] Create feature-specific hooks in `hooks/[feature]/`
+- [ ] Create feature-specific hooks in `hooks/[feature]/` or protocol adapters in `hooks/adapter/`
 - [ ] Add to navigation system
 - [ ] Implement proper loading states
 - [ ] Add error boundaries
 - [ ] Include proper TypeScript types
 - [ ] Add to Redux if global state needed
+- [ ] Integrate with transaction queue system if transactions required
 
 ## 🚧 Development Roadmap
 
@@ -327,9 +354,11 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 
 ### **Phase 3: Vault Management** ✅ *Completed*
 - [x] Multi-protocol vault integration *(First Feature)*
-- [x] Real-time APY and TVL data
-- [x] Morpho GraphQL API integration
-- [x] Vault deposit/withdrawal UI
+- [x] Real-time APY and TVL data with enhanced GraphQL
+- [x] Morpho GraphQL API integration with adapter hooks
+- [x] Falcon protocol integration via `useFalconData`
+- [x] Enhanced vault deposit/withdrawal UI with `managedBy` field
+- [x] Transaction queue system with Redux integration
 
 ### **Phase 4: Platform Expansion** 🔄 *In Progress*
 - [ ] Portfolio Analytics - Cross-protocol performance tracking
@@ -364,8 +393,9 @@ User Action → Component → Custom Hook → API/Contract → Apollo Cache → 
 
 ### **📊 Current Status**
 - **Lines of Code**: ~15,000+ TypeScript/TSX
-- **Components**: 50+ reusable UI components
-- **Vaults Supported**: 6 across 3 protocols *(First Feature)*
+- **Components**: 50+ reusable UI components with enhanced transaction queue
+- **Vaults Supported**: 8+ across 4 protocols (Morpho, Curve, Savings, Falcon) *(First Feature)*
+- **Architecture**: Protocol adapter pattern with Redux state management
 - **Test Coverage**: Comprehensive TypeScript coverage
 
 ## 🤝 Contributing

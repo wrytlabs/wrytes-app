@@ -16,11 +16,11 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 
 ### **Platform Vision:**
 - **Vault Management** (Current) - Multi-protocol yield optimization
-- **Transaction Queue Management** (Current) - Multi-tx batch optimization for e.g. DAOs like Aragon
+- **Transaction Queue Management** (Current) - Redux-powered multi-tx batch optimization
 - **Portfolio Analytics** (Future) - Cross-protocol performance tracking
 - **Strategy Builder** (Future) - Custom DeFi strategy creation
 - **Strategy Management** (Future) - Professional tools
-- **Blockchain Tools** (Future) - Inovative and brand new features
+- **Blockchain Tools** (Future) - Innovative and brand new features
 
 ## 🏗️ **Architecture Overview**
 
@@ -46,6 +46,7 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 │   ├── ui/                 # Generic UI primitives (ALWAYS REUSE THESE)
 │   │   ├── Button.tsx      # Multi-variant button system
 │   │   ├── Card.tsx        # Flexible card component
+│   │   ├── Toast.tsx       # Flexible toast component
 │   │   ├── Modal/          # Modal system with variants
 │   │   ├── Stats/          # Metric display components
 │   │   └── TransactionQueue/ # Generic transaction management
@@ -56,9 +57,11 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 │   ├── layout/             # 📐 Layout components
 │   └── sections/           # 🏠 Landing page sections
 ├── hooks/                  # 🔗 Custom React hooks
+│   ├── adapter/            # Protocol adapter hooks (Falcon, Morpho)
+│   ├── redux/              # Redux state hooks
 │   ├── ui/                 # Generic UI hooks
-│   ├── web3/               # Web3 interaction hooks
 │   ├── vaults/             # Vault-specific hooks
+│   ├── web3/               # Web3 interaction hooks
 │   └── [feature]/          # Feature-specific hooks
 ├── lib/                    # 🛠️ Business logic & integrations
 │   ├── vaults/             # Vault configurations (extensible)
@@ -89,7 +92,13 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 
 3. **`hooks/ui/`** - Generic UI hooks
    - `useModal.ts` - Modal state management
-   - `useToast.ts` - Toast notification system
+
+4. **`hooks/adapter/`** - Protocol-specific data fetching hooks
+   - `useFalconData.ts` - Falcon protocol integration
+   - `useMorphoVaultData.ts` - Enhanced Morpho vault data fetching
+
+5. **`hooks/redux/`** - Redux state management hooks
+   - `useTransactionQueue.ts` - Transaction queue management
 
 ### **Component Composition Patterns:**
 ```typescript
@@ -132,6 +141,12 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
    └── use[Feature]Actions.ts # Feature actions
    ```
 
+   **OR use Protocol Adapters:**
+   ```
+   hooks/adapter/
+   ├── use[Protocol]Data.ts  # Protocol-specific data fetching
+   ```
+
 3. **Add to Navigation:**
    ```
    lib/navigation/dashboard.ts
@@ -144,17 +159,19 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 
 ### **Feature Integration Checklist:**
 - [ ] Reuse existing UI components from `components/ui/`
-- [ ] Create feature-specific hooks in `hooks/[feature]/`
+- [ ] Create feature-specific hooks in `hooks/[feature]/` or protocol adapters in `hooks/adapter/`
 - [ ] Add to navigation system
 - [ ] Implement proper loading states
 - [ ] Add error boundaries
 - [ ] Include proper TypeScript types
 - [ ] Add to Redux if global state needed
+- [ ] Integrate with transaction queue system if transactions required
 
 ## 🔗 **Web3 Integration Philosophy**
 
 ### **Multi-Protocol Support:**
-- **Current:** Morpho, Curve, Savings protocols
+- **Current:** Morpho (with enhanced GraphQL), Curve, Savings, Falcon protocols
+- **Architecture:** Protocol adapter pattern for standardized interfaces
 - **Future:** Any DeFi protocol with standardized interfaces
 
 ### **Wallet Integration:**
@@ -171,6 +188,13 @@ const { data, isLoading, error } = useContractRead({
   functionName: 'balanceOf',
   args: [userAddress]
 });
+
+// ✅ Use protocol adapters for enhanced data fetching
+const { vaultData, isLoading } = useMorphoVaultData(vaultAddress);
+const { falconData } = useFalconData();
+
+// ✅ Use transaction queue for batch operations
+const { addTransaction, clearQueue } = useTransactionQueue();
 ```
 
 ## 📊 **Data Management Strategy**
@@ -273,15 +297,16 @@ interface FeatureModule {
 
 ```bash
 # Development
-yarn dev          # Start development server
+yarn dev          # Start development server (with Turbopack)
 yarn build        # Build for production
 yarn start        # Start production server
 
 # Code Quality
 yarn lint         # Run ESLint
-yarn lint:fix     # Fix ESLint errors
+yarn lint:fix     # Fix ESLint errors automatically
 yarn type-check   # TypeScript checking
 yarn format       # Format with Prettier
+yarn format:check # Check code formatting
 
 # Analysis
 yarn analyze      # Bundle analysis
