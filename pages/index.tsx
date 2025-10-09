@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
-import Services from '@/components/sections/Services';
+import Revenue from '@/components/sections/Revenue';
 import Contact from '@/components/sections/Contact';
 import { COMPANY } from '@/lib/constants';
 
@@ -9,30 +9,36 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>{COMPANY.name} - Swiss Bitcoin, Blockchain & AI Innovation</title>
+        <title>{COMPANY.name} - Profit-Driven Crypto R&D from Switzerland</title>
         <meta name="description" content={COMPANY.description} />
-        <meta name="keywords" content="Bitcoin, Blockchain, AI, Machine Learning, Software Development, Switzerland, Zug, FinTech" />
-        
+        <meta name="keywords" content={COMPANY.keywords} />
+
         {/* Open Graph */}
-        <meta property="og:title" content={`${COMPANY.name} - Swiss Bitcoin, Blockchain & AI Innovation`} />
+        <meta
+          property="og:title"
+          content={`${COMPANY.name} - Profit-Driven Crypto R&D from Switzerland`}
+        />
         <meta property="og:description" content={COMPANY.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://wrytes.io" />
-        
+
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${COMPANY.name} - Swiss Bitcoin, Blockchain & AI Innovation`} />
+        <meta
+          name="twitter:title"
+          content={`${COMPANY.name} - Profit-Driven Crypto R&D from Switzerland`}
+        />
         <meta name="twitter:description" content={COMPANY.description} />
-        
+
         {/* Additional SEO */}
         <meta name="author" content={COMPANY.name} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://wrytes.io" />
       </Head>
-      
+
       <Hero />
       <About />
-      <Services />
+      <Revenue />
       <Contact />
     </>
   );

@@ -10,7 +10,6 @@ import { QueueIcon, QueuePanel } from '@/components/ui/TransactionQueue';
 import { SidebarNav } from '@/components/navigation/SidebarNav';
 import { DASHBOARD_NAVIGATION } from '@/lib/navigation/dashboard';
 import { useActiveNavigation } from '@/hooks/useActiveNavigation';
-import Footer from './Footer';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

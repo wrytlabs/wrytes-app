@@ -15,8 +15,11 @@ export const CONFIG: ConfigEnv = {
 export const COMPANY = {
   name: 'Wrytes AG',
   location: 'Zug, Switzerland',
-  tagline: 'Innovating at the intersection of Bitcoin, Blockchain & AI technologies',
-  description: 'Swiss precision in software development, R&D, Bitcoin/Blockchain technology, and AI solutions.',
+  tagline: 'Profit-driven innovation through proprietary crypto strategies',
+  description:
+    'Swiss-based R&D company advancing cutting-edge technologies through profitable crypto asset management, funding continuous research and development.',
+  keywords:
+    'Crypto Asset Management, Bitcoin Options Trading, Proprietary Trading, R&D, Switzerland, Zug, Profit-Driven, DeFi, Blockchain Technology, Software Development',
 };
 
 export const SOCIAL = {
@@ -27,43 +30,50 @@ export const SOCIAL = {
 
 export const SERVICES = [
   {
-    id: 'software-development',
-    title: 'Software Development',
-    description: 'Custom software solutions across various sectors',
+    id: 'crypto-asset-management',
+    title: 'Proprietary Crypto Asset Management',
+    description: 'Profit-driven yield generation using company assets only',
     features: [
-      'Building innovative tools and applications',
-      'Development of new technologies and platforms',
-      'Sector-specific software solutions',
+      'Options contract trading strategies (primarily Bitcoin)',
+      'P2P lending and liquidity pool participation',
+      'Arbitrage and market inefficiency exploitation',
+      'Strategic borrowing for operational payments',
+      'Exclusively company-owned assets - never client funds',
     ],
   },
   {
-    id: 'innovation-rd',
-    title: 'Innovation & R&D',
-    description: 'Research and development in emerging technologies',
+    id: 'technical-services',
+    title: 'Technical Services',
+    description: 'Expert development services for clients and partners',
     features: [
-      'Creation of innovative tools and frameworks',
-      'Prototyping and proof-of-concept development',
-      'Technology consulting and strategy',
+      'Architecture design and game theory expertise',
+      'Smart contract development and auditing',
+      'DeFi project adapters and protocol connectors',
+      'Backend systems and API integrations',
+      'Automation frameworks and workflows',
     ],
   },
   {
-    id: 'bitcoin-blockchain',
-    title: 'Bitcoin & Blockchain',
-    description: 'Bitcoin-related software and tools',
+    id: 'platform-development',
+    title: 'Platform Development & Innovation',
+    description: 'Proprietary tools and cutting-edge research',
     features: [
-      'Blockchain development and integration',
-      'Cryptocurrency solutions',
-      'DeFi and financial technology applications',
+      'Proprietary blockchain tools and applications',
+      'Cutting-edge technology research and prototyping',
+      'Open-source contributions and community building',
+      'Internal tooling for enhanced trading operations',
     ],
   },
   {
-    id: 'ai-ml',
-    title: 'AI & Machine Learning',
-    description: 'AI development and integration',
+    id: 'strategic-partnerships',
+    title: 'Strategic Partnerships & Capital Operations',
+    description: 'Growth through partnerships and investments',
     features: [
-      'Machine learning solutions',
-      'Data analytics and insights',
-      'Intelligent automation tools',
+      'Mergers, acquisitions, and strategic partnerships',
+      'Resource alignment and mutual goal achievement',
+      'Technology and expertise sharing agreements',
+      'Capital raising for expansion initiatives',
+      'Strategic investments in complementary projects',
     ],
   },
 ];

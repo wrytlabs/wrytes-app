@@ -10,11 +10,14 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-dark overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-50">
-        <div className="w-full h-full bg-repeat bg-center" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }} />
+        <div
+          className="w-full h-full bg-repeat bg-center"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
       </div>
-      
+
       {/* Content */}
       <div className="relative container mx-auto px-4 text-center">
         <motion.div
@@ -51,7 +54,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-lg text-text-muted mb-12 max-w-2xl mx-auto"
           >
-            Swiss precision meets cutting-edge innovation. We build the future of finance and technology from the heart of Europe.
+            {COMPANY.description}
           </motion.p>
 
           {/* Location Badge */}
@@ -62,9 +65,7 @@ export default function Hero() {
             className="inline-flex items-center gap-2 bg-dark-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-dark-surface mb-12"
           >
             <div className="w-2 h-2 bg-accent-orange rounded-full animate-pulse" />
-            <span className="text-text-secondary text-sm">
-              {COMPANY.location}
-            </span>
+            <span className="text-text-secondary text-sm">{COMPANY.location}</span>
           </motion.div>
 
           {/* CTA Button */}
@@ -80,13 +81,9 @@ export default function Hero() {
               icon={<FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />}
               className="shadow-glow"
             >
-              Start Your Project
+              Explore Platform
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              href="#about"
-            >
+            <Button variant="outline" size="lg" href="#about">
               Learn More
             </Button>
           </motion.div>

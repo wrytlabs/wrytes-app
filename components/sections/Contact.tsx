@@ -21,8 +21,8 @@ export default function Contact() {
             Get in Touch
           </h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Ready to start your next project? Let&apos;s discuss how we can bring your vision to life 
-            with Swiss precision and cutting-edge technology.
+            Interested in our technical services or strategic partnerships? Let&apos;s discuss 
+            how our expertise can support your project goals.
           </p>
         </motion.div>
 
@@ -40,8 +40,8 @@ export default function Contact() {
                 Let&apos;s Start a Conversation
               </h3>
               <p className="text-text-secondary leading-relaxed mb-8">
-                Whether you need custom software development, blockchain solutions, 
-                or AI integration, our team is ready to help you achieve your goals.
+                Whether you need technical architecture expertise, smart contract development, 
+                or strategic partnership opportunities, our team is ready to help.
               </p>
             </div>
 

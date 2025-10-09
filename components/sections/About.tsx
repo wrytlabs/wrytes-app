@@ -5,16 +5,19 @@ import { COMPANY } from '@/lib/constants';
 
 const values = [
   {
+    title: 'Profit-Driven Independence',
+    description:
+      'Operating exclusively with company assets, with profits directly funding advanced research and development initiatives.',
+  },
+  {
+    title: 'Proprietary Excellence',
+    description:
+      'Developing cutting-edge crypto trading strategies that generate revenue to fuel continuous innovation and R&D expansion.',
+  },
+  {
     title: 'Swiss Precision',
-    description: 'Every line of code, every solution crafted with the meticulous attention to detail Switzerland is known for.',
-  },
-  {
-    title: 'Innovation First',
-    description: 'Pioneering technologies in Bitcoin, Blockchain, and AI to shape the future of finance and technology.',
-  },
-  {
-    title: 'Global Impact',
-    description: 'Building tools and solutions that create value worldwide, backed by Swiss reliability and expertise.',
+    description:
+      'Every strategy, every solution crafted with the meticulous attention to detail Switzerland is known for.',
   },
 ];
 
@@ -29,9 +32,7 @@ export default function About() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            About {COMPANY.name}
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">About {COMPANY.name}</h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
             {COMPANY.description}
           </p>
@@ -47,29 +48,27 @@ export default function About() {
           >
             <Card className="h-full">
               <h3 className="text-2xl font-bold mb-4 text-white">
-                Innovation from the Heart of Europe
+                Profit-Driven Innovation from Crypto Valley
               </h3>
-              <p className="text-text-secondary mb-6 leading-relaxed">
-                Based in {COMPANY.location}, we combine Swiss engineering excellence with 
-                cutting-edge technology expertise. Our focus spans software development, 
-                research & development, Bitcoin/Blockchain solutions, and AI applications.
+              <p className="text-text-secondary mb-4 leading-relaxed">
+                Based in {COMPANY.location}, we advance cutting-edge technologies through profitable
+                crypto asset management. Our proprietary trading strategies fund research and
+                development - exclusively using company-owned capital.
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-accent-orange rounded-full" />
-                  <span className="text-text-secondary">Software Development across sectors</span>
+                  <span className="text-text-secondary">Proprietary crypto asset management</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-accent-orange rounded-full" />
-                  <span className="text-text-secondary">Bitcoin & Blockchain expertise</span>
+                  <span className="text-text-secondary">Bitcoin options trading strategies</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-accent-orange rounded-full" />
-                  <span className="text-text-secondary">AI & Machine Learning solutions</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-accent-orange rounded-full" />
-                  <span className="text-text-secondary">Option trading on Bitcoin for cashflow</span>
+                  <span className="text-text-secondary">
+                    Technical services for clients & partners
+                  </span>
                 </div>
               </div>
             </Card>
@@ -87,17 +86,18 @@ export default function About() {
                 <div className="w-16 h-16 bg-accent-orange/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <div className="w-8 h-8 bg-accent-orange rounded-full animate-pulse" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  {COMPANY.location}
-                </h3>
-                <p className="text-text-secondary">
-                  Global Financial Technology Hub
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-2">{COMPANY.location}</h3>
+                <p className="text-text-secondary">Global Financial Technology Hub</p>
               </div>
-              <p className="text-text-secondary leading-relaxed">
-                Strategically located in Switzerland&apos;s most dynamic tech ecosystem, 
-                we leverage the country&apos;s reputation for excellence, stability, and 
-                innovation in financial technology.
+              <p className="text-text-secondary mb-4 leading-relaxed text-left">
+                Strategically located in Switzerland&apos;s most dynamic tech ecosystem, we leverage
+                the country&apos;s reputation for excellence, stability, and innovation in financial
+                technology.
+              </p>
+              <p className="text-text-secondary leading-relaxed text-left">
+                We specifically chose Switzerland for its progressive blockchain infrastructure and 
+                regulatory framework, enabling advanced capabilities like issuing shares on blockchain 
+                and conducting business with cryptocurrency payments, including tax settlements.
               </p>
             </Card>
           </motion.div>
@@ -120,12 +120,8 @@ export default function About() {
               viewport={{ once: true }}
             >
               <Card>
-                <h4 className="text-xl font-bold mb-3 text-white">
-                  {value.title}
-                </h4>
-                <p className="text-text-secondary leading-relaxed">
-                  {value.description}
-                </p>
+                <h4 className="text-xl font-bold mb-3 text-white">{value.title}</h4>
+                <p className="text-text-secondary leading-relaxed">{value.description}</p>
               </Card>
             </motion.div>
           ))}

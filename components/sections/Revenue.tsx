@@ -1,25 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faCode, 
-  faLightbulb, 
-  faBrain 
-} from '@fortawesome/free-solid-svg-icons';
+import { faCode, faLightbulb, faHandshake } from '@fortawesome/free-solid-svg-icons';
 import { faBitcoin } from '@fortawesome/free-brands-svg-icons';
 import Card from '@/components/ui/Card';
 import { SERVICES } from '@/lib/constants';
 
 const iconMap = {
-  'software-development': faCode,
-  'innovation-rd': faLightbulb,
-  'bitcoin-blockchain': faBitcoin,
-  'ai-ml': faBrain,
+  'crypto-asset-management': faBitcoin,
+  'technical-services': faCode,
+  'platform-development': faLightbulb,
+  'strategic-partnerships': faHandshake,
 };
 
-export default function Services() {
+export default function Revenue() {
   return (
-    <section id="services" className="py-24 bg-dark-bg">
+    <section id="revenue" className="py-24 bg-dark-bg">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -28,12 +24,10 @@ export default function Services() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Our Services
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Revenue Streams</h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Comprehensive solutions spanning software development, emerging technologies, 
-            and financial innovation.
+            Profit-driven R&D through proprietary crypto asset management and strategic technical
+            services for clients and partners.
           </p>
         </motion.div>
 
@@ -50,17 +44,13 @@ export default function Services() {
                 {/* Icon */}
                 <div className="mb-6">
                   <div className="w-16 h-16 bg-accent-orange/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-accent-orange/30 transition-colors">
-                    <FontAwesomeIcon 
-                      icon={iconMap[service.id as keyof typeof iconMap]} 
-                      className="w-8 h-8 text-accent-orange" 
+                    <FontAwesomeIcon
+                      icon={iconMap[service.id as keyof typeof iconMap]}
+                      className="w-8 h-8 text-accent-orange"
                     />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-text-secondary mb-6">
-                    {service.description}
-                  </p>
+                  <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
+                  <p className="text-text-secondary mb-6">{service.description}</p>
                 </div>
 
                 {/* Features */}
@@ -68,9 +58,7 @@ export default function Services() {
                   {service.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start gap-3 text-left">
                       <div className="w-1.5 h-1.5 bg-accent-orange rounded-full mt-2 flex-shrink-0" />
-                      <span className="text-text-secondary text-sm leading-relaxed">
-                        {feature}
-                      </span>
+                      <span className="text-text-secondary text-sm leading-relaxed">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -90,15 +78,15 @@ export default function Services() {
           <Card className="max-w-4xl mx-auto" gradient>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">10+</div>
-                <div className="text-text-secondary">Years Combined Experience</div>
+                <div className="text-3xl font-bold text-accent-orange mb-2">100%</div>
+                <div className="text-text-secondary">Company-Owned Assets</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">50+</div>
-                <div className="text-text-secondary">Projects Delivered</div>
+                <div className="text-3xl font-bold text-accent-orange mb-2">₿</div>
+                <div className="text-text-secondary">Bitcoin-Focused Strategies</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">24/7</div>
+                <div className="text-3xl font-bold text-accent-orange mb-2">🇨🇭</div>
                 <div className="text-text-secondary">Swiss Precision</div>
               </div>
             </div>
