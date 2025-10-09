@@ -10,6 +10,7 @@ import { QueueIcon, QueuePanel } from '@/components/ui/TransactionQueue';
 import { SidebarNav } from '@/components/navigation/SidebarNav';
 import { DASHBOARD_NAVIGATION } from '@/lib/navigation/dashboard';
 import { useActiveNavigation } from '@/hooks/useActiveNavigation';
+import Footer from './Footer';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -83,10 +84,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Desktop CTA Button */}
             <div className="hidden md:flex items-center gap-3">
               {/* Transaction Queue */}
-              <QueueIcon 
-                onClick={toggleTransactionQueue}
-                className="mr-4"
-              />
+              <QueueIcon onClick={toggleTransactionQueue} className="mr-4" />
 
               {!isConnected ? (
                 <button
@@ -116,17 +114,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Mobile Actions */}
             <div className="md:hidden flex items-center gap-2">
-              <QueueIcon 
-                onClick={toggleTransactionQueue}
-              />
+              <QueueIcon onClick={toggleTransactionQueue} />
               <button
                 onClick={toggleMobileMenu}
                 className="p-2 flex items-center justify-center text-text-secondary hover:text-accent-orange transition-colors"
               >
-                <FontAwesomeIcon 
-                  icon={isMobileMenuOpen ? faTimes : faBars} 
-                  className="w-5 h-5" 
-                />
+                <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -181,16 +174,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex pt-16">
         {/* Sidebar Overlay */}
         {(isSidebarOpen || isMobileMenuOpen) && (
-          <div 
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={handleOverlayClick}
-          />
+          <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={handleOverlayClick} />
         )}
 
         {/* Sidebar Navigation */}
-        <aside className={`fixed left-0 top-16 mt-1 w-64 h-screen bg-dark-bg border-r border-accent-orange/20 transform transition-transform duration-300 ease-in-out z-50 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0`}>
+        <aside
+          className={`fixed left-0 top-16 mt-1 w-64 h-screen bg-dark-bg border-r border-accent-orange/20 transform transition-transform duration-300 ease-in-out z-50 ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0`}
+        >
           <SidebarNav
             items={DASHBOARD_NAVIGATION}
             isActive={isActive}
@@ -200,9 +192,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8 md:ml-64">
-          {children}
-        </main>
+        <main className="flex-1 p-8 md:ml-64">{children}</main>
       </div>
 
       {/* Auth Modal */}
@@ -220,4 +210,4 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       />
     </div>
   );
-} 
+}

@@ -11,6 +11,7 @@ import { AmountInput } from '@/components/ui/AmountInput';
 import { useTransactionQueue } from '@/hooks/redux/useTransactionQueue';
 import { useAppKitAccount } from '@reown/appkit-controllers/react';
 import { erc4626ABI } from '@/lib/vaults/abi';
+import { formatCompactNumber, shortenAddress } from '@/lib/utils/format-handling';
 
 interface VaultWithdrawModalProps {
   vault: Vault;
@@ -69,10 +70,10 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
       const amountInWei = parseUnits(amount, decimalsToUse);
       
       const transactionTitle = withdrawMode === 'withdraw' 
-        ? `Withdraw ${amount} ${assetSymbol} from ${vault.name}`
-        : `Redeem ${amount} ${vault.symbol} from ${vault.name}`;
+        ? `Withdraw ${formatCompactNumber(amount)} ${assetSymbol} from ${vault.name}`
+        : `Redeem ${formatCompactNumber(amount)} ${vault.symbol} from ${vault.name}`;
       
-      const transactionSubtitle = `Vault: ${vault.name} | Amount: ${amount} ${withdrawMode === 'withdraw' ? assetSymbol : vault.symbol}`;
+      const transactionSubtitle = `Receiver is ${shortenAddress(userAddress as `0x${string}`)}`;
       
       // Add transaction to queue with proper ERC4626 function parameters
       const transactionId = await addTransaction({
