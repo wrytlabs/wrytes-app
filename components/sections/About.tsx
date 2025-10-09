@@ -34,41 +34,59 @@ export default function About() {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">About {COMPANY.name}</h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            {COMPANY.description}
+            Based in {COMPANY.location}, we advance cutting-edge technologies through profitable
+            crypto asset management. Our proprietary trading strategies fund research and
+            development - exclusively using company-owned capital.
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-          {/* Company Info */}
+          {/* Name Origin Story */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
+            className=""
           >
-            <Card className="h-full">
-              <h3 className="text-2xl font-bold mb-4 text-white">
-                Profit-Driven Innovation from Crypto Valley
-              </h3>
-              <p className="text-text-secondary mb-4 leading-relaxed">
-                Based in {COMPANY.location}, we advance cutting-edge technologies through profitable
-                crypto asset management. Our proprietary trading strategies fund research and
-                development - exclusively using company-owned capital.
-              </p>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-accent-orange rounded-full" />
-                  <span className="text-text-secondary">Proprietary crypto asset management</span>
+            <Card className="max-w-4xl mx-auto">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-white mb-4 text-center">
+                  The Meaning Behind <span className="text-accent-orange">Wrytes</span>
+                </h3>
+                <p className="text-text-secondary leading-relaxed mb-4">
+                  Our name combines <strong className="text-white">"write"</strong> and{' '}
+                  <strong className="text-white">"rights"</strong> - reflecting our vision to write
+                  code that empowers digital ownership, transparency, and user sovereignty through
+                  innovative blockchain technologies.
+                </p>
+                <p className="text-text-secondary leading-relaxed">
+                  From developing transparent blockchain applications to encoding immutable
+                  ownership rights, Wrytes represents the intersection of code craftsmanship and
+                  digital freedom - pushing the boundaries of what's possible with Switzerland's
+                  progressive regulatory framework for blockchain innovation.
+                </p>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6 text-left">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-accent-orange rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Write</h4>
+                    <p className="text-text-secondary text-sm">
+                      Blockchain protocols, smart contracts, decentralized applications, and
+                      privacy-preserving technologies
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-accent-orange rounded-full" />
-                  <span className="text-text-secondary">Bitcoin options trading strategies</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-accent-orange rounded-full" />
-                  <span className="text-text-secondary">
-                    Technical services for clients & partners
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-accent-orange rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Rights</h4>
+                    <p className="text-text-secondary text-sm">
+                      Digital sovereignty, transparent ownership, privacy protection, and user
+                      empowerment
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -95,9 +113,10 @@ export default function About() {
                 technology.
               </p>
               <p className="text-text-secondary leading-relaxed text-left">
-                We specifically chose Switzerland for its progressive blockchain infrastructure and 
-                regulatory framework, enabling advanced capabilities like issuing shares on blockchain 
-                and conducting business with cryptocurrency payments, including tax settlements.
+                We specifically chose Switzerland for its progressive blockchain infrastructure and
+                regulatory framework, enabling advanced capabilities like issuing shares on
+                blockchain and conducting business with cryptocurrency payments, including tax
+                settlements.
               </p>
             </Card>
           </motion.div>
