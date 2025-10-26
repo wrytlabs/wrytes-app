@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpRightFromSquare, faBars, faTimes, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowUpRightFromSquare,
+  faBars,
+  faTimes,
+  faLightbulb,
+} from '@fortawesome/free-solid-svg-icons';
 import { COMPANY } from '@/lib/constants';
 import Footer from './Footer';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -13,10 +18,10 @@ interface NavigationItem {
 }
 
 const navigation: NavigationItem[] = [
-  { name: 'About', href: '#about' },
-  { name: 'Revenue', href: '#revenue' },
-  { name: 'Contact', href: '#contact' },
-];  
+  { name: 'About', href: '/#about' },
+  { name: 'Revenue', href: '/#revenue' },
+  { name: 'Contact', href: '/#contact' },
+];
 
 interface HomeLayoutProps {
   children: React.ReactNode;
@@ -42,7 +47,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
             {/* Logo */}
             <div className="flex items-center gap-4">
               <div className="w-8 h-8 bg-accent-orange rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4 text-white" />
+                <FontAwesomeIcon icon={faLightbulb} className="w-4 h-4 text-white" />
               </div>
               <Link href="/" className="text-xl font-bold text-white">
                 {COMPANY.name.split(' ')[0]}
@@ -52,7 +57,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-              {navigation.map((item) => (
+              {navigation.map(item => (
                 <Link
                   key={item.name}
                   href={item.href}
@@ -80,10 +85,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
               onClick={toggleMobileMenu}
               className="md:hidden p-2 text-text-secondary hover:text-accent-orange transition-colors"
             >
-              <FontAwesomeIcon 
-                icon={isMobileMenuOpen ? faTimes : faBars} 
-                className="w-5 h-5" 
-              />
+              <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} className="w-5 h-5" />
             </button>
           </div>
 
@@ -91,7 +93,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
           {isMobileMenuOpen && (
             <div className="md:hidden mt-4 pb-4 border-t border-dark-surface pt-4">
               <nav className="space-y-4">
-                {navigation.map((item) => (
+                {navigation.map(item => (
                   <Link
                     key={item.name}
                     href={item.href}
@@ -116,10 +118,8 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
         </div>
       </header>
 
-      <main className="">
-        {children}
-      </main>
+      <main className="">{children}</main>
       <Footer />
     </div>
   );
-} 
+}

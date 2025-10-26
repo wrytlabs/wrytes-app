@@ -24,14 +24,20 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   vault,
   isOpen,
   onClose,
-  onSuccess // when added to the queue
+  onSuccess, // when added to the queue
 }) => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [depositMode, setDepositMode] = useState<'deposit' | 'mint'>('deposit');
-  
-  const { isDepositing, isMinting, calculateSharesFromAssets, calculateAssetsFromShares } = useVaultActions(vault.address);
-  const { assetBalance, assetSymbol, assetDecimals, loading: assetBalanceLoading } = useVaultUserData(vault);
+
+  const { isDepositing, isMinting, calculateSharesFromAssets, calculateAssetsFromShares } =
+    useVaultActions(vault.address);
+  const {
+    assetBalance,
+    assetSymbol,
+    assetDecimals,
+    loading: assetBalanceLoading,
+  } = useVaultUserData(vault);
   const { apy, loading: vaultLoading } = useVaultData(vault);
   const { address: userAddress } = useAppKitAccount();
   const { addTransaction } = useTransactionQueue();
@@ -39,17 +45,19 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   const handleAmountChange = (value: string) => {
     setAmount(value);
     setError('');
-    
+
     // Validate amount
     if (value && parseFloat(value) > 0) {
       const numValue = parseFloat(value);
       const maxDecimals = depositMode === 'deposit' ? assetDecimals : vault.decimals;
       const availableBalance = getAvailableBalance();
       const availableBalanceFormatted = parseFloat(formatUnits(availableBalance, maxDecimals));
-      
+
       if (numValue > availableBalanceFormatted) {
         const balanceSymbol = depositMode === 'deposit' ? assetSymbol : vault.symbol;
-        setError(`Insufficient balance. You have ${formatUnits(availableBalance, maxDecimals)} ${balanceSymbol}`);
+        setError(
+          `Insufficient balance. You have ${formatUnits(availableBalance, maxDecimals)} ${balanceSymbol}`
+        );
       }
     } else if (value && parseFloat(value) <= 0) {
       setError('Amount must be greater than 0');
@@ -67,17 +75,18 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
     try {
       const decimalsToUse = depositMode === 'deposit' ? assetDecimals : vault.decimals;
       const amountInWei = parseUnits(amount, decimalsToUse);
-      
+
       // approve tx
       const approveTitle = `Approve ${formatCompactNumber(amount)} ${assetSymbol} to ${vault.name}`;
       const approveSubtitle = `Receiver is ${shortenAddress(userAddress as `0x${string}`)}`;
 
       // vault action tx
-      const transactionTitle = depositMode === 'deposit' 
-        ? `Deposit ${formatCompactNumber(amount)} ${assetSymbol} to ${vault.name}`
-        : `Mint ${formatCompactNumber(amount)} ${vault.symbol} shares from ${vault.name}`;
+      const transactionTitle =
+        depositMode === 'deposit'
+          ? `Deposit ${formatCompactNumber(amount)} ${assetSymbol} to ${vault.name}`
+          : `Mint ${formatCompactNumber(amount)} ${vault.symbol} shares from ${vault.name}`;
       const transactionSubtitle = `Receiver is ${shortenAddress(userAddress as `0x${string}`)}`;
-      
+
       // Add transaction to queue
       const queueTransactions = await addTransaction([
         {
@@ -97,30 +106,31 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
           tokenSymbol: depositMode === 'deposit' ? assetSymbol : vault.symbol,
         },
         {
-        title: transactionTitle,
-        subtitle: transactionSubtitle,
-        chainId: 1, // Ethereum mainnet
-        type: depositMode === 'deposit' ? 'deposit' : 'mint',
-        contractAddress: vault.address,
-        abi: erc4626ABI,
-        functionName: depositMode === 'deposit' ? 'deposit' : 'mint',
-        args: [amountInWei, userAddress as `0x${string}`],
-        value: '0',
-        // Token metadata for UI display
-        tokenAddress: vault.asset.address,
-        tokenDecimals: decimalsToUse,
-        tokenAmount: amount,
-        tokenSymbol: depositMode === 'deposit' ? assetSymbol : vault.symbol,
-        // Vault metadata
-        tokenOutAddress: depositMode === 'deposit' ? vault.address : vault.asset.address,
-        tokenOutDecimals: depositMode === 'deposit' ? vault.decimals : assetDecimals,
-        tokenOutAmount: depositMode === 'deposit' ? calculateEstimatedShares() : amount,
-        tokenOutSymbol: depositMode === 'deposit' ? vault.symbol : assetSymbol,
-      }]);
+          title: transactionTitle,
+          subtitle: transactionSubtitle,
+          chainId: 1, // Ethereum mainnet
+          type: depositMode === 'deposit' ? 'deposit' : 'mint',
+          contractAddress: vault.address,
+          abi: erc4626ABI,
+          functionName: depositMode === 'deposit' ? 'deposit' : 'mint',
+          args: [amountInWei, userAddress as `0x${string}`],
+          value: '0',
+          // Token metadata for UI display
+          tokenAddress: vault.asset.address,
+          tokenDecimals: decimalsToUse,
+          tokenAmount: amount,
+          tokenSymbol: depositMode === 'deposit' ? assetSymbol : vault.symbol,
+          // Vault metadata
+          tokenOutAddress: depositMode === 'deposit' ? vault.address : vault.asset.address,
+          tokenOutDecimals: depositMode === 'deposit' ? vault.decimals : assetDecimals,
+          tokenOutAmount: depositMode === 'deposit' ? calculateEstimatedShares() : amount,
+          tokenOutSymbol: depositMode === 'deposit' ? vault.symbol : assetSymbol,
+        },
+      ]);
 
       // Trigger success callback if provided
       onSuccess();
-      
+
       // Close modal after adding to queue
       onClose();
     } catch (error: unknown) {
@@ -187,8 +197,8 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
   };
 
   const getInputTitle = () => {
-    return depositMode === 'deposit' 
-      ? `Amount to Deposit (${assetSymbol})` 
+    return depositMode === 'deposit'
+      ? `Amount to Deposit (${assetSymbol})`
       : `Shares to Mint (${vault.symbol})`;
   };
 
@@ -226,8 +236,8 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
             <h2 className="text-xl font-bold text-white">Deposit to {vault.name}</h2>
             <div className="flex items-center gap-2 mt-1">
               <p className="text-text-secondary text-sm">{vault.symbol}</p>
-              <ColoredBadge 
-                variant="risk" 
+              <ColoredBadge
+                variant="risk"
                 riskLevel={vault.riskLevel}
                 text={vault.riskLevel.toUpperCase()}
                 size="sm"
@@ -244,9 +254,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
 
         {/* Deposit Mode Toggle */}
         <div className="mb-6">
-          <label className="block text-text-secondary text-sm mb-2">
-            Deposit Mode
-          </label>
+          <label className="block text-text-secondary text-sm mb-2">Deposit Mode</label>
           <div className="flex bg-dark-surface rounded-lg p-1">
             <button
               onClick={() => setDepositMode('deposit')}
@@ -270,10 +278,9 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
             </button>
           </div>
           <p className="text-xs text-text-secondary mt-1">
-            {depositMode === 'deposit' 
-              ? `Deposit ${assetSymbol} tokens to receive vault shares` 
-              : `Specify exact shares to mint (requires ${assetSymbol} tokens)`
-            }
+            {depositMode === 'deposit'
+              ? `Deposit ${assetSymbol} tokens to receive vault shares`
+              : `Specify exact shares to mint (requires ${assetSymbol} tokens)`}
           </p>
         </div>
 
@@ -286,7 +293,7 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
             symbol={getInputSymbol()}
             decimals={getInputDecimals()}
             availableBalance={getAvailableBalance()}
-            availableLabel={`Available:`}
+            availableLabel={`Available`}
             onMaxClick={handleMaxClick}
             error={error}
             disabled={assetBalanceLoading}
@@ -298,12 +305,16 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
           {depositMode === 'deposit' ? (
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">Estimated Shares:</span>
-              <span className="text-white font-medium">{calculateEstimatedShares()} {vault.symbol}</span>
+              <span className="text-white font-medium">
+                {calculateEstimatedShares()} {vault.symbol}
+              </span>
             </div>
           ) : (
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">Needed Assets:</span>
-              <span className="text-white font-medium">{calculateEstimatedAssets()} {assetSymbol}</span>
+              <span className="text-white font-medium">
+                {calculateEstimatedAssets()} {assetSymbol}
+              </span>
             </div>
           )}
           <div className="flex justify-between text-sm">
@@ -314,8 +325,8 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">Risk Level:</span>
-            <ColoredBadge 
-              variant="risk" 
+            <ColoredBadge
+              variant="risk"
               riskLevel={vault.riskLevel}
               text={vault.riskLevel.toUpperCase()}
               size="sm"
@@ -330,11 +341,10 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
             <div className="text-xs text-blue-400">
               <p className="font-medium mb-1">Important Information</p>
               <p>
-                {depositMode === 'deposit' 
+                {depositMode === 'deposit'
                   ? `You will deposit ${assetSymbol} tokens and receive ${vault.symbol} shares based on the current exchange rate.`
-                  : `You will mint exact ${vault.symbol} shares by depositing the required amount of ${assetSymbol} tokens.`
-                }
-                {' '}APY rates are variable and may change over time.
+                  : `You will mint exact ${vault.symbol} shares by depositing the required amount of ${assetSymbol} tokens.`}{' '}
+                APY rates are variable and may change over time.
               </p>
             </div>
           </div>
@@ -358,8 +368,10 @@ export const VaultDepositModal: React.FC<VaultDepositModalProps> = ({
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 Processing...
               </div>
+            ) : depositMode === 'deposit' ? (
+              'Deposit'
             ) : (
-              depositMode === 'deposit' ? 'Deposit' : 'Mint'
+              'Mint'
             )}
           </button>
         </div>

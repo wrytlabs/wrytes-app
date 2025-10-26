@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Vault } from '@/lib/vaults/types';
-import { useVaultActions, } from '@/lib/vaults/vault';
+import { useVaultActions } from '@/lib/vaults/vault';
 import { useVaultUserData } from '@/hooks/vaults/useVaultUserData';
 import { useVaultData } from '@/hooks/vaults/useVaultData';
 import { parseUnits, formatUnits } from 'viem';
@@ -24,33 +24,42 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
   vault,
   isOpen,
   onClose,
-  onSuccess // when added to the queue
+  onSuccess, // when added to the queue
 }) => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [withdrawMode, setWithdrawMode] = useState<'withdraw' | 'redeem'>('redeem');
-  
-  const { isWithdrawing, isRedeeming, calculateAssetsFromShares, calculateSharesFromAssets } = useVaultActions(vault.address);
-  const { vaultBalance, vaultDecimals, assetDecimals, assetSymbol, loading: assetBalanceLoading } = useVaultUserData(vault);
+
+  const { isWithdrawing, isRedeeming, calculateAssetsFromShares, calculateSharesFromAssets } =
+    useVaultActions(vault.address);
+  const {
+    vaultBalance,
+    vaultDecimals,
+    assetDecimals,
+    assetSymbol,
+    loading: assetBalanceLoading,
+  } = useVaultUserData(vault);
   const { apy, loading: vaultLoading } = useVaultData(vault);
-  
+
   const { addTransaction } = useTransactionQueue();
   const { address: userAddress } = useAppKitAccount();
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
     setError('');
-    
+
     // Validate amount
     if (value && parseFloat(value) > 0) {
       const numValue = parseFloat(value);
       const maxDecimals = withdrawMode === 'withdraw' ? assetDecimals : vault.decimals;
       const availableBalance = getAvailableBalance();
       const availableBalanceFormatted = parseFloat(formatUnits(availableBalance, maxDecimals));
-      
+
       if (numValue > availableBalanceFormatted) {
         const balanceSymbol = withdrawMode === 'withdraw' ? assetSymbol : vault.symbol;
-        setError(`Insufficient balance. You have ${formatUnits(availableBalance, maxDecimals)} ${balanceSymbol}`);
+        setError(
+          `Insufficient balance. You have ${formatUnits(availableBalance, maxDecimals)} ${balanceSymbol}`
+        );
       }
     } else if (value && parseFloat(value) <= 0) {
       setError('Amount must be greater than 0');
@@ -68,13 +77,14 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
     try {
       const decimalsToUse = withdrawMode === 'withdraw' ? assetDecimals : vault.decimals;
       const amountInWei = parseUnits(amount, decimalsToUse);
-      
-      const transactionTitle = withdrawMode === 'withdraw' 
-        ? `Withdraw ${formatCompactNumber(amount)} ${assetSymbol} from ${vault.name}`
-        : `Redeem ${formatCompactNumber(amount)} ${vault.symbol} from ${vault.name}`;
-      
+
+      const transactionTitle =
+        withdrawMode === 'withdraw'
+          ? `Withdraw ${formatCompactNumber(amount)} ${assetSymbol} from ${vault.name}`
+          : `Redeem ${formatCompactNumber(amount)} ${vault.symbol} from ${vault.name}`;
+
       const transactionSubtitle = `Receiver is ${shortenAddress(userAddress as `0x${string}`)}`;
-      
+
       // Add transaction to queue with proper ERC4626 function parameters
       const transactionId = await addTransaction({
         title: transactionTitle,
@@ -84,9 +94,10 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
         contractAddress: vault.address,
         abi: erc4626ABI,
         functionName: withdrawMode === 'withdraw' ? 'withdraw' : 'redeem',
-        args: withdrawMode === 'withdraw' 
-          ? [amountInWei, userAddress as `0x${string}`, userAddress as `0x${string}`] // assets, receiver, owner
-          : [amountInWei, userAddress as `0x${string}`, userAddress as `0x${string}`], // shares, receiver, owner
+        args:
+          withdrawMode === 'withdraw'
+            ? [amountInWei, userAddress as `0x${string}`, userAddress as `0x${string}`] // assets, receiver, owner
+            : [amountInWei, userAddress as `0x${string}`, userAddress as `0x${string}`], // shares, receiver, owner
         value: '0',
         gasLimit: '300000',
         // Token metadata for UI display
@@ -100,10 +111,10 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
         tokenOutAmount: withdrawMode === 'withdraw' ? amount : calculateEstimatedAssets(),
         tokenOutSymbol: withdrawMode === 'withdraw' ? assetSymbol : vault.symbol,
       });
-      
+
       // Trigger success callback if provided
       onSuccess();
-      
+
       // Close modal after adding to queue
       onClose();
     } catch (error: unknown) {
@@ -170,9 +181,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
   };
 
   const getInputTitle = () => {
-    return withdrawMode === 'withdraw' 
-      ? `Amount to Withdraw` 
-      : `Shares to Redeem`;
+    return withdrawMode === 'withdraw' ? `Amount to Withdraw` : `Shares to Redeem`;
   };
 
   const getInputSymbol = () => {
@@ -209,8 +218,8 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
             <h2 className="text-xl font-bold text-white">Withdraw from {vault.name}</h2>
             <div className="flex items-center gap-2 mt-1">
               <p className="text-text-secondary text-sm">{vault.symbol}</p>
-              <ColoredBadge 
-                variant="risk" 
+              <ColoredBadge
+                variant="risk"
                 riskLevel={vault.riskLevel}
                 text={vault.riskLevel.toUpperCase()}
                 size="sm"
@@ -227,9 +236,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
 
         {/* Withdraw Mode Toggle */}
         <div className="mb-6">
-          <label className="block text-text-secondary text-sm mb-2">
-            Withdraw Mode
-          </label>
+          <label className="block text-text-secondary text-sm mb-2">Withdraw Mode</label>
           <div className="flex bg-dark-surface rounded-lg p-1">
             <button
               onClick={() => setWithdrawMode('withdraw')}
@@ -253,10 +260,9 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
             </button>
           </div>
           <p className="text-xs text-text-secondary mt-1">
-            {withdrawMode === 'withdraw' 
-              ? `Withdraw ${assetSymbol} tokens by burning ${vault.symbol} shares` 
-              : `Specify exact shares to redeem for ${assetSymbol} tokens`
-            }
+            {withdrawMode === 'withdraw'
+              ? `Withdraw ${assetSymbol} tokens by burning ${vault.symbol} shares`
+              : `Specify exact shares to redeem for ${assetSymbol} tokens`}
           </p>
         </div>
 
@@ -269,7 +275,7 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
             symbol={getInputSymbol()}
             decimals={getInputDecimals()}
             availableBalance={getAvailableBalance()}
-            availableLabel={`Available:`}
+            availableLabel={`Available`}
             onMaxClick={handleMaxClick}
             error={error}
             disabled={assetBalanceLoading}
@@ -281,12 +287,16 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
           {withdrawMode === 'withdraw' ? (
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">Estimated Shares:</span>
-              <span className="text-white font-medium">{calculateEstimatedShares()} {vault.symbol}</span>
+              <span className="text-white font-medium">
+                {calculateEstimatedShares()} {vault.symbol}
+              </span>
             </div>
           ) : (
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">Estimated Assets:</span>
-              <span className="text-white font-medium">{calculateEstimatedAssets()} {assetSymbol}</span>
+              <span className="text-white font-medium">
+                {calculateEstimatedAssets()} {assetSymbol}
+              </span>
             </div>
           )}
           <div className="flex justify-between text-sm">
@@ -297,8 +307,8 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">Risk Level:</span>
-            <ColoredBadge 
-              variant="risk" 
+            <ColoredBadge
+              variant="risk"
               riskLevel={vault.riskLevel}
               text={vault.riskLevel.toUpperCase()}
               size="sm"
@@ -313,11 +323,10 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
             <div className="text-xs text-blue-400">
               <p className="font-medium mb-1">Important Information</p>
               <p>
-                {withdrawMode === 'withdraw' 
+                {withdrawMode === 'withdraw'
                   ? `You will withdraw ${assetSymbol} tokens by burning ${vault.symbol} shares based on the current exchange rate.`
-                  : `You will redeem exact ${vault.symbol} shares for the corresponding amount of ${assetSymbol} tokens.`
-                }
-                {' '}Withdrawals may vary due to changes in the exchange rate while processing.
+                  : `You will redeem exact ${vault.symbol} shares for the corresponding amount of ${assetSymbol} tokens.`}{' '}
+                Withdrawals may vary due to changes in the exchange rate while processing.
               </p>
             </div>
           </div>
@@ -341,12 +350,14 @@ export const VaultWithdrawModal: React.FC<VaultWithdrawModalProps> = ({
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 Processing...
               </div>
+            ) : withdrawMode === 'withdraw' ? (
+              'Withdraw'
             ) : (
-              withdrawMode === 'withdraw' ? 'Withdraw' : 'Redeem'
+              'Redeem'
             )}
           </button>
         </div>
       </div>
     </div>
   );
-}; 
+};
