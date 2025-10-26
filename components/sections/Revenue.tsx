@@ -26,8 +26,8 @@ export default function Revenue() {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Revenue Streams</h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Profit-driven R&D through proprietary crypto asset management and strategic technical
-            services for clients and partners.
+            Our revenue model combines profitable crypto trading strategies that fund our R&D
+            operations with strategic technical services for clients and partners.
           </p>
         </motion.div>
 
@@ -86,8 +86,8 @@ export default function Revenue() {
                 <div className="text-text-secondary">Bitcoin-Focused Strategies</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">🇨🇭</div>
-                <div className="text-text-secondary">Swiss Precision</div>
+                <div className="text-3xl font-bold text-accent-orange mb-2">🌍</div>
+                <div className="text-text-secondary">Global & Independent Operations</div>
               </div>
             </div>
           </Card>
