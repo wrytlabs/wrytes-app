@@ -1,26 +1,31 @@
 # CLAUDE.md
 
-This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with the **Wrytes** DeFi dashboard platform as repository.
+This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with the **Wrytes AG** platform repository.
 
 ## 🎯 **Application / Repository Philosophy & Vision**
 
-**Wrytes** is not just a vault management application - it's a **comprehensive DeFi management platform** designed with a **generic, extensible architecture**. The vault feature is merely the **first implementation** of a broader vision for professional DeFi portfolio management.
+**Wrytes AG** is a Swiss-based R&D and software development company that operates through **profit-driven Bitcoin strategies** funding continuous innovation. Our technical platform includes DeFi management tools, but serves our broader mission of blockchain technology research and development.
 
-### **Core Design Principles:**
+The platform combines **proprietary trading operations** with **cutting-edge software development** to create sustainable, independent research capabilities.
 
-1. **🔄 Generic & Modular Architecture** - Every feature is designed to be extensible and reusable
-2. **🧩 Component Reusability** - Maximize reuse of existing components before building new ones
-3. **📱 Mobile-First Responsive** - Consistent patterns across all features
-4. **🏢 Enterprise-Grade** - Built for professional/institutional users with proper error handling
-5. **🔧 Feature-Based Structure** - Each major feature is self-contained and pluggable
+### **Core Business Principles:**
 
-### **Platform Vision:**
-- **Vault Management** (Current) - Multi-protocol yield optimization
-- **Transaction Queue Management** (Current) - Redux-powered multi-tx batch optimization
-- **Portfolio Analytics** (Future) - Cross-protocol performance tracking
-- **Strategy Builder** (Future) - Custom DeFi strategy creation
-- **Strategy Management** (Future) - Professional tools
-- **Blockchain Tools** (Future) - Innovative and brand new features
+1. **💰 Profit-Driven Independence** - Operating exclusively with company assets, profits fund R&D
+2. **🔬 Research-First Development** - Every tool serves our research and innovation goals
+3. **🧩 Component Reusability** - Maximize reuse of existing components before building new ones
+4. **📱 Mobile-First Responsive** - Consistent patterns across all features
+5. **🏢 Swiss Precision** - Built with meticulous attention to detail and quality
+6. **🔧 Feature-Based Structure** - Each major feature is self-contained and pluggable
+
+### **Platform Vision & Business Model:**
+- **🏦 Proprietary Trading Operations** (Core) - Bitcoin option strategies funding R&D
+- **🛠️ Technical Services** (Revenue) - Development services for clients and partners
+- **🚀 Platform Development** (Innovation) - Proprietary tools and research prototyping
+- **🤝 Strategic Partnerships** (Growth) - M&A and technology sharing agreements
+- **📊 DeFi Management Tools** (Current) - Multi-protocol yield optimization platform
+- **🔄 Transaction Queue Management** (Current) - Redux-powered batch operations
+- **📈 Advanced Trading Tools** (Future) - Enhanced Bitcoin strategy platforms
+- **🔍 Blockchain Research Tools** (Future) - Cutting-edge protocol development
 
 ## 🏗️ **Architecture Overview**
 
@@ -249,13 +254,15 @@ const { addTransaction, clearQueue } = useTransactionQueue();
 - **Input Sanitization** - Zod schemas for validation
 - **XSS Protection** - Proper escaping
 
-## 🚀 **Future Feature Architecture**
+## 🚀 **Future Development Roadmap**
 
-### **Planned Features:**
-1. **Portfolio Analytics** - Cross-protocol performance tracking
-2. **Strategy Builder** - Custom DeFi strategy creation
-3. **Risk Management** - Professional risk assessment
-4. **Institutional Tools** - Compliance and reporting
+### **R&D and Platform Expansion:**
+1. **Advanced Trading Tools** - Enhanced Bitcoin option strategy platforms
+2. **Blockchain Research Tools** - Cutting-edge protocol development and experimentation
+3. **Portfolio Analytics** - Cross-protocol performance tracking for internal operations
+4. **Strategy Builder** - Custom trading and DeFi strategy creation tools
+5. **Risk Management** - Professional risk assessment for trading operations
+6. **Institutional Services** - Client-facing tools for technical services business
 
 ### **Extensibility Patterns:**
 ```typescript
@@ -283,15 +290,19 @@ interface FeatureModule {
 ## 📈 **Business Context**
 
 ### **Wrytes AG Profile:**
-- **Swiss AG** - Based in Zug (Crypto Valley)
-- **Focus Areas** - Bitcoin/Blockchain, AI/ML, Software Development
-- **Target Market** - Professional DeFi users, institutions
+- **Swiss AG** - Based in Zug, Switzerland (Crypto Valley)
+- **Core Business** - Proprietary Bitcoin option trading strategies funding R&D operations
+- **Focus Areas** - Blockchain Technology R&D, Software Development, Bitcoin Trading
+- **Independence** - 100% company-owned assets, no external clients for trading
+- **Revenue Model** - Trading profits fund continuous research and development
 
-### **Platform Goals:**
-1. **DeFi Portfolio Management** - Multi-protocol aggregation
-2. **Yield Optimization** - Automated strategy execution
-3. **Risk Assessment** - Professional risk evaluation
-4. **Swiss Compliance** - Regulatory-compliant services
+### **Business Goals:**
+1. **Profit-Driven R&D Funding** - Sustainable research through trading profits
+2. **Technical Services Revenue** - Client development and consulting services
+3. **Platform Development** - Proprietary tools for internal operations and research
+4. **Strategic Partnerships** - Technology sharing and acquisition opportunities
+5. **Innovation Leadership** - Cutting-edge blockchain technology development
+6. **Swiss Excellence** - Maintaining highest standards of precision and quality
 
 ## 🛠️ **Development Commands**
 
@@ -355,13 +366,14 @@ yarn analyze      # Bundle analysis
 
 ---
 
-## 🎯 **Remember: This is a Platform, Not Just a Vault App**
+## 🎯 **Remember: This is an R&D Platform for Profit-Driven Innovation**
 
-The vault feature is the **first implementation** of a broader DeFi management platform. Every decision should consider:
+This platform serves **Wrytes AG's core mission**: using proprietary Bitcoin trading strategies to fund continuous blockchain research and development. Every technical decision should consider:
 
-1. **How will this scale to other protocols?**
-2. **Can this pattern be reused for future features?**
-3. **Is this component generic enough for other use cases?**
-4. **Does this follow the established architecture patterns?**
+1. **How does this serve our R&D and trading operations?**
+2. **Can this pattern be reused for future research tools?**
+3. **Is this component generic enough for multiple business functions?**
+4. **Does this maintain Swiss precision and quality standards?**
+5. **How will this scale as our research and business operations grow?**
 
-**Think platform-first, feature-second.**
+**Think research-first, business-sustainability-second, technical-excellence-always.**
