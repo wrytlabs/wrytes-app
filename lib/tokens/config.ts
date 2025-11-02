@@ -8,7 +8,7 @@ export interface TokenConfig {
 }
 
 export const TOKENS: Record<string, TokenConfig> = {
-  // Ethereum Mainnet tokens
+  // Ethereum Mainnet tokens, Stablecoins
   USDC: {
     address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // Circle USDC
     symbol: 'USDC',
@@ -41,6 +41,36 @@ export const TOKENS: Record<string, TokenConfig> = {
     address: '0xdde3eC717f220Fc6A29D6a4Be73F91DA5b718e55', // USDU token
     symbol: 'USDU',
     name: 'USDU',
+    decimals: 18,
+    chainId: 1,
+  },
+
+  // Crypto
+  WETH: {
+    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH token
+    symbol: 'WETH',
+    name: 'Wrapped Ether',
+    decimals: 18,
+    chainId: 1,
+  },
+  WBTC: {
+    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // WBTC token
+    symbol: 'WBTC',
+    name: 'Wrapped BTC',
+    decimals: 8,
+    chainId: 1,
+  },
+  cbBTC: {
+    address: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC token
+    symbol: 'cbBTC',
+    name: 'Coinbase Wrapped BTC',
+    decimals: 8,
+    chainId: 1,
+  },
+  FPS: {
+    address: '0x1bA26788dfDe592fec8bcB0Eaff472a42BE341B2', // FPS token
+    symbol: 'FPS',
+    name: 'Frankencoin Pool Share',
     decimals: 18,
     chainId: 1,
   },

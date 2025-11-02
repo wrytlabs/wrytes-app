@@ -137,8 +137,6 @@ export const AuthorizationForm: React.FC<AuthorizationFormProps> = ({
     verifyingContract &&
     Object.keys(errors).length === 0;
 
-  console.log(isFormValid);
-
   return (
     <Card>
       <div className="p-6 space-y-6">

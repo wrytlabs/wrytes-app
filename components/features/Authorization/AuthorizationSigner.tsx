@@ -1,11 +1,16 @@
 import React from 'react';
 import { useAccount, useSignTypedData, useChainId } from 'wagmi';
-import { parseUnits } from 'viem';
+import { parseUnits, formatUnits } from 'viem';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { AmountInput } from '@/components/ui/AmountInput';
 import { DateTimeInput } from '@/components/ui/DateTimeInput';
-import { useAuthorizationForm, OperationKind } from '@/hooks/authorization';
+import {
+  useAuthorizationForm,
+  OperationKind,
+  useAuthorizationBalance,
+} from '@/hooks/authorization';
+import { useBalance } from '@/hooks/web3/useBalance';
 import { TOKENS } from '@/lib/tokens/config';
 
 interface AuthorizationSignerProps {
@@ -30,6 +35,23 @@ export const AuthorizationSigner: React.FC<AuthorizationSignerProps> = ({
   const { authorization, verifyingContract, errors, updateField, validateForm, resetForm } =
     useAuthorizationForm();
 
+  // Fetch wallet balance for TRANSFER and DEPOSIT operations
+  const { balance: walletBalance, loading: walletLoading } = useBalance({
+    address: selectedAddress,
+    token: selectedToken,
+    chainId,
+    enabled: !!selectedAddress && !!selectedToken,
+  });
+
+  // Fetch processor balance for PROCESS and CLAIM operations
+  const { balance: processorBalance, loading: processorLoading } = useAuthorizationBalance({
+    processorAddress: verifyingContract,
+    owner: selectedAddress,
+    token: selectedToken,
+    chainId,
+    enabled: !!selectedAddress && !!selectedToken && !!verifyingContract,
+  });
+
   // Update from address when selectedAddress changes
   React.useEffect(() => {
     if (selectedAddress && selectedAddress !== authorization.from) {
@@ -51,13 +73,30 @@ export const AuthorizationSigner: React.FC<AuthorizationSignerProps> = ({
     }
   }, [selectedOperation, authorization.kind, updateField]);
 
-  const handleAddressChange = (address: string) => {
-    updateField('from', address);
-    onAddressChange?.(address);
+  // Determine which balance to use based on operation type
+  const getAvailableBalance = (): bigint => {
+    switch (selectedOperation) {
+      case OperationKind.TRANSFER:
+        return walletBalance; // Use wallet balance for outbound operations
+      case OperationKind.DEPOSIT:
+        return walletBalance; // Use wallet balance for outbound operations
+      case OperationKind.PROCESS:
+        return processorBalance; // Use processor balance for processor operations
+      case OperationKind.CLAIM:
+        return processorBalance; // Use processor balance for processor operations
+      default:
+        return 0n;
+    }
   };
 
+  const availableBalance = getAvailableBalance();
+  const isBalanceLoading = walletLoading || processorLoading;
+
   const handleMaxClick = () => {
-    updateField('amount', '1000'); // Mock max amount
+    if (availableBalance > 0n) {
+      const maxAmount = formatUnits(availableBalance, selectedTokenDecimals);
+      updateField('amount', maxAmount);
+    }
   };
 
   const handleSign = async () => {
@@ -121,9 +160,6 @@ export const AuthorizationSigner: React.FC<AuthorizationSignerProps> = ({
     selectedOperation !== undefined &&
     Object.entries(errors).filter(i => i[1] != undefined).length === 0;
 
-  console.log(authorization);
-  console.log(Object.entries(errors).filter(i => i[1] != undefined).length === 0);
-
   const getTokenSymbol = () => {
     const tokenEntry = Object.entries(TOKENS).find(
       ([, config]) => config.address === selectedToken
@@ -133,9 +169,7 @@ export const AuthorizationSigner: React.FC<AuthorizationSignerProps> = ({
 
   return (
     <Card>
-      <div className="p-6 space-y-6">
-        <h3 className="text-lg font-semibold text-white">Authorization Signing</h3>
-
+      <div className="space-y-6">
         {!isConnected && (
           <div className="p-4 bg-yellow-500/10 border border-gray-600 rounded-lg">
             <p className="text-yellow-400 text-sm">Please connect your wallet to continue</p>
@@ -171,7 +205,7 @@ export const AuthorizationSigner: React.FC<AuthorizationSignerProps> = ({
             onAmountChange={value => updateField('amount', value)}
             symbol={getTokenSymbol()}
             decimals={selectedTokenDecimals}
-            availableBalance={BigInt('1000000000000000000000')} // Mock balance
+            availableBalance={availableBalance}
             onMaxClick={handleMaxClick}
             placeholder="0.0"
             error={errors.amount}
@@ -179,7 +213,9 @@ export const AuthorizationSigner: React.FC<AuthorizationSignerProps> = ({
 
           {/* Nonce Input */}
           <div>
-            <label className="block text-text-secondary text-sm font-medium mb-2">Security Nonce</label>
+            <label className="block text-text-secondary text-sm font-medium mb-2">
+              Security Nonce
+            </label>
             <input
               type="text"
               value={authorization.nonce}

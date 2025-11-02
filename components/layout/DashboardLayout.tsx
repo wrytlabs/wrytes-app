@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-gradient-dark text-text-primary">
       {/* Dashboard Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-dark-card border-b border-dark-surface">
-        <div className="mx-auto max-md:px-8 px-16 py-3.5">
+        <div className="mx-auto max-md:px-4 px-16 py-3.5">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-4">
@@ -191,7 +191,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8 md:ml-64">{children}</main>
+        <main className="flex-1 px-4 py-8 md:ml-64">{children}</main>
       </div>
 
       {/* Auth Modal */}

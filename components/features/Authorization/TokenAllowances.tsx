@@ -1,11 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCoins,
-  faArrowUp,
-  faArrowDown,
-  faExchangeAlt,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faArrowUp, faArrowDown, faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 import Card from '@/components/ui/Card';
 import { OperationKind } from '@/hooks/authorization';
 
@@ -24,10 +19,9 @@ interface AllowanceInfo {
 }
 
 export const TokenAllowances: React.FC<TokenAllowancesProps> = ({
-  selectedAddress,
   isOwnAddress,
   selectedOperation,
-  onOperationSelect
+  onOperationSelect,
 }) => {
   // Operation definitions with descriptions
   const getAllowances = (): AllowanceInfo[] => {
@@ -64,43 +58,45 @@ export const TokenAllowances: React.FC<TokenAllowancesProps> = ({
   const getOperationDescription = (operation: OperationKind): string => {
     switch (operation) {
       case OperationKind.TRANSFER:
-        return "Send tokens from selected account to another address";
+        return 'Send tokens from selected account to another address';
       case OperationKind.DEPOSIT:
-        return "Deposit tokens into processor";
+        return 'Deposit tokens into processor';
       case OperationKind.PROCESS:
-        return "Internal transfers within the processor";
+        return 'Internal transfers within the processor';
       case OperationKind.CLAIM:
-        return "Withdraw funds from the processor";
+        return 'Withdraw funds from the processor';
       default:
-        return "";
+        return '';
     }
   };
 
   return (
     <Card>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-semibold text-white">Operation Allowances</h3>
           <p className="text-text-secondary text-sm">
             Click on an operation to select it for authorization signing
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {allowances.map((allowance) => (
+          {allowances.map(allowance => (
             <div
               key={allowance.operation}
               onClick={() => onOperationSelect(allowance.operation)}
               className={`
                 p-4 bg-dark-surface border rounded-lg cursor-pointer transition-all duration-200
-                ${selectedOperation === allowance.operation
-                  ? 'border-accent-orange bg-accent-orange/10'
-                  : 'border-gray-600 hover:border-accent-orange/50 hover:bg-accent-orange/5'
+                ${
+                  selectedOperation === allowance.operation
+                    ? 'border-accent-orange bg-accent-orange/10'
+                    : 'border-gray-600 hover:border-accent-orange/50 hover:bg-accent-orange/5'
                 }
               `}
             >
               <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center ${allowance.color} flex-shrink-0`}>
+                <div
+                  className={`w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center ${allowance.color} flex-shrink-0`}
+                >
                   <FontAwesomeIcon icon={allowance.icon} className="w-4 h-4" />
                 </div>
                 <div className="flex-1">

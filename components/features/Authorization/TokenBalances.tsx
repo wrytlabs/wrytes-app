@@ -1,10 +1,17 @@
 import React from 'react';
 import { formatUnits } from 'viem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWallet, faCoins, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faWallet,
+  faCoins,
+  faEye,
+  faEyeSlash,
+  faCalculator,
+} from '@fortawesome/free-solid-svg-icons';
 import Card from '@/components/ui/Card';
 import { TokenLogo } from '@/components/ui/TokenLogo';
-import { TOKENS, TokenConfig } from '@/lib/tokens/config';
+import { TokenConfig } from '@/lib/tokens/config';
+import { useTokenBalances } from '@/hooks/authorization';
 
 interface TokenBalancesProps {
   selectedAddress?: string;
@@ -12,13 +19,6 @@ interface TokenBalancesProps {
   onShowAddressSelection?: () => void;
   onTokenSelect?: (tokenAddress: string, tokenConfig: TokenConfig) => void;
   selectedToken?: string;
-}
-
-interface TokenBalanceInfo {
-  token: TokenConfig;
-  walletBalance: bigint;
-  processorBalance: bigint;
-  isLoading: boolean;
 }
 
 export const TokenBalances: React.FC<TokenBalancesProps> = ({
@@ -30,57 +30,19 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
 }) => {
   const [showZeroBalances, setShowZeroBalances] = React.useState(false);
 
-  // Mock token balances - in real implementation, fetch from contracts
-  const getTokenBalances = (): TokenBalanceInfo[] => {
-    return Object.values(TOKENS).map(token => {
-      // Mock different balance scenarios
-      const mockWalletBalance = (() => {
-        switch (token.symbol) {
-          case 'USDC':
-            return BigInt('1250750000'); // 1,250.75 USDC (6 decimals)
-          case 'USDT':
-            return BigInt('2500000000'); // 2,500 USDT (6 decimals)
-          case 'DAI':
-            return BigInt('500750000000000000000'); // 500.75 DAI (18 decimals)
-          case 'ZCHF':
-            return BigInt('1000000000000000000000'); // 1,000 ZCHF (18 decimals)
-          case 'USDU':
-            return BigInt('750250000000000000000'); // 750.25 USDU (18 decimals)
-          default:
-            return BigInt('0');
-        }
-      })();
+  // Use the real token balances hook
+  const {
+    balances: tokenBalances,
+    loading: balancesLoading,
+    error: balancesError,
+    getFilteredBalances,
+  } = useTokenBalances({
+    address: selectedAddress,
+    watch: true,
+    enabled: !!selectedAddress,
+  });
 
-      const mockProcessorBalance = (() => {
-        switch (token.symbol) {
-          case 'USDC':
-            return BigInt('500000000'); // 500 USDC in processor
-          case 'USDT':
-            return BigInt('1000000000'); // 1,000 USDT in processor
-          case 'DAI':
-            return BigInt('250000000000000000000'); // 250 DAI in processor
-          case 'ZCHF':
-            return BigInt('0'); // No ZCHF in processor
-          case 'USDU':
-            return BigInt('100000000000000000000'); // 100 USDU in processor
-          default:
-            return BigInt('0');
-        }
-      })();
-
-      return {
-        token,
-        walletBalance: isOwnAddress ? mockWalletBalance : BigInt('0'),
-        processorBalance: mockProcessorBalance,
-        isLoading: false,
-      };
-    });
-  };
-
-  const tokenBalances = getTokenBalances();
-  const filteredBalances = showZeroBalances
-    ? tokenBalances
-    : tokenBalances.filter(balance => balance.walletBalance > 0n || balance.processorBalance > 0n);
+  const filteredBalances = getFilteredBalances(showZeroBalances);
 
   const formatBalance = (balance: bigint, decimals: number): string => {
     const formatted = formatUnits(balance, decimals);
@@ -94,15 +56,18 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
   };
 
   const getTotalValue = (): string => {
-    // Mock USD values for demonstration
+    if (balancesLoading) return '--';
+
     let totalUSD = 0;
     tokenBalances.forEach(balance => {
+      if (balance.isLoading) return; // Skip loading balances
+
       const walletValue = parseFloat(formatUnits(balance.walletBalance, balance.token.decimals));
       const processorValue = parseFloat(
         formatUnits(balance.processorBalance, balance.token.decimals)
       );
 
-      // Mock USD prices
+      // Mock USD prices - in production, fetch from price feed
       const usdPrice =
         balance.token.symbol === 'USDC' || balance.token.symbol === 'USDT'
           ? 1
@@ -131,24 +96,36 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
 
   return (
     <Card>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white">Token Balances</h3>
             <p className="text-text-secondary text-sm">
               {isOwnAddress ? 'Your' : 'Address'} token holdings and processor deposits
             </p>
           </div>
           <div className="text-right">
             <p className="text-text-secondary text-sm">Total Value</p>
-            <p className="text-white font-semibold text-lg">{getTotalValue()}</p>
+            <p className="text-white font-semibold text-lg">
+              {balancesLoading ? (
+                <span className="animate-pulse">Loading...</span>
+              ) : (
+                getTotalValue()
+              )}
+            </p>
           </div>
         </div>
+
+        {/* Error Display */}
+        {balancesError && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-red-400 text-sm">Failed to load balances: {balancesError.message}</p>
+          </div>
+        )}
 
         {/* Address Info - Clickable to show address selection */}
         <div
           onClick={onShowAddressSelection}
-          className="flex items-center justify-between p-3 bg-blue-500/10 border border-gray-600 rounded-lg cursor-pointer hover:border-accent-orange/50 hover:bg-accent-orange/5 transition-all duration-200"
+          className="flex items-center justify-between p-3 bg-dark-surface border border-accent-orange rounded-lg cursor-pointer hover:border-accent-orange/80 hover:bg-accent-orange/5 transition-all duration-200"
         >
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
@@ -158,7 +135,7 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
             <span className="text-white font-medium">
               {isOwnAddress ? 'Connected Wallet' : 'Authorized Address'}
             </span>
-            <span className="text-text-secondary text-xs">(click to change)</span>
+            <span className="text-text-secondary text-xs max-md:hidden">(click to change)</span>
           </div>
           <span className="text-text-secondary text-sm font-mono">
             {selectedAddress.slice(0, 6)}...{selectedAddress.slice(-4)}
@@ -183,6 +160,7 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
         </div>
 
         {/* Token List */}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {filteredBalances.map(balance => (
             <div
@@ -197,34 +175,56 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
                 }
               `}
             >
-              <div className="flex items-center gap-3">
-                <TokenLogo currency={balance.token.symbol} size={8} />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-white font-medium">{balance.token.symbol}</span>
-                    <span className="text-text-secondary text-sm">•</span>
-                    <span className="text-text-secondary text-sm">{balance.token.name}</span>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-start gap-3">
+                  <TokenLogo currency={balance.token.symbol} size={8} />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-medium">{balance.token.symbol}</span>
+                    </div>
+                    <p className="text-text-secondary text-xs">
+                      {balance.token.address.slice(0, 6)}...{balance.token.address.slice(-4)}
+                    </p>
                   </div>
-                  <p className="text-text-secondary text-xs">
-                    {balance.token.address.slice(0, 6)}...{balance.token.address.slice(-4)}
-                  </p>
                 </div>
+                <div className="text-text-secondary text-sm">{balance.token.name}</div>
               </div>
 
-              <div className="text-right space-y-1">
-                {/* Wallet Balance */}
-                <div className="flex items-center justify-end gap-2">
-                  <FontAwesomeIcon icon={faWallet} className="w-3 h-3 text-green-400" />
-                  <span className="text-white text-sm">
-                    {formatBalance(balance.walletBalance, balance.token.decimals)} {balance.token.symbol}
-                  </span>
-                </div>
-                {/* Processor Balance */}
-                <div className="flex items-center justify-end gap-2">
-                  <FontAwesomeIcon icon={faCoins} className="w-3 h-3 text-blue-400" />
-                  <span className="text-text-secondary text-sm">
-                    {formatBalance(balance.processorBalance, balance.token.decimals)} {balance.token.symbol}
-                  </span>
+              <div className="flex flex-col gap-3">
+                <div className="text-right space-y-1">
+                  {/* Wallet Balance */}
+                  <div className="flex items-center justify-end gap-2">
+                    <FontAwesomeIcon icon={faWallet} className="w-3 h-3 text-green-400" />
+                    <span className="text-text-secondary text-sm">
+                      {balance.isLoading ? (
+                        <span className="animate-pulse">--</span>
+                      ) : (
+                        `${formatBalance(balance.walletBalance, balance.token.decimals)} ${balance.token.symbol}`
+                      )}
+                    </span>
+                  </div>
+                  {/* Processor Balance */}
+                  <div className="flex items-center justify-end gap-2">
+                    <FontAwesomeIcon icon={faCoins} className="w-3 h-3 text-blue-400" />
+                    <span className="text-text-secondary text-sm">
+                      {balance.isLoading ? (
+                        <span className="animate-pulse">--</span>
+                      ) : (
+                        `${formatBalance(balance.processorBalance, balance.token.decimals)} ${balance.token.symbol}`
+                      )}
+                    </span>
+                  </div>
+                  {/* Total Balance */}
+                  <div className="flex items-center justify-end gap-2">
+                    <FontAwesomeIcon icon={faCalculator} className="w-3 h-3 text-orange-400" />
+                    <span className="text-text-secondary text-sm">
+                      {balance.isLoading ? (
+                        <span className="animate-pulse">--</span>
+                      ) : (
+                        `${formatBalance(balance.walletBalance + balance.processorBalance, balance.token.decimals)} ${balance.token.symbol}`
+                      )}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -247,7 +247,7 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
         {/* Legend */}
         <div className="p-3 bg-gray-500/10 border border-gray-600 rounded-lg">
           <p className="text-text-secondary text-xs mb-2 font-medium">Legend:</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
             <div className="flex items-center gap-2">
               <FontAwesomeIcon icon={faWallet} className="w-3 h-3 text-green-400" />
               <span className="text-text-secondary">Wallet Balance - Direct token holdings</span>
@@ -256,6 +256,12 @@ export const TokenBalances: React.FC<TokenBalancesProps> = ({
               <FontAwesomeIcon icon={faCoins} className="w-3 h-3 text-blue-400" />
               <span className="text-text-secondary">
                 Processor Balance - Deposited in AuthorizationProcessor
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FontAwesomeIcon icon={faCalculator} className="w-3 h-3 text-orange-400" />
+              <span className="text-text-secondary">
+                Total Balance - Combined wallet and processor
               </span>
             </div>
           </div>
