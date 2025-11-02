@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatUnits } from 'viem';
+import { TokenLogo } from '@/components/ui/TokenLogo';
 import { AmountInputProps } from './types';
 
 export const AmountInput: React.FC<AmountInputProps> = ({
@@ -41,29 +42,32 @@ export const AmountInput: React.FC<AmountInputProps> = ({
           min="0"
           disabled={disabled}
           className={`
-            w-full bg-dark-surface border rounded-lg px-4 py-3 pr-20 
+            w-full bg-dark-surface border rounded-lg px-4 py-3 pr-24 
             text-white placeholder-text-secondary 
             focus:outline-none transition-colors
             ${error 
               ? 'border-red-400 focus:border-red-400' 
-              : 'border-dark-border focus:border-accent-orange'
+              : 'border-gray-600 focus:border-accent-orange'
             }
             ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           `}
         />
         
-        {/* Symbol */}
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
-          {symbol}
+        {/* Symbol with Logo */}
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2 text-text-secondary">
+          <TokenLogo currency={symbol} size={4} />
+          <span>{symbol}</span>
         </div>
       </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between text-xs">
         {/* Available Balance */}
-        <span className="text-text-secondary">
-          {availableLabel}: {formatAvailableBalance()} {symbol}
-        </span>
+        <div className="flex items-center gap-1 text-text-secondary">
+          <span>{availableLabel}: {formatAvailableBalance()}</span>
+          <TokenLogo currency={symbol} size={3} />
+          <span>{symbol}</span>
+        </div>
 
         {/* MAX Button */}
         {showMaxButton && (

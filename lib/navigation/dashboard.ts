@@ -3,6 +3,7 @@ import {
   faVault,
   faHistory,
   faMoneyCheckDollar,
+  faUserCheck,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -39,5 +40,11 @@ export const DASHBOARD_NAVIGATION: NavigationItem[] = [
     path: '/dashboard/queue',
     icon: faHistory,
     description: 'View and manage pending transactions',
+  },
+  {
+    label: 'Authorizations',
+    path: '/dashboard/authorizations',
+    icon: faUserCheck,
+    description: 'Manage authorization signatures for smart contracts',
   },
 ];
