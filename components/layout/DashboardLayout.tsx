@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes, faWallet, faLightbulb } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +18,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showTransactionQueue, setShowTransactionQueue] = useState(false);
   const { isAuthenticated, signOut } = useAuth();
@@ -62,6 +63,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const toggleTransactionQueue = () => {
     setShowTransactionQueue(!showTransactionQueue);
   };
+
+  // Show disclaimer toast when dashboard loads
+  useEffect(() => {
+    if (showDisclaimer) {
+      setTimeout(() => {
+        setShowDisclaimer(false);
+      }, 30000);
+    }
+  }, [showDisclaimer]);
 
   return (
     <div className="min-h-screen bg-gradient-dark text-text-primary">
@@ -191,7 +201,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 px-4 py-8 md:ml-64">{children}</main>
+        <main className="flex-1 px-4 py-8 md:ml-64">
+          <div
+            className={`bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 mb-8 ${showDisclaimer ? '' : 'hidden'}`}
+          >
+            <p className="text-text-secondary text-sm font-medium">
+              <strong className="text-white">
+                ⚠️ Wrytes.io doesn't audit nor endorse any of the protocols listed, we just focus on
+                providing tools and accurate data. Ape at your own risk.
+              </strong>
+            </p>
+          </div>
+          <div>{children}</div>
+        </main>
       </div>
 
       {/* Auth Modal */}

@@ -244,6 +244,18 @@ export default function RiskDisclaimer() {
                   </div>
                 </section>
 
+                {/* Protocol Disclaimer */}
+                <section>
+                  <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-6 mb-6">
+                    <h2 className="text-2xl font-bold text-orange-500 mb-4">Protocol Disclaimer</h2>
+                    <p className="text-text-secondary text-lg font-medium">
+                      <strong className="text-white">
+                        Wrytes.io doesn't audit nor endorse any of the protocols listed, we just focus on providing tools and accurate data. Ape at your own risk.
+                      </strong>
+                    </p>
+                  </div>
+                </section>
+
                 {/* No Financial Advice */}
                 <section>
                   <h2 className="text-2xl font-bold text-white mb-4">No Financial Advice</h2>
