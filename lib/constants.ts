@@ -60,11 +60,10 @@ export const SERVICES = [
     title: 'Strategic Partnerships & Capital Operations',
     description: 'Growth through partnerships and investments',
     features: [
-      'Strategic partnerships in technology projects',
+      'Strategic partnerships in projects',
       'Resource alignment and shared objectives',
       'Technology and expertise sharing agreements',
-      'Investment opportunities and joint ventures',
-      'Expansion initiatives and market development',
+      'Investment opportunities, mergers, acquisitions and joint ventures',
     ],
   },
   {

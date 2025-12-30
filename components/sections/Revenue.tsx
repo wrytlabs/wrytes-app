@@ -49,7 +49,9 @@ export default function Revenue() {
                       className="w-8 h-8 text-accent-orange"
                     />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
+                  <h3 className="text-xl font-bold text-white mb-3 min-h-[3.5rem] flex justify-center">
+                    {service.title}
+                  </h3>
                   <p className="text-text-secondary mb-6">{service.description}</p>
                 </div>
 
