@@ -15,11 +15,13 @@ export const CONFIG: ConfigEnv = {
 export const COMPANY = {
   name: 'Wrytes AG',
   location: 'Zug, Switzerland',
-  tagline: 'Profit-driven innovation through proprietary Bitcoin strategies',
+  tagline: 'Software Development & Distributed Ledger Technologies & AI',
+  shortDescription:
+    'Swiss R&D company specializing in developing and deploying Software Solutions for Distributed Ledger Technologies and AI.',
   description:
-    'Swiss-based R&D company specializing in blockchain technology and software development. Our proprietary Bitcoin option trading strategies fund continuous research and innovation.',
+    'We develop cutting-edge tools and adapters/integrations from smart contracts to APIs and applications, with expertise in accounting automation, governance overlays, and advanced transaction systems. Independent revenue through Proprietary Asset Management funds our continuous innovation.',
   keywords:
-    'Crypto Asset Management, Bitcoin Options Trading, Proprietary Trading, R&D, Switzerland, Zug, Profit-Driven, DeFi, Blockchain Technology, Software Development',
+    'Software Development, Distributed Ledger Technologies, AI, Full-Stack Development, Smart Contracts, APIs, Automation, Governance Tools, DAO Management, Transaction Systems, Switzerland, Zug, R&D, DeFi, Blockchain Technology',
 };
 
 export const SOCIAL = {
@@ -30,25 +32,13 @@ export const SOCIAL = {
 
 export const SERVICES = [
   {
-    id: 'crypto-asset-management',
-    title: 'Proprietary Crypto Asset Management',
-    description: 'Profit-driven yield generation using company assets only',
-    features: [
-      'Bitcoin option trading strategies',
-      'Strategic P2P borrowing and lending strategies',
-      'Arbitrage, liquidations and market inefficiency exploitation',
-      'Strategic borrowing for operational payments',
-      'Exclusively company-owned assets - never client funds',
-    ],
-  },
-  {
     id: 'technical-services',
     title: 'Technical Services',
     description: 'Expert development services for clients and partners',
     features: [
-      'Architecture design and game theory expertise',
+      'Architecture design and system integration',
       'Smart contract development and auditing',
-      'DeFi project adapters and protocol connectors',
+      'Distributed ledger adapters and protocol connectors',
       'Backend systems and API integrations',
       'Automation frameworks and workflows',
     ],
@@ -58,11 +48,11 @@ export const SERVICES = [
     title: 'Platform Development & Innovation',
     description: 'Proprietary tools and cutting-edge research',
     features: [
-      'Proprietary blockchain tools and applications',
-      'Cutting-edge technology research and prototyping',
-      'Safety and monitoring tools, including custom actions',
+      'Cutting-edge research and prototyping',
+      'Distributed ledger tools and applications',
+      'Safety and monitoring systems',
       'Open-source contributions and community building',
-      'Internal tooling for enhanced trading operations',
+      'Business tools for enhanced operations',
     ],
   },
   {
@@ -70,11 +60,23 @@ export const SERVICES = [
     title: 'Strategic Partnerships & Capital Operations',
     description: 'Growth through partnerships and investments',
     features: [
-      'Mergers, acquisitions, and strategic partnerships',
-      'Resource alignment and mutual goal achievement',
+      'Strategic partnerships in technology projects',
+      'Resource alignment and shared objectives',
       'Technology and expertise sharing agreements',
-      'Capital raising for expansion initiatives',
-      'Strategic investments in complementary projects',
+      'Investment opportunities and joint ventures',
+      'Expansion initiatives and market development',
+    ],
+  },
+  {
+    id: 'crypto-asset-management',
+    title: 'Proprietary Asset Management',
+    description: 'Independent revenue generation funding R&D operations',
+    features: [
+      'Bitcoin-based revenue strategies',
+      'Strategic yield optimization approaches',
+      'Market inefficiency identification and exploitation',
+      'Operational financing through strategic positions',
+      'Exclusively company-owned assets',
     ],
   },
 ];

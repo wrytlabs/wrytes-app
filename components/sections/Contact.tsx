@@ -22,17 +22,16 @@ export default function Contact() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Contact Information */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="space-y-8"
           >
-            {/* Contact Details */}
-            <div className="space-y-6">
+            {/* Contact Details - Desktop Row Layout / Mobile Stack */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
               {/* Location */}
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-accent-orange/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -59,7 +58,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/*  */}
+              {/* Telegram Community */}
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-accent-orange/20 rounded-xl flex items-center justify-center flex-shrink-0">
                   <FontAwesomeIcon icon={faPeopleGroup} className="w-5 h-5 text-accent-orange" />
