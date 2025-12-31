@@ -15,6 +15,9 @@ export const CONFIG: ConfigEnv = {
 export const COMPANY = {
   name: 'Wrytes AG',
   location: 'Zug, Switzerland',
+  address: 'Chamerstrasse 172, 6300 Zug, Switzerland',
+  uid: 'CHE-351.107.319',
+  registry: 'https://zg.chregister.ch/cr-portal/auszug/auszug.xhtml?uid=CHE-351.107.319',
   tagline: 'Software Development & Distributed Ledger Technologies & AI',
   shortDescription:
     'Swiss R&D company specializing in developing and deploying Software Solutions for Distributed Ledger Technologies and AI.',

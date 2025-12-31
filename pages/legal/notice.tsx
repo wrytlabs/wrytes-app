@@ -67,10 +67,21 @@ export default function LegalNotice() {
                       <strong className="text-white">Company Name:</strong> {COMPANY.name}
                     </div>
                     <div>
+                      <strong className="text-white">Company ID:</strong>{' '}
+                      <a
+                        href={COMPANY.registry}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-accent-orange hover:text-accent-orange/80 transition-colors underline"
+                      >
+                        {COMPANY.uid}
+                      </a>
+                    </div>
+                    <div>
                       <strong className="text-white">Legal Form:</strong> Aktiengesellschaft (AG)
                     </div>
                     <div>
-                      <strong className="text-white">Registered Address:</strong> {COMPANY.location}
+                      <strong className="text-white">Registered Address:</strong> {COMPANY.address}
                     </div>
                     <div>
                       <strong className="text-white">Email:</strong> hello@wrytes.io

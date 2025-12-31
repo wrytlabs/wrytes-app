@@ -68,7 +68,7 @@ export default function PrivacyPolicy() {
                       <p>
                         <strong className="text-white">{COMPANY.name}</strong>
                       </p>
-                      <p>{COMPANY.location}</p>
+                      <p>{COMPANY.address}</p>
                       <p>Email: hello@wrytes.io</p>
                     </div>
                   </div>
