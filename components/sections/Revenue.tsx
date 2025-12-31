@@ -80,16 +80,16 @@ export default function Revenue() {
           <Card className="max-w-4xl mx-auto" gradient>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">100%</div>
-                <div className="text-text-secondary">Company-Owned Assets</div>
+                <div className="text-3xl font-bold text-accent-orange mb-2">🚀</div>
+                <div className="text-text-secondary">Software Development</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-accent-orange mb-2">⚙️</div>
+                <div className="text-text-secondary">Platform & Infrastructure</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-accent-orange mb-2">₿</div>
-                <div className="text-text-secondary">Bitcoin-Focused Strategies</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">🌍</div>
-                <div className="text-text-secondary">Global & Independent Operations</div>
+                <div className="text-text-secondary">Company-Owned Assets</div>
               </div>
             </div>
           </Card>
