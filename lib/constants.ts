@@ -25,7 +25,7 @@ export const COMPANY = {
 };
 
 export const SOCIAL = {
-  Github_user: 'https://github.com/wrytes_io',
+  Github_user: 'https://github.com/wrytlabs', // TODO: 'https://github.com/wrytes_io' after setup
   Twitter: 'https://twitter.com/wrytes_io',
   Telegram: 'https://t.me/wrytes_io',
 };

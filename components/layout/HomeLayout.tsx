@@ -71,7 +71,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
 
             {/* Desktop CTA Button */}
             {/* TODO: remove min-w-32 after activating button again */}
-            <div className="hidden md:flex items-center gap-4 min-w-32">
+            <div className="hidden md:flex items-center gap-4 min-w-28">
               {/* <Link
                 href="/dashboard"
                 className="inline-flex items-center gap-2 bg-accent-orange text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-sm font-medium"

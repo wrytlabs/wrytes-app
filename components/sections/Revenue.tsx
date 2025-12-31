@@ -24,7 +24,7 @@ export default function Revenue() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Business Operations</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Revenue Streams</h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
             Our operations focus on advanced software development and technical services for
             Distributed Ledger Technologies, funded by independent Proprietary Asset Management.
