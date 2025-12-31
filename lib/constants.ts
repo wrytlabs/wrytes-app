@@ -79,3 +79,56 @@ export const SERVICES = [
     ],
   },
 ];
+
+export const INTEGRATIONS = [
+  {
+    id: 'aragon-dao',
+    name: 'Aragon DAO',
+    description: 'On-chain treasury management with governance plugins and multi-action payloads',
+    url: 'https://aragon.org/',
+    icon: '/integration/Aragon Logos/aragon-logo.png',
+  },
+  {
+    id: 'morpho',
+    name: 'Morpho',
+    description: 'P2P lending protocol with floating rates and flashloan capabilities',
+    url: 'https://morpho.org/',
+    icon: '/integration/Morpho Logos/Morpho Logos/SVG/Morpho-logo-symbol-lightmode.svg',
+  },
+  {
+    id: 'curve',
+    name: 'Curve',
+    description: 'AMM pools, liquidity provision, and swap integrations',
+    url: 'https://curve.fi/',
+    icon: '/integration/Curve Logos/CRV-transparent.svg',
+  },
+  {
+    id: 'termmax',
+    name: 'TermMax',
+    description: 'P2P fixed-term lending protocol for credit markets',
+    url: 'https://termmax.io/',
+    icon: '/integration/TermMax Logos/TermMax Logomark_Color.svg',
+  },
+  {
+    id: 'frankencoin',
+    name: 'Frankencoin',
+    description: 'Swiss Franc stablecoin with 1:1 CHF on/off ramping',
+    url: 'https://frankencoin.com/',
+    icon: '/integration/Frankencoin Logos/coin_logo_frankencoin.svg',
+  },
+  {
+    id: 'usdu-finance',
+    name: 'USDU Finance',
+    description: 'Non-algorithmic stablecoin backed by protocol adapters for structured finance',
+    url: 'https://usdu.finance/',
+    icon: '/integration/USDU-Finance Logos/usdu.svg',
+  },
+  {
+    id: 'deribit',
+    name: 'Deribit',
+    description:
+      'Bitcoin/Ethereum options exchange with custom WebSocket client and automation tools',
+    url: 'https://deribit.com/',
+    icon: '/integration/Deribit Logos/Deribit Logo Only.jpeg',
+  },
+];
