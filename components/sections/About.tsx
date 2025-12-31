@@ -34,8 +34,8 @@ export default function About() {
             <Card className="h-full mb-5">
               <h3 className="text-2xl font-bold mb-4 text-white">The Meaning Behind Wrytes</h3>
               <p className="text-text-secondary mb-4 leading-relaxed">
-                Our name combines <strong className="text-white">"write"</strong> and{' '}
-                <strong className="text-white">"rights"</strong> - reflecting our mission to write
+                Our name combines <strong className="text-white">&quot;write&quot;</strong> and{' '}
+                <strong className="text-white">&quot;rights&quot;</strong> - reflecting our mission to write
                 software that empowers digital ownership, transparency, and innovation through
                 Distributed Ledger Technologies.
               </p>
@@ -84,7 +84,7 @@ export default function About() {
                 <p className="text-text-secondary">Global Financial Technology Hub</p>
               </div>
               <p className="text-text-secondary leading-relaxed text-left">
-                Located in Switzerland's dynamic tech ecosystem, leveraging regulatory frameworks
+                Located in Switzerland&apos;s dynamic tech ecosystem, leveraging regulatory frameworks
                 for advanced Distributed-Ledger Technology business capabilities.
               </p>
             </Card>
