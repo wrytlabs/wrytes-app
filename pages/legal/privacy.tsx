@@ -120,7 +120,7 @@ export default function PrivacyPolicy() {
                     <ul className="list-disc list-inside space-y-2 ml-4">
                       <li>
                         <strong className="text-white">Platform Operation:</strong> To provide and
-                        maintain our DeFi management platform
+                        maintain our software development platform for Distributed Ledger Technology solutions
                       </li>
                       <li>
                         <strong className="text-white">Authentication:</strong> To verify your

@@ -115,7 +115,7 @@ export const INTEGRATIONS = [
   {
     id: 'frankencoin',
     name: 'Frankencoin',
-    description: 'Swiss Franc stablecoin with 1:1 CHF on/off ramping',
+    description: 'Swiss Franc stablecoin ecosystem incl. invoice payments',
     url: 'https://frankencoin.com/',
     icon: '/integration/Frankencoin Logos/coin_logo_frankencoin.svg',
   },
@@ -129,8 +129,7 @@ export const INTEGRATIONS = [
   {
     id: 'deribit',
     name: 'Deribit',
-    description:
-      'Bitcoin/Ethereum options exchange with custom WebSocket client and automation tools',
+    description: 'Bitcoin & Ethereum options exchange with API and automation tools',
     url: 'https://deribit.com/',
     icon: '/integration/Deribit Logos/Deribit Logo Only.jpeg',
   },

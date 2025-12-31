@@ -77,15 +77,16 @@ export default function TermsOfService() {
                   <h2 className="text-2xl font-bold text-white mb-4">Service Description</h2>
                   <div className="text-text-secondary space-y-3">
                     <p>
-                      Wrytes AG provides a DeFi management platform that allows users to interact
-                      with various decentralized finance protocols. Our services include:
+                      Wrytes AG provides a software development platform specializing in Distributed Ledger Technology 
+                      solutions and protocol integrations. Our services include:
                     </p>
                     <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>Multi-protocol vault management and yield optimization</li>
-                      <li>Transaction queue management and batch operations</li>
-                      <li>Portfolio analytics and performance tracking</li>
-                      <li>Blockchain technology research and development tools</li>
+                      <li>Software development and Distributed Ledger Technology solutions</li>
+                      <li>Protocol adapters and system integrations</li>
+                      <li>Full-stack development from smart contracts to APIs and applications</li>
                       <li>Technical consulting and development services</li>
+                      <li>Platform development and innovation tools</li>
+                      <li>Research and development in cutting-edge technology</li>
                     </ul>
                   </div>
                 </section>

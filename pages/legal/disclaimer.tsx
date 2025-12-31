@@ -13,7 +13,7 @@ export default function RiskDisclaimer() {
         <title>Risk Disclaimer - {COMPANY.name}</title>
         <meta
           name="description"
-          content="Important risk disclosures for cryptocurrency and DeFi activities."
+          content="Important risk disclosures for Distributed Ledger Technology and software platform activities."
         />
         <meta name="robots" content="index, follow" />
       </Head>
@@ -50,7 +50,7 @@ export default function RiskDisclaimer() {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Risk Disclaimer</h1>
             <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-              Important risk disclosures for cryptocurrency, DeFi, and blockchain-related
+              Important risk disclosures for Distributed Ledger Technology and software platform
               activities.
             </p>
           </motion.div>
@@ -72,8 +72,8 @@ export default function RiskDisclaimer() {
                       Important Risk Warning
                     </h2>
                     <p className="text-text-secondary">
-                      Cryptocurrency and DeFi activities involve substantial risk of loss. You
-                      should carefully consider whether trading or participating in DeFi protocols
+                      Distributed Ledger Technology and software platform activities involve substantial risk of loss. You
+                      should carefully consider whether participating in Distributed Ledger Technology protocols
                       is suitable for you in light of your financial circumstances and risk
                       tolerance.{' '}
                       <strong className="text-white">
@@ -91,11 +91,11 @@ export default function RiskDisclaimer() {
                   <div className="text-text-secondary space-y-3">
                     <ul className="list-disc list-inside space-y-2 ml-4">
                       <li>
-                        <strong className="text-white">Extreme Volatility:</strong> Cryptocurrency
+                        <strong className="text-white">Extreme Volatility:</strong> Digital asset
                         prices can fluctuate dramatically within short periods
                       </li>
                       <li>
-                        <strong className="text-white">Market Manipulation:</strong> Crypto markets
+                        <strong className="text-white">Market Manipulation:</strong> Digital asset markets
                         may be subject to manipulation and artificial price movements
                       </li>
                       <li>
@@ -103,12 +103,12 @@ export default function RiskDisclaimer() {
                         to exit positions quickly or at desired prices
                       </li>
                       <li>
-                        <strong className="text-white">Market Crashes:</strong> Cryptocurrency
+                        <strong className="text-white">Market Crashes:</strong> Digital asset
                         markets can experience severe and prolonged downturns
                       </li>
                       <li>
                         <strong className="text-white">Correlation Risks:</strong> Different
-                        cryptocurrencies may move together during market stress
+                        digital assets may move together during market stress
                       </li>
                     </ul>
                   </div>
@@ -126,7 +126,7 @@ export default function RiskDisclaimer() {
                         bugs or exploits could result in loss of funds
                       </li>
                       <li>
-                        <strong className="text-white">Protocol Failures:</strong> DeFi protocols
+                        <strong className="text-white">Protocol Failures:</strong> Distributed Ledger Technology protocols
                         may fail, be hacked, or operate incorrectly
                       </li>
                       <li>
@@ -282,7 +282,7 @@ export default function RiskDisclaimer() {
                 <section>
                   <h2 className="text-2xl font-bold text-white mb-4">Your Responsibilities</h2>
                   <div className="text-text-secondary space-y-3">
-                    <p>Before using our platform or engaging in any crypto activities, you must:</p>
+                    <p>Before using our platform or engaging in any Distributed Ledger Technology activities, you must:</p>
                     <ul className="list-disc list-inside space-y-2 ml-4">
                       <li>
                         Understand the risks involved and accept full responsibility for your
@@ -325,12 +325,12 @@ export default function RiskDisclaimer() {
                   </h2>
                   <div className="text-text-secondary space-y-3">
                     <p>
-                      Cryptocurrency regulations vary significantly by jurisdiction. You are
+                      Digital asset regulations vary significantly by jurisdiction. You are
                       responsible for understanding and complying with all applicable laws in your
                       location, including:
                     </p>
                     <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>Cryptocurrency trading and ownership restrictions</li>
+                      <li>Digital asset interaction and ownership restrictions</li>
                       <li>Tax reporting and payment obligations</li>
                       <li>Anti-money laundering (AML) requirements</li>
                       <li>Know Your Customer (KYC) compliance</li>

@@ -98,15 +98,17 @@ export default function LegalNotice() {
                   <div className="text-text-secondary space-y-3">
                     <p>
                       Wrytes AG is a Swiss research and development company specializing in
-                      blockchain technology and software development. Our core business activities
+                      software development for Distributed Ledger Technologies and AI. Our core business activities
                       include:
                     </p>
                     <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>Proprietary cryptocurrency trading strategies and operations</li>
-                      <li>Blockchain technology research and development</li>
-                      <li>Software development services for clients and partners</li>
-                      <li>Platform development and innovation</li>
-                      <li>Strategic partnerships and technology consulting</li>
+                      <li>Software development and Distributed Ledger Technology solutions</li>
+                      <li>Full-stack development from smart contracts to APIs and applications</li>
+                      <li>Protocol adapters and system integrations</li>
+                      <li>Technical consulting and development services for clients and partners</li>
+                      <li>Platform development and innovation for cutting-edge technology research</li>
+                      <li>Proprietary Asset Management (funding R&D operations)</li>
+                      <li>Strategic partnerships and technology sharing agreements</li>
                     </ul>
                   </div>
                 </section>

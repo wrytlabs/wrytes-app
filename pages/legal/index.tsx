@@ -32,7 +32,7 @@ const legalPages = [
   },
   {
     title: 'Risk Disclaimer',
-    description: 'Important risk disclosures for cryptocurrency and DeFi activities.',
+    description: 'Important risk disclosures for Distributed Ledger Technology and software platform activities.',
     href: '/legal/disclaimer',
     icon: faExclamationTriangle,
   },
