@@ -1,8 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import Button from '@/components/ui/Button';
 import { COMPANY } from '@/lib/constants';
 
 export default function Hero() {
@@ -54,7 +51,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-lg text-text-muted mb-12 max-w-2xl mx-auto"
           >
-            {COMPANY.description}
+            {COMPANY.shortDescription}
           </motion.p>
 
           {/* Location Badge */}
@@ -75,17 +72,18 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 1.0 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Button
+            {/* Temporarily commented out - platform not ready for public access */}
+            {/* <Button
               size="lg"
               href="/dashboard"
               icon={<FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />}
               className="shadow-glow"
             >
               Explore Platform
-            </Button>
-            <Button variant="outline" size="lg" href="#about">
+            </Button> */}
+            {/* <Button variant="outline" size="lg" href="#about">
               Learn More
-            </Button>
+            </Button> */}
           </motion.div>
         </motion.div>
       </div>

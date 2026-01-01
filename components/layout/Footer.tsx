@@ -42,7 +42,7 @@ export default function Footer() {
           <div className="text-text-muted text-sm">
             © {year} {COMPANY.name}. {COMPANY.location}
           </div>
-          
+
           {/* Social Links */}
           <ul className="flex items-center justify-center gap-8">
             <li>
@@ -58,29 +58,29 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
-            <Link 
-              href="/legal/notice" 
+            <Link
+              href="/legal/notice"
               className="text-text-muted hover:text-accent-orange transition-colors"
             >
               Legal Notice
             </Link>
             <span className="text-text-muted">•</span>
-            <Link 
-              href="/legal/privacy" 
+            <Link
+              href="/legal/privacy"
               className="text-text-muted hover:text-accent-orange transition-colors"
             >
               Privacy Policy
             </Link>
             <span className="text-text-muted">•</span>
-            <Link 
-              href="/legal/terms" 
+            <Link
+              href="/legal/terms"
               className="text-text-muted hover:text-accent-orange transition-colors"
             >
               Terms of Service
             </Link>
             <span className="text-text-muted">•</span>
-            <Link 
-              href="/legal/disclaimer" 
+            <Link
+              href="/legal/disclaimer"
               className="text-text-muted hover:text-accent-orange transition-colors"
             >
               Risk Disclaimer

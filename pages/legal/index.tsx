@@ -32,7 +32,7 @@ const legalPages = [
   },
   {
     title: 'Risk Disclaimer',
-    description: 'Important risk disclosures for cryptocurrency and DeFi activities.',
+    description: 'Important risk disclosures for Distributed Ledger Technology and software platform activities.',
     href: '/legal/disclaimer',
     icon: faExclamationTriangle,
   },
@@ -107,7 +107,7 @@ export default function LegalIndex() {
                 <p>
                   <strong className="text-white">{COMPANY.name}</strong>
                 </p>
-                <p>{COMPANY.location}</p>
+                <p>{COMPANY.address}</p>
                 <p>Email: hello@wrytes.io</p>
               </div>
               <p className="text-text-muted text-sm mt-4">

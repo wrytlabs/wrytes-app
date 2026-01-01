@@ -26,8 +26,8 @@ export default function Revenue() {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Revenue Streams</h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Our revenue model combines profitable crypto trading strategies that fund our R&D
-            operations with strategic technical services for clients and partners.
+            Our operations focus on advanced software development and technical services for
+            Distributed Ledger Technologies, funded by independent Proprietary Asset Management.
           </p>
         </motion.div>
 
@@ -49,7 +49,9 @@ export default function Revenue() {
                       className="w-8 h-8 text-accent-orange"
                     />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
+                  <h3 className="text-xl font-bold text-white mb-3 min-h-[3.5rem] flex justify-center">
+                    {service.title}
+                  </h3>
                   <p className="text-text-secondary mb-6">{service.description}</p>
                 </div>
 
@@ -78,16 +80,16 @@ export default function Revenue() {
           <Card className="max-w-4xl mx-auto" gradient>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">100%</div>
-                <div className="text-text-secondary">Company-Owned Assets</div>
+                <div className="text-3xl font-bold text-accent-orange mb-2">🚀</div>
+                <div className="text-text-secondary">Software Development</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-accent-orange mb-2">⚙️</div>
+                <div className="text-text-secondary">Platform & Infrastructure</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-accent-orange mb-2">₿</div>
-                <div className="text-text-secondary">Bitcoin-Focused Strategies</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-orange mb-2">🌍</div>
-                <div className="text-text-secondary">Global & Independent Operations</div>
+                <div className="text-text-secondary">Company-Owned Assets</div>
               </div>
             </div>
           </Card>
