@@ -1,7 +1,7 @@
-import { cookieStorage, createStorage, http } from "@wagmi/core";
-import { injected, coinbaseWallet, walletConnect, safe } from "@wagmi/connectors";
-import { mainnet, base, AppKitNetwork } from "@reown/appkit/networks";
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import { cookieStorage, createStorage, http } from '@wagmi/core';
+import { injected, coinbaseWallet, safe } from '@wagmi/connectors';
+import { mainnet, base, AppKitNetwork } from '@reown/appkit/networks';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 
 // Configuration from environment variables
 const CONFIG = {
@@ -29,12 +29,12 @@ export const getChainById = (chainId: number) => {
 export const getBlockExplorerUrl = (path: string, chainId?: number) => {
   const chain = chainId ? getChainById(chainId) : mainnet;
   const baseUrl = chain.blockExplorers?.default?.url;
-  
+
   if (!baseUrl) {
     // Fallback to etherscan if no block explorer is configured
     return `https://etherscan.io/${path}`;
   }
-  
+
   // Ensure the path doesn't start with a slash if baseUrl ends with one
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   return `${baseUrl}/${cleanPath}`;
@@ -43,7 +43,8 @@ export const getBlockExplorerUrl = (path: string, chainId?: number) => {
 // Metadata for wallets
 export const WAGMI_METADATA = {
   name: 'Wrytes',
-  description: 'Swiss precision in software development, Bitcoin/Blockchain technology, and AI solutions',
+  description:
+    'Swiss precision in software development, Distributed Ledger Technology and AI solutions',
   url: process.env.NEXT_PUBLIC_APP_URL || 'https://wrytes.io',
   icons: ['/favicon.ico'],
 };
