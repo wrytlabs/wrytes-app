@@ -4,28 +4,28 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 
 ## 🎯 **Application / Repository Philosophy & Vision**
 
-**Wrytes AG** is a Swiss-based R&D and software development company that operates through **profit-driven Bitcoin strategies** funding continuous innovation. Our technical platform includes DeFi management tools, but serves our broader mission of blockchain technology research and development.
+**Wrytes AG** is a Swiss-based R&D company specializing in **Software Development for Distributed Ledger Technologies and AI**. Our technical platform creates cutting-edge tools, protocol adapters, and full-stack applications that serve our broader mission of technology innovation and research.
 
-The platform combines **proprietary trading operations** with **cutting-edge software development** to create sustainable, independent research capabilities.
+The platform combines **independent asset management funding** with **cutting-edge software development** to create sustainable, self-funded research and development capabilities.
 
 ### **Core Business Principles:**
 
-1. **💰 Profit-Driven Independence** - Operating exclusively with company assets, profits fund R&D
-2. **🔬 Research-First Development** - Every tool serves our research and innovation goals
+1. **💻 Software Development Focus** - Primary focus on Distributed Ledger Technology solutions and AI
+2. **🔬 Research-Driven Innovation** - Every tool serves our development and innovation goals
 3. **🧩 Component Reusability** - Maximize reuse of existing components before building new ones
 4. **📱 Mobile-First Responsive** - Consistent patterns across all features
 5. **🏢 Swiss Precision** - Built with meticulous attention to detail and quality
 6. **🔧 Feature-Based Structure** - Each major feature is self-contained and pluggable
 
 ### **Platform Vision & Business Model:**
-- **🏦 Proprietary Trading Operations** (Core) - Bitcoin option strategies funding R&D
+- **💻 Software Development** (Core) - Full-stack solutions for Distributed Ledger Technologies and AI
 - **🛠️ Technical Services** (Revenue) - Development services for clients and partners
 - **🚀 Platform Development** (Innovation) - Proprietary tools and research prototyping
-- **🤝 Strategic Partnerships** (Growth) - M&A and technology sharing agreements
-- **📊 DeFi Management Tools** (Current) - Multi-protocol yield optimization platform
-- **🔄 Transaction Queue Management** (Current) - Redux-powered batch operations
-- **📈 Advanced Trading Tools** (Future) - Enhanced Bitcoin strategy platforms
-- **🔍 Blockchain Research Tools** (Future) - Cutting-edge protocol development
+- **🤝 Strategic Partnerships** (Growth) - Technology sharing and collaboration agreements
+- **🔗 Protocol Integrations** (Current) - Multi-protocol adapters and system integrations
+- **🔄 Transaction Management Systems** (Current) - Advanced deployment and monitoring tools
+- **⚙️ Platform Operations Tools** (Future) - Enhanced infrastructure and automation systems
+- **🔍 R&D Innovation Tools** (Future) - Cutting-edge technology research and development
 
 ## 🏗️ **Architecture Overview**
 
@@ -73,6 +73,8 @@ The platform combines **proprietary trading operations** with **cutting-edge sof
 │   ├── web3/               # Web3 configuration
 │   ├── graphql/            # GraphQL client & queries
 │   └── utils/              # Utility functions
+├── logs/                   # 📋 Project Documentation & Change History
+│   └── CHANGELOG-YYYY.MM.DD.md # Dated changelog files for version tracking
 ├── redux/                  # 📊 Global state management
 │   └── slices/             # Feature-specific slices
 └── pages/                  # 🚀 Next.js pages
@@ -175,9 +177,9 @@ The platform combines **proprietary trading operations** with **cutting-edge sof
 ## 🔗 **Web3 Integration Philosophy**
 
 ### **Multi-Protocol Support:**
-- **Current:** Morpho (with enhanced GraphQL), Curve, Savings, Falcon protocols
+- **Current:** Morpho (with enhanced GraphQL), Curve, TermMax, Frankencoin, USDU Finance, Deribit
 - **Architecture:** Protocol adapter pattern for standardized interfaces
-- **Future:** Any DeFi protocol with standardized interfaces
+- **Future:** Any Distributed Ledger Technology protocol with standardized interfaces
 
 ### **Wallet Integration:**
 - **Reown AppKit** - Modern wallet connection
@@ -297,12 +299,13 @@ interface FeatureModule {
 - **Revenue Model** - Trading profits fund continuous research and development
 
 ### **Business Goals:**
-1. **Profit-Driven R&D Funding** - Sustainable research through trading profits
+1. **Software Development Excellence** - Leading full-stack solutions for Distributed Ledger Technologies
 2. **Technical Services Revenue** - Client development and consulting services
 3. **Platform Development** - Proprietary tools for internal operations and research
-4. **Strategic Partnerships** - Technology sharing and acquisition opportunities
-5. **Innovation Leadership** - Cutting-edge blockchain technology development
-6. **Swiss Excellence** - Maintaining highest standards of precision and quality
+4. **Strategic Partnerships** - Technology sharing and collaboration agreements
+5. **Innovation Leadership** - Cutting-edge technology development and R&D
+6. **Independent Funding** - Sustainable research through proprietary asset management
+7. **Swiss Excellence** - Maintaining highest standards of precision and quality
 
 ## 🛠️ **Development Commands**
 
@@ -350,6 +353,29 @@ yarn analyze      # Bundle analysis
 - Comprehensive error boundaries
 - User-friendly error messages
 
+## 📋 **Documentation & Change Management**
+
+### **Logs Folder Structure:**
+The `logs/` folder contains project documentation and change history:
+
+```
+logs/
+└── CHANGELOG-YYYY.MM.DD.md    # Dated changelog files for major updates
+```
+
+### **Changelog Management Guidelines:**
+- **Date-based naming** - Use `CHANGELOG-YYYY.MM.DD.md` format for major changes
+- **Comprehensive documentation** - Include technical details, business impact, and architectural changes
+- **Version tracking** - Document all significant updates, feature additions, and refactoring
+- **Future reference** - Maintain detailed records for historical context and decision tracking
+
+### **When to Create New Changelogs:**
+- Major feature implementations or removals
+- Significant business positioning changes
+- Architecture overhauls or technology stack updates
+- Legal document updates or compliance changes
+- Large-scale UI/UX modifications
+
 ## 🔍 **Troubleshooting Guide**
 
 ### **Common Issues:**
@@ -376,4 +402,4 @@ This platform serves **Wrytes AG's core mission**: using proprietary Bitcoin tra
 4. **Does this maintain Swiss precision and quality standards?**
 5. **How will this scale as our research and business operations grow?**
 
-**Think research-first, business-sustainability-second, technical-excellence-always.**
+**Think software-development-first, research-driven-innovation, technical-excellence-always.**
