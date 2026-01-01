@@ -16,16 +16,16 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RequireRole } from '@/components/auth/RequireRole'
 import { type Role, type Permission } from '@/lib/auth/types'
 import { AuthService } from '@/lib/auth/AuthService'
+import { CONFIG } from '@/lib/constants'
 
 // API service functions
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io'
 
 const apiService = {
   async getAllRoles(): Promise<Role[]> {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/roles`, {
+    const response = await fetch(`${CONFIG.api}/roles`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/permissions`, {
+    const response = await fetch(`${CONFIG.api}/permissions`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/roles`, {
+    const response = await fetch(`${CONFIG.api}/roles`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -81,7 +81,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/roles/${roleId}`, {
+    const response = await fetch(`${CONFIG.api}/roles/${roleId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -101,7 +101,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/roles/${roleId}`, {
+    const response = await fetch(`${CONFIG.api}/roles/${roleId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -118,7 +118,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/roles/${roleId}/permissions`, {
+    const response = await fetch(`${CONFIG.api}/roles/${roleId}/permissions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -136,7 +136,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/roles/${roleId}/permissions/${permissionId}`, {
+    const response = await fetch(`${CONFIG.api}/roles/${roleId}/permissions/${permissionId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

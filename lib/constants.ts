@@ -5,6 +5,9 @@ export type ConfigEnv = {
   indexer: string;
   reownProjectId: string;
   rpcUrl: string;
+  morphoGraphqlEndpoint: string;
+  morphoApiKey: string;
+  nodeEnv: string;
 };
 
 export const CONFIG: ConfigEnv = {
@@ -14,6 +17,9 @@ export const CONFIG: ConfigEnv = {
   indexer: process.env.NEXT_PUBLIC_INDEXER_URL || 'https://indexer.wrytes.io',
   reownProjectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || '',
   rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || '',
+  morphoGraphqlEndpoint: process.env.NEXT_PUBLIC_MORPHO_GRAPHQL_ENDPOINT || 'https://api.morpho.org/graphql',
+  morphoApiKey: process.env.NEXT_PUBLIC_MORPHO_API_KEY || '',
+  nodeEnv: process.env.NODE_ENV || 'development',
 };
 
 export const COMPANY = {

@@ -7,15 +7,14 @@ import {
   type UserProfile,
   type ApiError,
 } from './types'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io'
+import { CONFIG } from '@/lib/constants'
 
 export class AuthService {
   private static instance: AuthService
   private baseURL: string
 
   private constructor() {
-    this.baseURL = API_BASE_URL
+    this.baseURL = CONFIG.api
   }
 
   static getInstance(): AuthService {

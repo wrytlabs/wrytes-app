@@ -13,10 +13,10 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RequireRole } from '@/components/auth/RequireRole'
 import { useState, useEffect } from 'react'
 import { AuthService } from '@/lib/auth/AuthService'
+import { CONFIG } from '@/lib/constants'
 import Link from 'next/link'
 
 // API service functions
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io'
 
 // Fallback mock data for when API endpoints are not available
 const mockAdminStats: AdminStats = {
@@ -68,7 +68,7 @@ const apiService = {
     const token = authService.getStoredToken()
     
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/stats`, {
+      const response = await fetch(`${CONFIG.api}/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ const apiService = {
     const token = authService.getStoredToken()
     
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/activity`, {
+      const response = await fetch(`${CONFIG.api}/admin/activity`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const apiService = {
     const token = authService.getStoredToken()
     
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/health`, {
+      const response = await fetch(`${CONFIG.api}/admin/health`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

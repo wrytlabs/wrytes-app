@@ -1,4 +1,5 @@
 import { mainnet, base } from 'viem/chains'
+import { CONFIG } from '@/lib/constants'
 
 // Supported networks
 export const SUPPORTED_NETWORKS = {
@@ -11,7 +12,7 @@ export const NETWORK_CONFIG = {
   [SUPPORTED_NETWORKS.MAINNET]: {
     name: 'Ethereum Mainnet',
     chainId: SUPPORTED_NETWORKS.MAINNET,
-    rpcUrl: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_RPC_URL}`,
+    rpcUrl: `https://eth-mainnet.g.alchemy.com/v2/${CONFIG.rpcUrl}`,
     blockExplorer: 'https://etherscan.io',
     nativeCurrency: {
       name: 'Ether',
@@ -22,7 +23,7 @@ export const NETWORK_CONFIG = {
   [SUPPORTED_NETWORKS.BASE]: {
     name: 'Base',
     chainId: SUPPORTED_NETWORKS.BASE,
-    rpcUrl: `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_RPC_URL}`,
+    rpcUrl: `https://base-mainnet.g.alchemy.com/v2/${CONFIG.rpcUrl}`,
     blockExplorer: 'https://basescan.org',
     nativeCurrency: {
       name: 'Ether',

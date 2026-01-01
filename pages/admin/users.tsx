@@ -27,9 +27,9 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RequireRole } from '@/components/auth/RequireRole'
 import { type User, type Role } from '@/lib/auth/types'
 import { AuthService } from '@/lib/auth/AuthService'
+import { CONFIG } from '@/lib/constants'
 
 // API service functions
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io'
 
 const apiService = {
   async getAllUsers(): Promise<User[]> {
@@ -37,7 +37,7 @@ const apiService = {
     const token = authService.getStoredToken()
     
     // Try to include roles in the query - some APIs use query parameters
-    const response = await fetch(`${API_BASE_URL}/users?include=roles&includeInactive=true`, {
+    const response = await fetch(`${CONFIG.api}/users?include=roles&includeInactive=true`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/roles`, {
+    const response = await fetch(`${CONFIG.api}/users/${userId}/roles`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/roles`, {
+    const response = await fetch(`${CONFIG.api}/roles`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ const apiService = {
     const token = authService.getStoredToken()
     
     // Use the new admin-specific endpoint for updating any user's profile
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/profile`, {
+    const response = await fetch(`${CONFIG.api}/users/${userId}/profile`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -188,7 +188,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/activate`, {
+    const response = await fetch(`${CONFIG.api}/users/${userId}/activate`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -207,7 +207,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/deactivate`, {
+    const response = await fetch(`${CONFIG.api}/users/${userId}/deactivate`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -226,7 +226,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+    const response = await fetch(`${CONFIG.api}/users/${userId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -243,7 +243,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/roles`, {
+    const response = await fetch(`${CONFIG.api}/users/${userId}/roles`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -264,7 +264,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/roles/${roleId}`, {
+    const response = await fetch(`${CONFIG.api}/users/${userId}/roles/${roleId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -281,7 +281,7 @@ const apiService = {
     const authService = AuthService.getInstance()
     const token = authService.getStoredToken()
     
-    const response = await fetch(`${API_BASE_URL}/users/bulk`, {
+    const response = await fetch(`${CONFIG.api}/users/bulk`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

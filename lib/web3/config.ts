@@ -2,18 +2,14 @@ import { cookieStorage, createStorage, http } from '@wagmi/core';
 import { injected, coinbaseWallet, safe } from '@wagmi/connectors';
 import { mainnet, base, AppKitNetwork } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { CONFIG } from '@/lib/constants';
 
-// Configuration from environment variables
-const CONFIG = {
-  wagmiId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID,
-  rpc: process.env.NEXT_PUBLIC_RPC_URL,
-};
-
-if (!CONFIG.wagmiId) {
+// Validation for required configuration
+if (!CONFIG.reownProjectId) {
   throw new Error('NEXT_PUBLIC_REOWN_PROJECT_ID is not set');
 }
 
-if (!CONFIG.rpc) {
+if (!CONFIG.rpcUrl) {
   throw new Error('NEXT_PUBLIC_RPC_URL is not set');
 }
 
@@ -45,15 +41,15 @@ export const WAGMI_METADATA = {
   name: 'Wrytes',
   description:
     'Swiss precision in software development, Distributed Ledger Technology and AI solutions',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'https://wrytes.io',
+  url: CONFIG.app,
   icons: ['/favicon.ico'],
 };
 
 export const WAGMI_ADAPTER = new WagmiAdapter({
   networks: WAGMI_CHAINS as unknown as AppKitNetwork[],
   transports: {
-    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
-    [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${CONFIG.rpc}`),
+    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${CONFIG.rpcUrl}`),
+    [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${CONFIG.rpcUrl}`),
   },
   batch: {
     multicall: {
@@ -74,7 +70,7 @@ export const WAGMI_ADAPTER = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
   }),
-  projectId: CONFIG.wagmiId,
+  projectId: CONFIG.reownProjectId,
 });
 
 export const WAGMI_CONFIG = WAGMI_ADAPTER.wagmiConfig;

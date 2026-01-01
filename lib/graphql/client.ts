@@ -3,14 +3,11 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { RetryLink } from '@apollo/client/link/retry';
 import { HEALTH_CHECK_QUERY } from './queries/morpho';
-
-// Environment variables for GraphQL configuration
-const MORPHO_GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_MORPHO_GRAPHQL_ENDPOINT || 'https://api.morpho.org/graphql';
-const MORPHO_API_KEY = process.env.NEXT_PUBLIC_MORPHO_API_KEY;
+import { CONFIG } from '@/lib/constants';
 
 // Create HTTP link for Morpho GraphQL API
 const httpLink = createHttpLink({
-  uri: MORPHO_GRAPHQL_ENDPOINT,
+  uri: CONFIG.morphoGraphqlEndpoint,
 });
 
 // Authentication link (if API key is required)
@@ -18,7 +15,7 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      ...(MORPHO_API_KEY && { authorization: `Bearer ${MORPHO_API_KEY}` }),
+      ...(CONFIG.morphoApiKey && { authorization: `Bearer ${CONFIG.morphoApiKey}` }),
       'Content-Type': 'application/json',
     }
   };
@@ -113,7 +110,7 @@ export const apolloClient = new ApolloClient({
     },
   },
   // Enable developer tools in development
-  connectToDevTools: process.env.NODE_ENV === 'development',
+  connectToDevTools: CONFIG.nodeEnv === 'development',
 });
 
 // Health check function for GraphQL endpoint

@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from "react";
 import { WAGMI_CONFIG, WAGMI_ADAPTER, WAGMI_METADATA, WAGMI_CHAINS, WAGMI_CHAIN } from "./config";
+import { CONFIG } from "@/lib/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Config, State, WagmiProvider } from "wagmi";
 import { createAppKit } from "@reown/appkit/react";
@@ -10,7 +11,7 @@ const queryClient = new QueryClient();
 
 const modal = createAppKit({
 	adapters: [WAGMI_ADAPTER],
-	projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID!,
+	projectId: CONFIG.reownProjectId,
 	// @ts-expect-error - AppKit networks type mismatch
 	networks: WAGMI_CHAINS,
 	defaultNetwork: WAGMI_CHAIN,
