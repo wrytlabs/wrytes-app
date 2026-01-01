@@ -432,12 +432,12 @@ This project is proprietary software of **Wrytes AG**. All rights reserved.
 ### **Wrytes AG**
 - **🏢 Address**: Zug, Switzerland
 - **🌐 Website**: [wrytes.io](https://wrytes.io)
-- **📧 Contact**: [info@wrytes.io](mailto:info@wrytes.io)
+- **📧 Contact**: [hello@wrytes.io](mailto:hello@wrytes.io)
 
 ### **Development Team**
 - **🔧 Technical Issues**: Create an issue on GitHub
 - **💡 Feature Requests**: Create an issue on GitHub
-- **🐛 Bug Reports**: [info@wrytes.io](mailto:info@wrytes.io)
+- **🐛 Bug Reports**: [hello@wrytes.io](mailto:hello@wrytes.io)
 
 ---
 
