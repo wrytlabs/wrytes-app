@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -17,8 +18,11 @@ const inter = Inter({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
-  console.log('YOU ARE USING THIS CONFIG PROFILE:');
-  console.log(CONFIG);
+  useEffect(() => {
+    // Log CONFIG only once when the app mounts
+    console.log('YOU ARE USING THIS CONFIG PROFILE');
+    console.log(CONFIG);
+  }, []);
 
   return (
     <div className={`${inter.variable} font-sans`}>
