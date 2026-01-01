@@ -1,21 +1,25 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
-import { Inter } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
-import { Provider as ReduxProvider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
-import Layout from '@/components/layout/Layout'
-import { AuthProvider } from '@/contexts/AuthContext'
-import { ApolloProvider } from '@/lib/graphql/provider'
-import AppKitProvider from '@/lib/web3/appkit-provider'
-import { store, persistor } from '@/redux/redux.store'
+import '../styles/globals.css';
+import type { AppProps } from 'next/app';
+import { Inter } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
+import { Provider as ReduxProvider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import Layout from '@/components/layout/Layout';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ApolloProvider } from '@/lib/graphql/provider';
+import AppKitProvider from '@/lib/web3/appkit-provider';
+import { store, persistor } from '@/redux/redux.store';
+import { CONFIG } from '@/lib/constants';
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-})
+});
 
 export default function App({ Component, pageProps }: AppProps) {
+  console.log('YOU ARE USING THIS CONFIG PROFILE:');
+  console.log(CONFIG);
+
   return (
     <div className={`${inter.variable} font-sans`}>
       <ReduxProvider store={store}>
@@ -26,7 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <Layout>
                   <Component {...pageProps} />
                 </Layout>
-                <Toaster 
+                <Toaster
                   position="bottom-right"
                   toastOptions={{
                     style: {

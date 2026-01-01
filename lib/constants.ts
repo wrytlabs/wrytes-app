@@ -3,6 +3,8 @@ export type ConfigEnv = {
   app: string;
   api: string;
   indexer: string;
+  reownProjectId: string;
+  rpcUrl: string;
 };
 
 export const CONFIG: ConfigEnv = {
@@ -10,6 +12,8 @@ export const CONFIG: ConfigEnv = {
   app: process.env.NEXT_PUBLIC_APP_URL || 'https://app.wrytes.io',
   api: process.env.NEXT_PUBLIC_API_URL || 'https://api.wrytes.io',
   indexer: process.env.NEXT_PUBLIC_INDEXER_URL || 'https://indexer.wrytes.io',
+  reownProjectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || '',
+  rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || '',
 };
 
 export const COMPANY = {
